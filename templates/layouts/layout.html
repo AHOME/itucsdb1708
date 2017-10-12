@@ -20,12 +20,12 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" href="{{ url_for('home_page') }}" style="color: #ffffff;">Restoranlandın</a>
+    <a class="navbar-brand" href="{{ url_for('site.home_page') }}" style="color: #ffffff;">Restoranlandın</a>
   </div>
 
   <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     <ul class="nav navbar-nav">
-      <li class="active"><a href="{{ url_for('restaurant_home_page') }}" style="color: #ffffff;">Restaurants</a></li>
+      <li class="active"><a href="{{ url_for('site.restaurant_home_page') }}" style="color: #ffffff;">Restaurants</a></li>
     </ul>
   
     <div class="col-sm-3 col-md-3">
@@ -39,7 +39,7 @@
         </form>
     </div>
     <ul class="nav navbar-nav navbar-right">
-      <li class="active"><a href="{{ url_for('register_home_page') }}" style="color: #ffffff;">Register</a></li>
+      <li class="active"><a href="{{ url_for('site.register_home_page') }}" style="color: #ffffff;">Register</a></li>
     </ul>
   </div>
 
