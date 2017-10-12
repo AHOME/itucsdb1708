@@ -1,4 +1,19 @@
 {% extends "layouts/layout.html" %}
 
 {% block title %} Home {% endblock %}
-{%block content %} <h1>Welcome :)</h1> {% endblock %}
+{%block csslinks %}   <link rel="stylesheet" href="/static/homepage/home.css" /> {% endblock %}
+{%block content %}
+<div class="container">
+	<div class="news">
+        <hr>
+        <h1>First Restaurant Added</h1>
+        <p>We are celebrating to have a restaurant. With your help this network will become larger. Sign up now!. The honor of being our first restaurant goes to: Restaurant at the End of the Universe </p>
+         <a href="#">Link to the Restaurant</a>
+         <hr>
+        <h1>Website is Open Now!</h1>
+            <p>The only website for visualizing and ordering from restaurants is now ready to serve you. Created by Alperen Kantarcı, Sadık Ekin Özbay, Onat Şahin and Burak Bekci</p>
+        <hr>
+    </div>
+</div>
+
+{% endblock %}
