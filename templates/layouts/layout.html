@@ -27,6 +27,7 @@
     <ul class="nav navbar-nav">
       <li class="active"><a href="{{ url_for('restaurant_home_page') }}" style="color: #ffffff;">Restaurants</a></li>
     </ul>
+  
     <div class="col-sm-3 col-md-3">
         <form class="navbar-form" role="search">
         <div class="input-group">
@@ -38,10 +39,14 @@
         </form>
     </div>
     <ul class="nav navbar-nav navbar-right">
-      <li><a href="#" style="color: #ffffff;">Restaurants</a></li>
+      <li class="active"><a href="{{ url_for('register_home_page') }}" style="color: #ffffff;">Register</a></li>
     </ul>
   </div>
+
+
+
 </nav>
+
 {% block content %} {% endblock %}
 </body>
 </html>

@@ -20,8 +20,8 @@ def restaurant_show_page():
     return render_template('restaurant/show.html')
 
 @app.route('/register')
-def restaurant_home_page():
-    return render_template('register/register.html')
+def register_home_page():
+    return render_template('register/index.html')
 
 
 

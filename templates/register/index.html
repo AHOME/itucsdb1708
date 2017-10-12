@@ -1,50 +1,39 @@
- {% extends "layout.html" %}
+ {% extends "layouts/layout.html" %}
 
 {% block title %} Registration Page{% endblock %}
-{% block csslinks %}  <link rel="stylesheet" type="text/css" href="/static/register/new.css" > {% endblock %}
+{% block csslinks %}  <link rel="stylesheet" type="text/css" href="/static/register/index.css" > {% endblock %}
 {% block content %}
 
 
-  <div class="container">
+  <div class="container" align="left">
             <form class="form-horizontal" role="form">
                 <h2>Registration Form</h2>
 
-               <div class="fileinput fileinput-new" data-provides="fileinput">
-               <div class="fileinput-new thumbnail" style="width: 200px; height: 150px;">
-               <img data-src="holder.js/100%x100%" class="img-responsive" alt="150x200">
-               </div>
-
-               <div class="deneme">
-               <span class="btn btn-default btn-file"><span class="fileinput-new">Select image</span>
-               <span class="fileinput-exists">Change</span><input type="file" name="..."></span>
-                <a href="#" class="btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
-              </div>
-
-              </div>
+               
 
                 <div class="form-group">
                     <label for="firstName" class="col-sm-3 control-label">Full Name</label>
                     <div class="col-sm-9">
-                        <input type="text" id="firstName" placeholder="Full Name" class="form-control" autofocus>
+                        <input type="text" id="firstName" name="firstName" placeholder="Full Name" class="form-control" autofocus>
                         <span class="help-block">First Name, Last Name, eg.: John, Smith</span>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="email" class="col-sm-3 control-label">Email</label>
                     <div class="col-sm-9">
-                        <input type="email" id="email" placeholder="Email" class="form-control">
+                        <input type="email" id="email" name="email" placeholder="Email" class="form-control">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="password" class="col-sm-3 control-label">Password</label>
                     <div class="col-sm-9">
-                        <input type="password" id="password" placeholder="Password" class="form-control">
+                        <input type="password" id="password" name="password" placeholder="Password" class="form-control">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="birthDate" class="col-sm-3 control-label">Date of Birth</label>
                     <div class="col-sm-9">
-                        <input type="date" id="birthDate" class="form-control">
+                        <input type="date" id="birthDate" name="birthDate" class="form-control">
                     </div>
                 </div>
                 <div class="form-group">
@@ -103,7 +92,7 @@
                             </div>
                             <div class="col-sm-4">
                                 <label class="radio-inline">
-                                    <input type="radio"  name ="gender" id="uncknownRadio" value="Unknown">Unknown
+                                    <input type="radio"  name ="gender" id="unknownRadio" value="Unknown">Unknown
                                 </label>
                             </div>
                         </div>
@@ -133,6 +122,15 @@
                         </div>
                     </div>
                 </div> <!-- /.form-group -->
+                
+                <div>    
+
+            
+             <div class="pull-right" id="imageUpload">
+                <input type="file" name="...">  
+              </div>
+            </div>
+                   
                 <div class="form-group">
                     <div class="col-sm-9 col-sm-offset-3">
                         <button type="submit" class="btn btn-danger btn-block">Register</button>

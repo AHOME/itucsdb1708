@@ -16,6 +16,10 @@ body {
     background-color: #FFFFFF;
 }
 
+.deneme{
+    position: absolute;
+   border: 3px solid #73AD21; 
+}
 
 
 .btn-file{
@@ -26,3 +30,6 @@ body {
 	background-color: white;
 }
 
+#imageUpload{
+    padding-bottom: 20px; 
+}
