@@ -1,0 +1,15 @@
+.relative{
+    position: relative;
+    left: 30px;
+    border: 3px solid #73AD21;
+}
+.btn-glyphicon { padding:8px; background:#ffffff; margin-right:4px; }
+.icon-btn { padding: 1px 15px 3px 2px; border-radius:50px;}
+
+div.but {
+    position: relative;
+    left: 75px;
+}
+h2 {
+  color: red;
+}

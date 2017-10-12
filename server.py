@@ -19,6 +19,9 @@ def restaurant_home_page():
 def restaurant_show_page():
     return render_template('restaurant/show.html')
 
+@app.route('/user/15') #Change me with model [ID]
+def user_show_page():
+    return render_template('user/show.html')
 
 if __name__ == '__main__':
     VCAP_APP_PORT = os.getenv('VCAP_APP_PORT')
