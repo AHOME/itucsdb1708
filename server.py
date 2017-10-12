@@ -17,6 +17,10 @@ def restaurant_home_page():
     now = datetime.datetime.now()
     return render_template('restaurant/index.html', current_time=now.ctime())
 
+@app.route('/restaurant/12') #Change me with model [ID]
+def restaurant_show_page():
+    now = datetime.datetime.now()
+    return render_template('restaurant/show.html', current_time=now.ctime())
 
 
 if __name__ == '__main__':
