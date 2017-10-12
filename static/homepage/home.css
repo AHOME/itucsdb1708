@@ -1,3 +1,30 @@
 h1{
     color:red;
 }
+
+
+div.contact h1,h2,h3 {
+	margin:0 0 35px 0;
+	font-family: 'Patua One', cursive;
+	text-transform: uppercase;
+	letter-spacing:1px;
+}
+
+div.contact p{
+	margin:0 0 25px;
+	font-size:18px;
+	line-height:1.6em;
+}
+div.contact a{
+    color:#26a5d3;
+    text-decoration:none;
+	color:#26a5d3;
+
+}
+div.contact{
+	background:#003322;
+	color:#f4f4f4;
+	position: fixed;
+    bottom: 10px;
+    width: 100%;
+}
