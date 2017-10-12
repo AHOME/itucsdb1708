@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  {% block csslinks %}<link rel="stylesheet" href="/static/restaurant/show.css" />  {% endblock %}
+</head>
+
+<body>
+  {% extends "layouts/layout.html" %} {%block content %}
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $(".btn-pref .btn").click(function() {
+        $(".btn-pref .btn").removeClass("btn-primary").addClass("btn-default");
+        $(this).removeClass("btn-default").addClass("btn-primary");
+      });
+    });
+  </script>
+  
+  <!-- change Information with database file -->
+  <div class="col-lg-6 col-sm-6 col-centered text-centers">
+    <div class="container">
+      <div class="row">
+    <div class="span12">
+    <div class="card hovercard">
+      <div class="card-background">
+        <img class="card-bkimg" alt="" src="https://media-cdn.tripadvisor.com/media/photo-s/0d/bb/36/4f/photo3jpg.jpg">
+      </div>
+      <div class="useravatar">
+        <img alt="" src="https://media-cdn.tripadvisor.com/media/photo-s/0d/bb/36/4f/photo3jpg.jpg">
+      </div>
+      <div class="card-info"> <span class="card-title">Kofteci Ahmet</span>
+
+      </div>
+    </div>
+    <div class="btn-pref btn-group btn-group-justified btn-group-lg" role="group" aria-label="...">
+      <div class="btn-group" role="group">
+        <button type="button" id="stars" class="btn btn-danger" href="#tab1" data-toggle="tab"><span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                <div class="hidden-xs">Menu</div>
+            </button>
+      </div>
+      <div class="btn-group" role="group">
+        <button type="button" id="favorites" class="btn btn-danger" href="#tab2" data-toggle="tab"><span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
+                <div class="hidden-xs">Important Informations</div>
+            </button>
+      </div>
+      <div class="btn-group" role="group">
+        <button type="button" id="following" class="btn btn-danger" href="#tab3" data-toggle="tab"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                <div class="hidden-xs">Occupancy Status</div>
+            </button>
+      </div>
+    </div>
+
+    <div class="well">
+      <div class="tab-content">
+        <div class="tab-pane fade in active" id="tab1">
+                <table class="table table-condensed table-hover">
+                  <thead>
+                    <tr>
+                      <th>Item Name</th>
+                      <th>Item Price</th>
+                      <th>Item Calorie</th>
+                      <th>Item is Vegetarian</th>
+                      <th>Item Picture</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <!-- Change me with model and use for loop for showing all item inside the database. -->
+                      <td>Porsiyon Kofte</a></td>
+                      <td>15₺</td>
+                      <td>145 Calorie</td>
+                      <td>No</td>
+                      <td><img alt="" width="64" height="64" src="http://www.bafrapidecim.com/wp-content/uploads/2017/04/kofte-porsiyon.png"></td>
+                    </tr>
+                  </tbody>
+                </table>
+        </div>
+        <div class="tab-pane fade in" id="tab2">
+          <table class="table table-condensed table-hover">
+            <thead>
+              <tr>
+                <th>Restaurant Name</th>
+                <th>Owner Name</th>
+                <th>Restaurant Location</th>
+                <th>Restaurant Rating</th>
+                <th>Restaurant Bestseller Item</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <!-- Change me with model and use for loop for showing all item inside the database. -->
+                <td><a href="{{ url_for('restaurant_show_page') }}">KemalPasa Koftecisi</a></td>
+                <td>Mahmut Hava</td>
+                <td>Taksim 42/5 Beyoglu/Istanbul</td>
+                <td>4/5</td>
+                <td>Porsiyon 4 kofte</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tab-pane fade in" id="tab3">
+          <!-- Change me with model -->
+          <h3 class="text-center ">Restaurant is now 5/80</h3>
+        </div>
+      </div>
+      </div>
+    </div>
+    </div>
+    </div>
+
+  </div>
+
+  {% endblock %}
+</body>
+
+</html>

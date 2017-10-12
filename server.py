@@ -9,8 +9,15 @@ app = Flask(__name__)
 
 @app.route('/')
 def home_page():
-    now = datetime.datetime.now()
-    return render_template('home.html', current_time=now.ctime())
+    return render_template('home/index.html')
+
+@app.route('/restaurant')
+def restaurant_home_page():
+    return render_template('restaurant/index.html')
+
+@app.route('/restaurant/12') #Change me with model [ID]
+def restaurant_show_page():
+    return render_template('restaurant/show.html')
 
 
 if __name__ == '__main__':
