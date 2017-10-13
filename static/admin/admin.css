@@ -1,18 +1,66 @@
 h1 {
     position: relative;
     left: 40%;
+    font-family:Palatino Linotype;
     color: red;
 }
-.restaurants h2{
-    color: red;
-    position: relative;
-    padding-left: 10%;
+#message {
+    width: 20%;
+    position: absolute;
+    right: 50%;
+    font-family:Book Antiqua;
 }
-.restaurants {
+#post_news{
+    position: fixed;
+    font-family:Book Antiqua;
+    bottom: 10px;
+}
+#restaurants {
     width: 20%;
     height: 50%;
     overflow: auto;
+    position: absolute;
+    right: 78%;
 }
-
-#select_button {
+#users{
+    width: 20%;
+    height: 50%;
+    overflow: auto;
+    position: absolute;
+    left: 78%;
+}
+#users h2{
+    color: #003399;
+    position: relative;
+    padding-top: 10%;
+    padding-bottom: 10%;
+}
+#restaurants h2{
+    color :#003399;
+    position: relative;
+    padding-top: 10%;
+    padding-bottom: 10%;
+}
+#message h2{
+    position: relative;
+    padding-top: 10%;
+    padding-bottom: 10%;
+    color: #003399;
+}
+#post_news h2{
+    color: #009900;
+}
+#publish_button{
+    position: relative;
+    margin-top: 1%;
+    background:#00AA00;
+    left: 94%;
+}
+#send_message_button {
+    position: relative;
+    margin-top: 5%;
+    left: 65%;
+}
+#delete_button{
+    background: #AA0000;
 }

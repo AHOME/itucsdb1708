@@ -4,35 +4,90 @@
 {%block csslinks %}   <link rel="stylesheet" href="/static/admin/admin.css" /> {% endblock %}
 {%block content %}
   <h1>Welcome Admin</h1>
-<div class="restaurants">
+<!--List restaurants-->
+  <div class="container" id = "restaurants">
     <h2>Restaurants</h2>
-    <form role="form" action="" method="post" name="movies"
-      class="form-horizontal">
-  <ul class="list-unstyled">
-    <li>
-      <p> Has Kebap <input type="checkbox" id = "select_button" name="restaurant_ids" value="" /></p>
-    </li>
-    <li>
-      <p>Vegan Ev yemekleri <input type="checkbox" id = "select_button" name="restaurant_ids" value="" /></p>
-    </li>
-    <li>
-      <p>Hasoğullar Kebap<input type="checkbox" id = "select_button" name="restaurant_ids" value="" /></p>
-    </li>
-    <li>
-      <p>Tarihi Has Kebap<input type="checkbox" id = "select_button" name="restaurant_ids" value="" /></p>
-    </li>
-    <li>
-      <p>Off Acıktım Döner<input type="checkbox"id = "select_button"  name="restaurant_ids" value="" /></p>
-    </li>
-    <li>
-      <p>Ölüm Dürüm<input type="checkbox" id = "select_button" name="restaurant_ids" value="" /></p>
-    </li>
+    <form>
+      <div class="checkbox">
+        <label><input type="checkbox" value="">Has Kebap </label>
+      </div>
+      <div class="checkbox">
+        <label><input type="checkbox" value="">Vegan Ev yemekleri </label>
+      </div>
+      <div class="checkbox ">
+        <label><input type="checkbox" value="" >Hasoğullar Kebap</label>
+      </div>
+      <div class="checkbox">
+        <label><input type="checkbox" value="" >Off Acıktım Döner</label>
+      </div>
+      <div class="checkbox">
+        <label><input type="checkbox" value="">Ölüm Dürüm</label>
+      </div>
+      <button type="submit" name="delete"
+      class="btn btn-primary" id="delete_button">Delete Restaurants</button>
+    </form>
+  </div>
+<!--List users-->
+  <div class="container" id = "users">
+    <h2>Users</h2>
+    <form>
+      <div class="checkbox">
+        <label><input type="checkbox" value="">Domdom Ali</label>
+      </div>
+      <div class="checkbox">
+        <label><input type="checkbox" value="">Tulum Hayri</label>
+      </div>
+      <div class="checkbox ">
+        <label><input type="checkbox" value="" >H2S04</label>
+      </div>
+      <div class="checkbox">
+        <label><input type="checkbox" value="" >Ozbaysa</label>
+      </div>
+      <div class="checkbox">
+        <label><input type="checkbox" value="">Bay Ölüm</label>
+      </div>
+      <div class="checkbox">
+        <label><input type="checkbox" value="">Neil Young</label>
+      </div>
+      <div class="checkbox">
+        <label><input type="checkbox" value="">White Buffalo</label>
+      </div>
+      <button type="submit" name="delete"
+      class="btn btn-primary" id="delete_button">Delete Users</button>
+    </form>
+  </div>
 
-</ul>
+<!--Message users-->
+  <div class="container" id="message">
+    <h2>Message to User</h2>
+    <form>
+      <div class="form-group">
+        <label for="usr">Name of the User:</label>
+        <input type="text" class="form-control" id="usr">
+        <label for="comment">Message:</label>
+        <textarea class="form-control" rows="5" id="comment"></textarea>
+        <button type="submit" name="Send"
+        class="btn btn-primary" id="send_message_button">Send Message</button>
+      </div>
+    </form>
+  </div>
 
-  <button type="submit" name="delete"
-          class="btn btn-primary">Delete Restaurants</button>
-</form>
+<!--Post a New-->
+    <div class="container" id="post_news">
+      <h2>Publish an Article</h2>
+      <p>Articles will be visible on homepage.</p>
+      <form>
+        <div class="form-group">
+          <label for="usr">Title: </label>
+          <input type="text" class="form-control" id="usr">
+          <label for="comment">Article:</label>
+          <textarea class="form-control" rows="5" id="comment"></textarea>
+          <label for="link">Related Links (If there is any):</label>
+          <input type="text" class="form-control" id="link">
+          <button type="submit" name="Send"
+          class="btn btn-primary" id="publish_button">Publish</button>
+        </div>
+      </form>
+    </div>
 
-</div>
 {% endblock %}
