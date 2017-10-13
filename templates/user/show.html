@@ -1,0 +1,163 @@
+{% extends "layouts/layout.html" %}
+
+{% block title %} - Profile {% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="span3 well">
+        <center>
+        <a href="#aboutModal" data-toggle="modal" data-target="#myModal"><img src="https://i1.wp.com/img11.deviantart.net/fcd9/i/2010/182/b/9/aang_the_last_airbender_by_cigsace.png?resize=498%2C413" name="aboutme" width="140" height="140" class="img-circle"></a>
+        <h3>Ahmet Usta</h3>
+        <!-- change me -->
+		</center>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title" id="myModalLabel">More About Ahmet Usta</h4> <!-- change me -->
+                    </div>
+                <div class="modal-body">
+                    <center>
+                    <img src="https://i1.wp.com/img11.deviantart.net/fcd9/i/2010/182/b/9/aang_the_last_airbender_by_cigsace.png?resize=498%2C413" name="aboutme" width="140" height="140" border="0" class="img-circle"></a>
+                    <h3 class="media-heading">Ahmet Usta <small>TR</small></h3><!-- change me -->
+                    <span><strong>Restaurant Locations: </strong></span>
+                        <span class="label label-info">Adana</span>
+                        <span class="label label-info">Istanbul</span>
+                        <span class="label label-info">Urfa</span>
+                    </center>
+                    <hr>
+                    <center>
+                    <p class="text-left"><strong>Bio: </strong><br>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut sem dui, tempor sit amet commodo a, vulputate vel tellus.</p>
+                    <br>
+                    </center>
+                </div>
+                <div class="modal-footer">
+                    <center>
+                    <button type="button" class="btn btn-warning" data-dismiss="modal">OK</button>
+                    <!-- <button type="button" class="btn btn-warning" data-dismiss="modal">Edit</button> -->
+                    <a href="{{ url_for('site.restaurant_edit_page') }}" class="btn btn-warning" data-dismiss="modal">Edit</a>
+                    </center>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h1>Restaurants</h1>
+    <div class="row col-md-12 custyle">
+    <table class="table table-striped custab">
+    <thead>
+    <a href="{{ url_for('site.restaurant_new_page') }}" class="btn btn-primary btn-xs pull-right"><b>+</b> Add new restaurant</a>
+        <tr>
+            <th>ID</th>
+            <th>Restaurant Name</th>
+            <th>Location</th>
+            <th>Score</th>
+            <th class="text-center">Action</th>
+
+
+
+        </tr>
+    </thead>
+            <tr>
+                <td>1</td>
+                <td><a href="{{ url_for('site.restaurant_show_page') }}">Köfteci Ahmet</a></td>
+                <td>Adana</td>
+                <td>9</td>
+                <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a> <a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
+            </tr>
+    </table>
+    </div>
+
+</div>
+
+
+<!-- -------------- NOW NORMAL user ------------------- -->
+
+<div class="container">
+    <div class="span4 well">
+        <center>
+        <a href="#aboutModal" data-toggle="modal" data-target="#myModal"><img src="https://i.pinimg.com/736x/8b/4b/52/8b4b52cb45296ff329b155824840f0c3--prince-zuko-watch.jpg" name="aboutme" width="140" height="140" class="img-circle"></a>
+        <h3>Zuko</h3>
+        <!-- change me -->
+		</center>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <h4 class="modal-title" id="myModalLabel">More About Zuko</h4> <!-- change me -->
+                    </div>
+                <div class="modal-body">
+                    <center>
+                    <img src="https://i.pinimg.com/736x/8b/4b/52/8b4b52cb45296ff329b155824840f0c3--prince-zuko-watch.jpg" name="aboutme" width="140" height="140" border="0" class="img-circle"></a>
+                    <h3 class="media-heading">Zuko <small>TR</small></h3><!-- change me -->
+                    <span><strong>Location: </strong></span>
+                        <span class="label label-info">Adana</span>
+                    </center>
+                    <hr>
+                    <center>
+                    <p class="text-left"><strong>Bio: </strong><br>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut sem dui, tempor sit amet commodo a, vulputate vel tellus.</p>
+                    <br>
+                    </center>
+                </div>
+                <div class="modal-footer">
+                    <center>
+                    <button type="button" class="btn btn-warning" data-dismiss="modal">OK</button>
+                    </center>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h1>Liked Restaurants</h1>
+    <div class="row col-md-12 custyle">
+    <table class="table table-striped custab">
+    <thead>
+        <tr>
+            <th>Restaurant Name</th>
+            <th>Location</th>
+            <th>Score</th>
+            <th class="text-center">Action</th>
+
+
+
+        </tr>
+    </thead>
+            <tr>
+                <td><a href="{{ url_for('site.restaurant_show_page') }}">Köfteci Ahmet</a></td>
+                <td>Adana</td>
+                <td>9</td>
+                <td class="text-center"> <a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Dislike</a></td>
+            </tr>
+    </table>
+    </div>
+    <h1>Recent Orders</h1>
+    <div class="row col-md-12 custyle">
+    <table class="table table-striped custab">
+    <thead>
+        <tr>
+            <th>Restaurant Name</th>
+            <th>Items</th>
+            <th>Price</th>
+
+
+
+        </tr>
+    </thead>
+            <tr>
+                <td><a href="{{ url_for('site.restaurant_show_page') }}">Köfteci Ahmet</a></td>
+                <td>1 Izmir Köfte Porsiyon, 1 Ayran</td>
+                <td>13.5 TL</td>
+            </tr>
+    </table>
+    </div>
+
+</div>
+
+{% endblock %}
