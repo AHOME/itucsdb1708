@@ -24,11 +24,12 @@ def restaurant_edit_page():
 def restaurant_new_page():
     return render_template('restaurant/new.html')
 
-
 @site.route('/register')
 def register_home_page():
     return render_template('register/index.html')
-
+@site.route('/user/15') #Change me with model [ID]
+def user_show_page():
+    return render_template('user/show.html')
 @site.route('/admin')
 def admin_page():
     return render_template('admin/admin.html')
