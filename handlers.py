@@ -32,4 +32,4 @@ def user_show_page():
     return render_template('user/show.html')
 @site.route('/admin')
 def admin_page():
-    return render_template('admin/admin.html')
+    return render_template('admin/index.html')
