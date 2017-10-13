@@ -1,0 +1,38 @@
+{% extends "layouts/layout.html" %}
+
+{% block title %} Home {% endblock %}
+{%block csslinks %}   <link rel="stylesheet" href="/static/admin/admin.css" /> {% endblock %}
+{%block content %}
+  <h1>Welcome Admin</h1>
+<div class="restaurants">
+    <h2>Restaurants</h2>
+    <form role="form" action="" method="post" name="movies"
+      class="form-horizontal">
+  <ul class="list-unstyled">
+    <li>
+      <p> Has Kebap <input type="checkbox" id = "select_button" name="restaurant_ids" value="" /></p>
+    </li>
+    <li>
+      <p>Vegan Ev yemekleri <input type="checkbox" id = "select_button" name="restaurant_ids" value="" /></p>
+    </li>
+    <li>
+      <p>Hasoğullar Kebap<input type="checkbox" id = "select_button" name="restaurant_ids" value="" /></p>
+    </li>
+    <li>
+      <p>Tarihi Has Kebap<input type="checkbox" id = "select_button" name="restaurant_ids" value="" /></p>
+    </li>
+    <li>
+      <p>Off Acıktım Döner<input type="checkbox"id = "select_button"  name="restaurant_ids" value="" /></p>
+    </li>
+    <li>
+      <p>Ölüm Dürüm<input type="checkbox" id = "select_button" name="restaurant_ids" value="" /></p>
+    </li>
+
+</ul>
+
+  <button type="submit" name="delete"
+          class="btn btn-primary">Delete Restaurants</button>
+</form>
+
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+h1 {
+    position: relative;
+    left: 40%;
+    color: red;
+}
+.restaurants h2{
+    color: red;
+    position: relative;
+    padding-left: 10%;
+}
+.restaurants {
+    width: 20%;
+    height: 50%;
+    overflow: auto;
+}
+
+#select_button {
+}
