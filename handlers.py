@@ -27,6 +27,15 @@ def restaurant_new_page():
 @site.route('/register')
 def register_home_page():
     return render_template('register/index.html')
+
+@site.route('/messages')  
+def messages_home_page():
+    return render_template('messages/index.html')
+
+@site.route('/messages/new')
+def messages_new_page():
+    return render_template('messages/new.html')
+
 @site.route('/user/15') #Change me with model [ID]
 def user_show_page():
     return render_template('user/show.html')
