@@ -28,11 +28,11 @@ def restaurant_new_page():
 def register_home_page():
     return render_template('register/index.html')
 
-@site.route('/messages')  
+@site.route('user/12/message')  
 def messages_home_page():
     return render_template('messages/index.html')
 
-@site.route('/messages/new')
+@site.route('user/12/message/new') #Change me with model [ID]
 def messages_new_page():
     return render_template('messages/new.html')
 
