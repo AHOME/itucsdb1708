@@ -3,9 +3,12 @@
 {% block title %} Home {% endblock %}
 {%block csslinks %}   <link rel="stylesheet" href="/static/admin/index.css" /> {% endblock %}
 {%block content %}
+
   <h1>Welcome Admin</h1>
 <!--List restaurants-->
-  <div class="container" id = "restaurants">
+<div class="page">
+<div class="row" id="first_row">
+  <div class="col-sm-3 col-md-6 col-lg-9" id = "restaurants">
     <h2>Restaurants</h2>
     <form>
       <div class="checkbox">
@@ -28,7 +31,7 @@
     </form>
   </div>
 <!--List users-->
-  <div class="container" id = "users">
+  <div class="col-sm-3 col-md-6 col-lg-9" id = "users">
     <h2>Users</h2>
     <form>
       <div class="checkbox">
@@ -58,7 +61,7 @@
   </div>
 
 <!--Message users-->
-  <div class="container" id="message">
+  <div class="col-sm-3 col-md-6 col-lg-9" id="message">
     <h2>Message to User</h2>
     <form>
       <div class="form-group">
@@ -71,9 +74,10 @@
       </div>
     </form>
   </div>
-
+</div>
 <!--Post a New-->
-    <div class="container" id="post_news">
+<div class="container">
+    <div class="col-xs-3 col-sm-6 col-md-6 col-lg-9" id="post_news">
       <h2>Publish an Article</h2>
       <p>Articles will be visible on homepage.</p>
       <form>
@@ -89,5 +93,6 @@
         </div>
       </form>
     </div>
-
+    </div>
+</div>
 {% endblock %}

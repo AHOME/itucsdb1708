@@ -11,20 +11,18 @@ h1 {
     font-family:Book Antiqua;
 }
 #post_news{
-    position: fixed;
+    position: absolute;
+    bottom: 2%;
     font-family:Book Antiqua;
-    bottom: 10px;
 }
 #restaurants {
     width: 20%;
-    height: 50%;
     overflow: auto;
     position: absolute;
     right: 78%;
 }
 #users{
     width: 20%;
-    height: 50%;
     overflow: auto;
     position: absolute;
     left: 78%;
