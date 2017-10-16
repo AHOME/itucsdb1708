@@ -4,12 +4,17 @@
 {%block csslinks %}   <link rel="stylesheet" href="/static/admin/index.css" /> {% endblock %}
 {%block content %}
 
-  <h1>Welcome Admin</h1>
 <!--List restaurants-->
-<div class="page">
-<div class="row" id="first_row">
-  <div class="col-sm-3 col-md-6 col-lg-9" id = "restaurants">
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6 col-md-12 col-lg-12" id = "title">
+        <h1>Welcome Admin</h1>
+    </div>
+</div>
+<div class="row">
+  <div class="col-xs-2 col-sm-4 col-md-4 col-lg-4" id = "restaurants">
     <h2>Restaurants</h2>
+    <div class="restaurantscroll" id="restaurantscroll">
     <form>
       <div class="checkbox">
         <label><input type="checkbox" value="">Has Kebap </label>
@@ -26,42 +31,14 @@
       <div class="checkbox">
         <label><input type="checkbox" value="">Ölüm Dürüm</label>
       </div>
+  </div>
       <button type="submit" name="delete"
       class="btn btn-primary" id="delete_button">Delete Restaurants</button>
     </form>
-  </div>
-<!--List users-->
-  <div class="col-sm-3 col-md-6 col-lg-9" id = "users">
-    <h2>Users</h2>
-    <form>
-      <div class="checkbox">
-        <label><input type="checkbox" value="">Domdom Ali</label>
-      </div>
-      <div class="checkbox">
-        <label><input type="checkbox" value="">Tulum Hayri</label>
-      </div>
-      <div class="checkbox ">
-        <label><input type="checkbox" value="" >H2S04</label>
-      </div>
-      <div class="checkbox">
-        <label><input type="checkbox" value="" >Ozbaysa</label>
-      </div>
-      <div class="checkbox">
-        <label><input type="checkbox" value="">Bay Ölüm</label>
-      </div>
-      <div class="checkbox">
-        <label><input type="checkbox" value="">Neil Young</label>
-      </div>
-      <div class="checkbox">
-        <label><input type="checkbox" value="">White Buffalo</label>
-      </div>
-      <button type="submit" name="delete"
-      class="btn btn-primary" id="delete_button">Delete Users</button>
-    </form>
-  </div>
+</div>
 
 <!--Message users-->
-  <div class="col-sm-3 col-md-6 col-lg-9" id="message">
+<div class="col-xs-2 col-sm-4 col-md-4 col-lg-4" id ="message">
     <h2>Message to User</h2>
     <form>
       <div class="form-group">
@@ -74,25 +51,56 @@
       </div>
     </form>
   </div>
+<!--List users-->
+<div class="col-xs-2 col-sm-4 col-md-4 col-lg-4" id = "users">
+    <h2>Users</h2>
+    <div class="userscroll" id="userscroll">
+        <form>
+          <div class="checkbox">
+            <label><input type="checkbox" value="">Domdom Ali</label>
+          </div>
+          <div class="checkbox">
+            <label><input type="checkbox" value="">Tulum Hayri</label>
+          </div>
+          <div class="checkbox ">
+            <label><input type="checkbox" value="" >H2S04</label>
+          </div>
+          <div class="checkbox">
+            <label><input type="checkbox" value="" >Ozbaysa</label>
+          </div>
+          <div class="checkbox">
+            <label><input type="checkbox" value="">Bay Ölüm</label>
+          </div>
+          <div class="checkbox">
+            <label><input type="checkbox" value="">Neil Young</label>
+          </div>
+          <div class="checkbox">
+            <label><input type="checkbox" value="">White Buffalo</label>
+          </div>
+        </form>
+    </div>
+    <button type="submit" name="delete"
+    class="btn btn-primary" id="delete_button">Delete Users</button>
+ </div>
 </div>
 <!--Post a New-->
-<div class="container">
-    <div class="col-xs-3 col-sm-6 col-md-6 col-lg-9" id="post_news">
-      <h2>Publish an Article</h2>
-      <p>Articles will be visible on homepage.</p>
-      <form>
-        <div class="form-group">
-          <label for="usr">Title: </label>
-          <input type="text" class="form-control" id="usr">
-          <label for="comment">Article:</label>
-          <textarea class="form-control" rows="5" id="comment"></textarea>
-          <label for="link">Related Links (If there is any):</label>
-          <input type="text" class="form-control" id="link">
-          <button type="submit" name="Send"
-          class="btn btn-primary" id="publish_button">Publish</button>
-        </div>
-      </form>
-    </div>
+    <div class="row" id="post_news">
+        <div class="col-xs-3 col-sm-6 col-md-9 col-lg-12">
+          <h2>Publish an Article</h2>
+          <p>Articles will be visible on homepage.</p>
+          <form>
+            <div class="form-group">
+              <label for="usr">Title: </label>
+              <input type="text" class="form-control" id="usr">
+              <label for="comment">Article:</label>
+              <textarea class="form-control" rows="5" id="comment"></textarea>
+              <label for="link">Related Links (If there is any):</label>
+              <input type="text" class="form-control" id="link">
+              <button type="submit" name="Send"
+              class="btn btn-primary" id="publish_button">Publish</button>
+            </div>
+          </form>
+      </div>
     </div>
 </div>
 {% endblock %}
