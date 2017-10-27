@@ -1,15 +1,12 @@
 h1{
     color:red;
 }
-
-
 div.contact h1,h2,h3 {
 	margin:0 0 35px 0;
 	font-family: 'Patua One', cursive;
 	text-transform: uppercase;
 	letter-spacing:1px;
 }
-
 div.contact p{
 	margin:0 0 25px;
 	font-size:18px;
@@ -19,12 +16,44 @@ div.contact a{
     color:#26a5d3;
     text-decoration:none;
 	color:#26a5d3;
-
 }
 div.contact{
 	background:#003322;
 	color:#f4f4f4;
-	position: fixed;
-    bottom: 10px;
     width: 100%;
+}
+body { padding-top: 50px; }
+/*#####################
+Additional Styles (required)
+######################*/
+.carousel-indicators {
+    bottom:-40px;
+	left:0;
+	width:100%;
+	background:#ccc;
+	padding: 6px 0px;
+	margin-left:0;
+	border-top:2px solid #fff;
+}
+.carousel-indicators li {
+	width:12px;
+	height:12px;
+	background:#fff;
+	border-color:#fff;
+}
+.carousel-indicators .active {
+	width:14px;
+	height:14px;
+	background:#428bca;
+	border-color:#428bca;
+}
+.carousel-inner .thumbnail {
+    max-width: 600px;
+    max-height: 600px;
+	border-bottom-left-radius:0;
+	border-bottom-right-radius:0;
+}
+.carousel-inner .caption {
+	background:#aa22ee;
+	padding: 10px;
 }
