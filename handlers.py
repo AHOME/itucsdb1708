@@ -28,7 +28,7 @@ def restaurant_new_page():
 def register_home_page():
     return render_template('register/index.html')
 
-@site.route('/user/12/message')  
+@site.route('/user/12/message')
 def messages_home_page():
     return render_template('messages/index.html')
 
@@ -42,3 +42,6 @@ def user_show_page():
 @site.route('/admin')
 def admin_page():
     return render_template('admin/index.html')
+@site.route('/event/create')
+def event_create_page():
+    return render_template('event/index.html')

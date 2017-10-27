@@ -44,16 +44,17 @@ Additional Styles (required)
 .carousel-indicators .active {
 	width:14px;
 	height:14px;
-	background:#428bca;
+    background:#d32f2f;
 	border-color:#428bca;
 }
-.carousel-inner .thumbnail {
-    max-width: 600px;
-    max-height: 600px;
+.carousel-inner .item .thumbnail {
+    width: 900px;
+    height: 600px;
 	border-bottom-left-radius:0;
 	border-bottom-right-radius:0;
 }
 .carousel-inner .caption {
-	background:#aa22ee;
+	background:#d32f2f;
+    color: #FFFFFF;
 	padding: 10px;
 }
