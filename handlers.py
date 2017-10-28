@@ -42,6 +42,13 @@ def user_show_page():
 @site.route('/admin')
 def admin_page():
     return render_template('admin/index.html')
-@site.route('/event/create')
+@site.route('/event/new')
 def event_create_page():
-    return render_template('event/index.html')
+    return render_template('event/new.html')
+@site.route('/achievement/new')
+def achievement_create_page():
+    return render_template('achievement/new.html')
+
+@site.route('/event/12')
+def event_show_page():
+        return render_template('event/show.html')

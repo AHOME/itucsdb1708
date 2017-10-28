@@ -12,7 +12,7 @@
     </div>
 </div>
 <div class="row">
-  <div class="col-xs-2 col-sm-4 col-md-4 col-lg-4" id = "restaurants">
+  <div class="col-xs-8 col-sm-8 col-md-3 col-lg-3" id = "restaurants">
     <h2>Restaurants</h2>
     <div class="restaurantscroll" id="restaurantscroll">
     <form>
@@ -36,23 +36,42 @@
       class="btn btn-primary" id="delete_button">Delete Restaurants</button>
     </form>
 </div>
+<!--List Events-->
+<div class="col-xs-8 col-sm-8 col-md-3 col-lg-3" id = "events">
+  <h2>Events</h2>
+  <div class="eventscroll" id="eventscroll">
+  <form>
+    <div class="checkbox">
+      <label><input type="checkbox" value="">Pizza </label>
+    </div>
+    <div class="checkbox">
+      <label><input type="checkbox" value="">Balık</label>
+    </div>
+</div>
+    <button type="submit" name="delete"
+    class="btn btn-primary" id="delete_button">Delete Restaurants</button>
+  </form>
+</div>
 
-<!--Message users-->
-<div class="col-xs-2 col-sm-4 col-md-4 col-lg-4" id ="message">
-    <h2>Message to User</h2>
-    <form>
-      <div class="form-group">
-        <label for="usr">Name of the User:</label>
-        <input type="text" class="form-control" id="usr">
-        <label for="comment">Message:</label>
-        <textarea class="form-control" rows="5" id="comment"></textarea>
-        <button type="submit" name="Send"
-        class="btn btn-primary" id="send_message_button">Send Message</button>
-      </div>
-    </form>
-  </div>
+<!--List Achievements-->
+<div class="col-xs-8 col-sm-8 col-md-3 col-lg-3" id = "achievements">
+  <h2>Achievements</h2>
+  <div class="achievementscroll" id="achievementscroll">
+  <form>
+    <div class="checkbox">
+      <label><input type="checkbox" value="">100 Farklı Pizza Siparişi </label>
+    </div>
+    <div class="checkbox">
+      <label><input type="checkbox" value="">Bir günde 10 kebap</label>
+    </div>
+</div>
+    <button type="submit" name="delete"
+    class="btn btn-primary" id="delete_button">Delete Restaurants</button>
+  </form>
+</div>
+
 <!--List users-->
-<div class="col-xs-2 col-sm-4 col-md-4 col-lg-4" id = "users">
+<div class="col-xs-8 col-sm-8 col-md-3 col-lg-3" id = "users">
     <h2>Users</h2>
     <div class="userscroll" id="userscroll">
         <form>
@@ -83,6 +102,22 @@
     class="btn btn-primary" id="delete_button">Delete Users</button>
  </div>
 </div>
+<!--Message users-->
+    <div class="row" id="post_news">
+<div class="col-xs-3 col-sm-6 col-md-9 col-lg-12" id ="message">
+    <h2>Message to User</h2>
+    <form>
+      <div class="form-group">
+        <label for="usr">Name of the User:</label>
+        <input type="text" class="form-control" id="usr">
+        <label for="comment">Message:</label>
+        <textarea class="form-control" rows="5" id="comment"></textarea>
+        <button type="submit" name="Send"
+        class="btn btn-primary" id="send_message_button">Send Message</button>
+      </div>
+    </form>
+  </div>
+  </div>
 <!--Post a New-->
     <div class="row" id="post_news">
         <div class="col-xs-3 col-sm-6 col-md-9 col-lg-12">
@@ -102,6 +137,14 @@
           </form>
       </div>
     </div>
-    <a href="{{ url_for('site.event_create_page') }}">Create an Event!</a>
+<br>
+    <div class="row" id="links">
+        <div class="col-xs-3 col-sm-3 col-md-6 col-lg-6">
+            <a href="{{ url_for('site.event_create_page') }}">Create an Event!</a>
+        </div>
+        <div class="col-xs-3 col-sm-3 col-md-6 col-lg-6">
+            <a href="{{ url_for('site.achievement_create_page') }}">Create an Achievement!</a>
+        </div>
+    </div>
 </div>
 {% endblock %}

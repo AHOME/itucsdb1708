@@ -1,0 +1,35 @@
+body {
+    background-color: #FFFFFF;
+}
+
+*[role="form"] {
+    max-width: 530px;
+    padding: 15px;
+    margin: 0 auto;
+    background-color: #FFFFFF;
+    border-radius: 0.3em;
+}
+
+*[role="form"] h2 {
+    margin-left: 5em;
+    margin-bottom: 1em;
+    background-color: #FFFFFF;
+}
+
+.deneme{
+    position: absolute;
+   border: 3px solid #73AD21;
+}
+
+
+.btn-file{
+	position: relative;
+}
+
+.form-horizontal{
+	background-color: white;
+}
+
+#imageUpload{
+    padding-bottom: 20px;
+}

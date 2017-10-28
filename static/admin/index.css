@@ -1,63 +1,43 @@
 h1 {
-    position: relative;
+    text-align: center;
     font-family:Palatino Linotype;
     color: red;
-    left: 40%;
 }
 #message {
     height:20%;
     position:relative;
     font-family:Book Antiqua;
-
-}
-#restaurantscroll{
-    overflow-y: scroll;
-    max-height: 300px;
-}
-#userscroll
-{    overflow-y: scroll;
-    max-height: 300px;
 }
 #post_news{
     position: relative;
     font-family:Book Antiqua;
 }
-#restaurants {
+
+#events,#restaurants,#users,#achievements{
     height: 20%;
     overflow: auto;
     position: relative;
-    left: 0%;
 }
-#users{
-    height: 20%;
-    overflow: auto;
-    /*position: relative;*/
+#eventscroll,#restaurantscroll,#userscroll,#achievementscroll {
+    overflow-y: scroll;
+    max-height: 300px;
 }
-#users h2{
-    color: #003399;
-    position: relative;
-}
-#restaurants h2{
+#events h2,#users h2,#restaurants h2,#achievements h2{
     color :#003399;
     position: relative;
+    font-family:Palatino Linotype;
 }
-#message h2{
-    position: relative;
-    color: #003399;
-}
-#post_news h2{
+#post_news h2,#message h2{
     color: #009900;
 }
-#publish_button{
+#publish_button,#send_message_button{
     position: relative;
     margin-top: 1%;
     background:#00AA00;
 }
-#send_message_button {
-    position: relative;
-    left: 60%;
-    margin-top: 2%;
-}
 #delete_button{
     background: #AA0000;
+}
+#links{
+    margin: 50px;
 }

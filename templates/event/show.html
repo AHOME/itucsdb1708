@@ -1,0 +1,34 @@
+
+{% extends "layouts/layout.html" %}
+
+{% block title %} -Restaurant Name- Page{% endblock %}
+{% block csslinks %}  <link rel="stylesheet" href="/static/event/show.css" /> {% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="eventTitle">
+            <h2>Event Name</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        	<img class="image" id= "image" src="https://www.cicis.com/media/1176/pizza_trad_pepperonibeef.png" alt="Slide1">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        	<p id="expPara">
+        	    Explanation of Event will be here.
+        	</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <p id="Place"><b>Place of Event:</b></p>
+        </div>
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <p id="Date"><b>Date of Event:</b></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
