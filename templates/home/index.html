@@ -1,42 +1,95 @@
 {% extends "layouts/layout.html" %}
-
 {% block title %} Home {% endblock %}
 {%block csslinks %}   <link rel="stylesheet" href="/static/homepage/home.css" /> {% endblock %}
 {%block content %}
+
 <div class="container">
-	<div class="news">
-        <hr>
-        <h1>First Restaurant Added</h1>
-        <p>We are celebrating to have a restaurant. With your help this network will become larger. Sign up now!. The honor of being our first restaurant goes to: Restaurant at the End of the Universe </p>
-         <a href="#">Link to the Restaurant</a>
-         <hr>
-        <h1>Website is Open Now!</h1>
-            <p>The only website for visualizing and ordering from restaurants is now ready to serve you. Created by Alperen Kantarcı, Sadık Ekin Özbay, Onat Şahin and Burak Bekci</p>
-        <hr>
+    <div class="row">
+    	<div class="col-md-4 col-lg-12">
+            <div id="myCarousel" class="carousel slide">
+                <div class="carousel-inner">
+                    <div class="item active">
+                    	<a href="{{ url_for('site.event_show_page') }}"><img class="thumbnail" src="https://www.cicis.com/media/1176/pizza_trad_pepperonibeef.png" alt="Slide1"></a>
+                        <div class="caption">
+                       	  <h4>Pizza Günleri</h4>
+						  <p>10 Ocak 2018</p>
+                            <p>Saat: 10:00-20:00</p>
+							   <p>Yer: Beşiktaş İskele</p>
+                        </div>
+                    </div>
+                    <div class="item">
+                    	<a href="{{ url_for('site.event_show_page') }}"><img class="thumbnail" src="http://www.muslumkebap.com/Contents/Upload/MuslumAdana_qyz0b34a.p3w.jpg" alt="Slide2"></a>
+                        <div class="caption">
+                       	  <h4>Kebap Buluşması</h4>
+						  <p>27 Ekim 2017</p>
+						  <p>Saat: 10:00-20:00</p>
+							 <p>Yer: Yenikapı Metro İstasyonu</p>
+                        </div>
+                     </div>
+                    <div class="item">
+                    	<a href="{{ url_for('site.event_show_page') }}"><img class="thumbnail" src="http://www.focabalik.com/wp-content/uploads/2016/08/levrek-%C4%B1zgara-1-1200x480.jpg" alt="Slide3"></a>
+                        <div class="caption">
+                       	  <h4>Balık Av ve Pişirme Günleri</h4>
+						  <p>15 Kasım 2017</p>
+						  <p>Saat: 10:00-20:00</p>
+						   <p>Yer: Beşiktaş - Tarabya Kordonu</p>
+                        </div>
+                    </div>
+                </div>
+                 <!-- Indicators -->
+                  <ol class="carousel-indicators">
+                    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                    <li data-target="#myCarousel" data-slide-to="1"></li>
+                    <li data-target="#myCarousel" data-slide-to="2"></li>
+                  </ol>
+            </div><!-- End Carousel -->
+    	</div>
     </div>
 </div>
+<br>
+<div class="row">
+	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+		<div class="container">
+			<div class="news">
+		        <hr>
+		        <h1>First Restaurant Added</h1>
+		        <p>We are celebrating to have a restaurant. With your help this network will become larger. Sign up now!. The honor of being our first restaurant goes to: Restaurant at the End of the Universe </p>
+		         <a href="#">Link to the Restaurant</a>
+		         <hr>
+		        <h1>Website is Open Now!</h1>
+		            <p>The only website for visualizing and ordering from restaurants is now ready to serve you. Created by Alperen Kantarcı, Sadık Ekin Özbay, Onat Şahin and Burak Bekci</p>
+		        <hr>
+		    </div>
+		</div>
+	</div>
+</div>
 
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-<section id="contact" class="content-section text-center">
-        <div class="contact">
-            <div class="container">
-              <h2>Reach Us!</h2>
-              <p>Feel free to contact us for further information.</p>
-              <div class="row">
-                <div class="col-md-8 col-md-offset-2">
-                  <hr>
-                    <h3>Our Social Sites</h3>
-                  <ul class="list-inline banner-social-buttons">
-                    <li><a href="https://twitter.com/sadkekin" class="btn btn-default btn-lg"><i class="fa fa-twitter"> <span class="network-name">Twitter</span></i></a></li>
-                    <li><a href="https://www.facebook.com/burak.bekci.58" class="btn btn-default btn-lg"><i class="fa fa-facebook"> <span class="network-name">Facebook</span></i></a></li>
-                  </ul>
-				  <p>
-				  	You can mail us every time at info@restoranlandin.com
-				  </p>
-                </div>
-              </div>
-            </div>
-        </div>
-      </section>
-
+<div class="row">
+	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+	<section id="contact" class="content-section text-center">
+		<div id="footer">
+			<div class="footer-block">
+	        <div class="contact">
+	              <h2>Reach Us!</h2>
+	              <p>Feel free to contact us for further information.</p>
+	              <div class="row">
+	                <div class="col-md-8 col-md-offset-2">
+	                  <hr>
+	                    <h3>Our Social Sites</h3>
+	                  <ul class="list-inline banner-social-buttons">
+	                    <li><a href="https://twitter.com/sadkekin" class="btn btn-default btn-lg"><i class="fa fa-twitter"> <span class="network-name">Twitter</span></i></a></li>
+	                    <li><a href="https://www.facebook.com/burak.bekci.58" class="btn btn-default btn-lg"><i class="fa fa-facebook"> <span class="network-name">Facebook</span></i></a></li>
+	                  </ul>
+					  <p>
+					  	You can mail us every time at info@restoranlandin.com
+					  </p>
+	                </div>
+	              </div>
+	        </div>
+		</div>
+		</div>
+	      </section>
+	  </div>
+</div>
 {% endblock %}
