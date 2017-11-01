@@ -1,9 +1,8 @@
 {% extends "layouts/layout.html" %}
 
 {% block title %} Edit Page{% endblock %}
-{% block csslinks %}  <link rel="stylesheet" type="text/css" href="/static/register/index.css" > {% endblock %}
+{% block csslinks %}  <link rel="stylesheet" type="text/css" href="/static/user/edit.css" > {% endblock %}
 {% block content %}
-
 
  <div class="container" align="left">
            <form class="form-horizontal" method="POST" role="form">
@@ -33,6 +32,12 @@
                    <label for="birthDate" class="col-sm-3 control-label">Date of Birth</label>
                    <div class="col-sm-9">
                        <input type="date" id="birthDate" name="birthDate" class="form-control">
+                   </div>
+               </div>
+               <div class="form-group">
+                   <label for="bio" class="col-sm-3 control-label">Bio</label>
+                   <div class="col-sm-9">
+                       <input type="bio" id="bio" name="bio" class="bio">
                    </div>
                </div>
                <div class="form-group">
