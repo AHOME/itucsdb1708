@@ -39,12 +39,19 @@ def messages_new_page():
 @site.route('/user/15') #Change me with model [ID]
 def user_show_page():
     return render_template('user/show.html')
+
+@site.route('/user/15/edit') #Change me with model [ID]
+def user_edit_page():
+    return render_template('user/edit.html')
+
 @site.route('/admin')
 def admin_page():
     return render_template('admin/index.html')
+
 @site.route('/event/new')
 def event_create_page():
     return render_template('event/new.html')
+
 @site.route('/achievement/new')
 def achievement_create_page():
     return render_template('achievement/new.html')
