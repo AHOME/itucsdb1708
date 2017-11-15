@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template , redirect , current_app,url_for
+import psycopg2 as dbapi2
 
 
 site = Blueprint('site', __name__)
@@ -7,6 +8,65 @@ site = Blueprint('site', __name__)
 @site.route('/')
 def home_page():
     return render_template('home/index.html')
+
+@site.route('/count') #This page meant for test the database, will be deleted after stability updates
+def counter_page():
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+
+        query = "UPDATE COUNTER SET N = N + 1"
+        cursor.execute(query)
+        connection.commit()
+
+        query = "SELECT N FROM COUNTER"
+        cursor.execute(query)
+        count = cursor.fetchone()[0]
+    return "This page was accessed %d times." % count
+
+
+@site.route('/initdb')
+def initialize_database():
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+
+        query = """DROP TABLE IF EXISTS "USER";"""
+        cursor.execute(query)
+
+        query = """DROP TABLE IF EXISTS MESSAGE;"""
+        cursor.execute(query)
+        # Next three queries will be removed after we update our queries
+        query = """DROP TABLE IF EXISTS COUNTER;"""
+        cursor.execute(query)           
+
+        query = """CREATE TABLE COUNTER (N INTEGER);"""
+        cursor.execute(query)
+        query = """INSERT INTO COUNTER (N) VALUES(0);"""
+        cursor.execute(query)
+
+        query = """CREATE TABLE "USER" (
+        ID INTEGER PRIMARY KEY NOT NULL,
+        FIRSTNAME VARCHAR(80) NOT NULL,
+        LASTNAME VARCHAR(80) NOT NULL,
+        MAIL VARCHAR(80) NOT NULL,
+        PASSWORD VARCHAR(80) NOT NULL,
+        BIRTHDATE DATE NOT NULL,
+        CITY VARCHAR(80) NOT NULL,
+        GENDER VARCHAR(20),
+        USERTYPE VARCHAR(80) NOT NULL,
+        AVATAR VARCHAR(255) );"""
+        cursor.execute(query)
+
+        query = """CREATE TABLE MESSAGE (
+        ID INTEGER PRIMARY KEY NOT NULL,
+        SENDER INTEGER NOT NULL,
+        RECEIVER INTEGER NOT NULL,
+        TOPIC VARCHAR(80) NOT NULL,
+        CONTENT VARCHAR(80) NOT NULL,
+        SENDDATE TIMESTAMP NOT NULL);"""
+        cursor.execute(query)
+
+        connection.commit()
+        return redirect(url_for('site.home_page'))
 
 @site.route('/restaurant')
 def restaurant_home_page():

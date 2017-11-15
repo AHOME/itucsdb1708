@@ -1,5 +1,7 @@
 applications:
-- disk_quota: 1024M
+- services:
+   - ElephantSQL-pz
+  disk_quota: 1024M
   host: itucsdb1708
   name: itucsdb1708
   path: .
