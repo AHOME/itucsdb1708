@@ -156,7 +156,7 @@ def initialize_database():
         );"""
         cursor.execute(query)
 
-        query = """CREATE TABLE ORDER (
+        query = """CREATE TABLE ORDERS (
         ID SERIAL PRIMARY KEY,
         USER_ID INTEGER NOT NULL,
         REST_ID INTEGER NOT NULL,
