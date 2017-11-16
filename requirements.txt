@@ -1,2 +1,5 @@
-Flask
-psycopg2
+- Python 3
+  - Flask 
+  - flask_login
+  - Psycopg2
+  - Sphinx
