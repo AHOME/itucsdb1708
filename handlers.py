@@ -34,13 +34,89 @@ def initialize_database():
 
         query = """DROP TABLE IF EXISTS MESSAGE;"""
         cursor.execute(query)
+
+        query = """DROP TABLE IF EXISTS FOODS;"""
+        cursor.execute(query)
+
+        query = """DROP TABLE IF EXISTS RESTAURANTS;"""
+        cursor.execute(query)
+
+        query = """DROP TABLE IF EXISTS ACHIEVEMENTS;"""
+        cursor.execute(query)
+
+        query = """DROP TABLE IF EXISTS RESTAURANT_FOODS;"""
+        cursor.execute(query)
+
+        query = """DROP TABLE IF EXISTS COMMENTS;"""
+        cursor.execute(query)
+
+        query = """DROP TABLE IF EXISTS EVENT_RESTAURANTS;"""
+        cursor.execute(query)
+
         # Next three queries will be removed after we update our queries
         query = """DROP TABLE IF EXISTS COUNTER;"""
-        cursor.execute(query)           
+        cursor.execute(query)
 
         query = """CREATE TABLE COUNTER (N INTEGER);"""
         cursor.execute(query)
         query = """INSERT INTO COUNTER (N) VALUES(0);"""
+        cursor.execute(query)
+
+        #---------------------------------------------------------------------------
+
+        query = """CREATE TABLE EVENT_RESTAURANTS (
+           ID INTEGER PRIMARY KEY AUTOINCREMENT,
+           EVENT_ID INTEGER  NOT NULL,
+           RESTAURANT_ID INTEGER  NOT NULL,
+        )"""
+        cursor.execute(query)
+
+        query = """CREATE TABLE COMMENTS (
+           ID INTEGER PRIMARY KEY AUTOINCREMENT,
+           USER_ID INTEGER  NOT NULL,
+           RESTAURANT_ID INTEGER  NOT NULL,
+           CONTENT VARCHAR(255) NOT NULL,
+           SENDDATE TIMESTAMP NOT NULL,
+        )"""
+        cursor.execute(query)
+
+        query = """CREATE TABLE RESTAURANT_FOODS (
+           ID INTEGER PRIMARY KEY AUTOINCREMENT,
+           RESTAURANT_ID INTEGER  NOT NULL,
+           FOOD_ID INTEGER  NOT NULL
+        )"""
+        cursor.execute(query)
+
+        query = """CREATE TABLE ACHIEVEMENTS (
+           ID INTEGER PRIMARY KEY AUTOINCREMENT,
+           NAME VARCHAR(80) NOT NULL,
+           ICON VARCHAR(255) NOT NULL,
+           CONTENT VARCHAR(80) NOT NULL
+        )"""
+        cursor.execute(query)
+
+        query = """CREATE TABLE FOODS (
+           ID INTEGER PRIMARY KEY AUTOINCREMENT,
+           NAME VARCHAR(80) NOT NULL,
+           ICON VARCHAR(255) NOT NULL,
+           FOOD_TYPE VARCHAR(80) NOT NULL,
+           PRICE VARCHAR(80) NOT NULL,
+           CALORIE VARCHAR(80) NOT NULL
+        )"""
+        cursor.execute(query)
+
+
+        query = """CREATE TABLE RESTAURANTS (
+           ID INTEGER PRIMARY KEY AUTOINCREMENT,
+           NAME VARCHAR(80) NOT NULL,
+           ADDRESS INTEGER NOT NULL,
+           CONTACT_NAME VARCHAR(80) NOT NULL,
+           CONTACT_PHONE VARCHAR(80) NOT NULL,
+           SCORE INTEGER NOT NULL DEFAULT 0 CHECK(CONSTRAINT SCORE >= 0 AND SCORE <= 5),
+           PROFILE_PICTURE VARCHAR(80) NOT NULL,
+           HOURS VARCHAR(80) NOT NULL,
+           CURRENT_STATUS VARCHAR(80) NOT NULL
+        )"""
         cursor.execute(query)
 
         query = """CREATE TABLE "USER" (
