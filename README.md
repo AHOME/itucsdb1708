@@ -1,7 +1,5 @@
 # RESTORANLANDIN
 
-## Introduction
-
 Restoranlandın is a website in which restaurant owners can display their restaurants and share information about them, while customers can look at restaurants' menus, rate them and order from them. As customers order from restaurants and visit them, they can unlock achievements. These achievements will give them additional deals. Moreover, Restoranlandın shares events from the world of taste in the home page to inform people and tempt them to join.
 
 ## Requirements to Deploy Project
@@ -24,4 +22,4 @@ Restoranlandın is a website in which restaurant owners can display their restau
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the BSD 3-clause - see the [LICENSE.md](LICENSE.md) file for details.
