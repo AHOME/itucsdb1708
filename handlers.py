@@ -53,6 +53,12 @@ def initialize_database():
         query = """DROP TABLE IF EXISTS EVENT_RESTAURANTS;"""
         cursor.execute(query)
 
+        query = """DROP TABLE IF EXISTS DEALS;"""
+        cursor.execute(query)
+
+        query = """DROP TABLE IF EXISTS ORDER;"""
+        cursor.execute(query)
+
         # Next three queries will be removed after we update our queries
         query = """DROP TABLE IF EXISTS COUNTER;"""
         cursor.execute(query)
@@ -140,6 +146,25 @@ def initialize_database():
         CONTENT VARCHAR(80) NOT NULL,
         SENDDATE TIMESTAMP NOT NULL);"""
         cursor.execute(query)
+
+        query = """CREATE TABLE DEALS (
+        ID SERIAL PRIMARY KEY,
+        FOOD_ID INTEGER NOT NULL,
+        REST_ID INTEGER NOT NULL,
+        DATE DATE NOT NULL,
+        DISCOUNT_RATE INTEGER NOT NULL CHECK(CONSTRAINT DISCOUNT_RATE >= 0 AND DISCOUNT_RATE <= 100)
+        );"""
+        cursor.execute(query)
+
+        query = """CREATE TABLE ORDER (
+        ID SERIAL PRIMARY KEY,
+        USER_ID INTEGER NOT NULL,
+        REST_ID INTEGER NOT NULL,
+        PRICE VARCHAR(80) NOT NULL,
+        DATE DATE NOT NULL,
+        STATUS VARCHAR(80) NOT NULL);"""
+        cursor.execute(query)
+
 
         connection.commit()
         return redirect(url_for('site.home_page'))
