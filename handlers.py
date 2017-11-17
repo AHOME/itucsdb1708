@@ -13,7 +13,7 @@ def home_page():
 def counter_page():
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
-
+        
         query = "UPDATE COUNTER SET N = N + 1"
         cursor.execute(query)
         connection.commit()
@@ -29,10 +29,10 @@ def initialize_database():
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
 
-        query = """DROP TABLE IF EXISTS "USER";"""
+        query = """DROP TABLE IF EXISTS USERS;"""
         cursor.execute(query)
 
-        query = """DROP TABLE IF EXISTS MESSAGE;"""
+        query = """DROP TABLE IF EXISTS MESSAGES;"""
         cursor.execute(query)
 
         query = """DROP TABLE IF EXISTS FOODS;"""
@@ -53,10 +53,16 @@ def initialize_database():
         query = """DROP TABLE IF EXISTS EVENT_RESTAURANTS;"""
         cursor.execute(query)
 
+        query = """DROP TABLE IF EXISTS DRINKS;"""
+        cursor.execute(query)
+
+        query = """DROP TABLE IF EXISTS EVENTS;"""
+        cursor.execute(query)
+
         query = """DROP TABLE IF EXISTS DEALS;"""
         cursor.execute(query)
 
-        query = """DROP TABLE IF EXISTS ORDER;"""
+        query = """DROP TABLE IF EXISTS ORDERS;"""
         cursor.execute(query)
 
         # Next three queries will be removed after we update our queries
@@ -71,62 +77,62 @@ def initialize_database():
         #---------------------------------------------------------------------------
 
         query = """CREATE TABLE EVENT_RESTAURANTS (
-           ID INTEGER PRIMARY KEY AUTOINCREMENT,
+           ID SERIAL PRIMARY KEY,
            EVENT_ID INTEGER  NOT NULL,
            RESTAURANT_ID INTEGER  NOT NULL,
-        )"""
+        );"""
         cursor.execute(query)
 
         query = """CREATE TABLE COMMENTS (
-           ID INTEGER PRIMARY KEY AUTOINCREMENT,
+           ID SERIAL PRIMARY KEY,
            USER_ID INTEGER  NOT NULL,
            RESTAURANT_ID INTEGER  NOT NULL,
            CONTENT VARCHAR(255) NOT NULL,
-           SENDDATE TIMESTAMP NOT NULL,
-        )"""
+           SENDDATE TIMESTAMP NOT NULL
+        );"""
         cursor.execute(query)
 
         query = """CREATE TABLE RESTAURANT_FOODS (
-           ID INTEGER PRIMARY KEY AUTOINCREMENT,
+           ID SERIAL PRIMARY KEY,
            RESTAURANT_ID INTEGER  NOT NULL,
            FOOD_ID INTEGER  NOT NULL
-        )"""
+        );"""
         cursor.execute(query)
 
         query = """CREATE TABLE ACHIEVEMENTS (
-           ID INTEGER PRIMARY KEY AUTOINCREMENT,
+           ID SERIAL PRIMARY KEY,
            NAME VARCHAR(80) NOT NULL,
            ICON VARCHAR(255) NOT NULL,
            CONTENT VARCHAR(80) NOT NULL
-        )"""
+        );"""
         cursor.execute(query)
 
         query = """CREATE TABLE FOODS (
-           ID INTEGER PRIMARY KEY AUTOINCREMENT,
+           ID SERIAL PRIMARY KEY,
            NAME VARCHAR(80) NOT NULL,
            ICON VARCHAR(255) NOT NULL,
            FOOD_TYPE VARCHAR(80) NOT NULL,
            PRICE VARCHAR(80) NOT NULL,
            CALORIE VARCHAR(80) NOT NULL
-        )"""
+        );"""
         cursor.execute(query)
 
 
         query = """CREATE TABLE RESTAURANTS (
-           ID INTEGER PRIMARY KEY AUTOINCREMENT,
+           ID SERIAL PRIMARY KEY,
            NAME VARCHAR(80) NOT NULL,
            ADDRESS INTEGER NOT NULL,
            CONTACT_NAME VARCHAR(80) NOT NULL,
            CONTACT_PHONE VARCHAR(80) NOT NULL,
-           SCORE INTEGER NOT NULL DEFAULT 0 CHECK(CONSTRAINT SCORE >= 0 AND SCORE <= 5),
+           SCORE INTEGER NOT NULL DEFAULT 0 CHECK( SCORE >= 0 AND SCORE <= 5),
            PROFILE_PICTURE VARCHAR(80) NOT NULL,
            HOURS VARCHAR(80) NOT NULL,
            CURRENT_STATUS VARCHAR(80) NOT NULL
-        )"""
+        );"""
         cursor.execute(query)
 
-        query = """CREATE TABLE "USER" (
-        ID INTEGER PRIMARY KEY NOT NULL,
+        query = """CREATE TABLE USERS (
+        ID SERIAL PRIMARY KEY,
         FIRSTNAME VARCHAR(80) NOT NULL,
         LASTNAME VARCHAR(80) NOT NULL,
         MAIL VARCHAR(80) NOT NULL,
@@ -138,15 +144,34 @@ def initialize_database():
         AVATAR VARCHAR(255) );"""
         cursor.execute(query)
 
-        query = """CREATE TABLE MESSAGE (
-        ID INTEGER PRIMARY KEY NOT NULL,
+        query = """CREATE TABLE MESSAGES (
+        ID SERIAL PRIMARY KEY,
         SENDER INTEGER NOT NULL,
         RECEIVER INTEGER NOT NULL,
         TOPIC VARCHAR(80) NOT NULL,
         CONTENT VARCHAR(80) NOT NULL,
         SENDDATE TIMESTAMP NOT NULL);"""
         cursor.execute(query)
+        
+        query = """CREATE TABLE DRINKS(
+        ID SERIAL PRIMARY KEY,
+        NAME VARCHAR(20) NOT NULL,
+        TYPE BOOLEAN,
+        CALORIE INTEGER,
+        DRINKCOLD BOOLEAN,
+        ALCOHOL BOOLEAN); """
+        cursor.execute(query)
 
+        query = """CREATE TABLE EVENT(
+        ID SERIAL PRIMARY KEY,
+        CONTENT VARCHAR(255) NOT NULL,
+        ADDRESS VARCHAR(255) NOT NULL,
+        STARTINGDATE DATE NOT NULL,
+        ENDINGDATE DATE NOT NULL,
+        NAME VARCHAR(140) NOT NULL,
+        ICON VARCHAR(255)); """
+        cursor.execute(query)
+        
         query = """CREATE TABLE DEALS (
         ID SERIAL PRIMARY KEY,
         FOOD_ID INTEGER NOT NULL,
@@ -164,8 +189,7 @@ def initialize_database():
         DATE DATE NOT NULL,
         STATUS VARCHAR(80) NOT NULL);"""
         cursor.execute(query)
-
-
+        
         connection.commit()
         return redirect(url_for('site.home_page'))
 
