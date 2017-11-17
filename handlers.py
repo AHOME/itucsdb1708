@@ -13,7 +13,7 @@ def home_page():
 def counter_page():
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
-
+        
         query = "UPDATE COUNTER SET N = N + 1"
         cursor.execute(query)
         connection.commit()
@@ -58,6 +58,13 @@ def initialize_database():
 
         query = """DROP TABLE IF EXISTS EVENTS;"""
         cursor.execute(query)
+
+        query = """DROP TABLE IF EXISTS DEALS;"""
+        cursor.execute(query)
+
+        query = """DROP TABLE IF EXISTS ORDERS;"""
+        cursor.execute(query)
+
         # Next three queries will be removed after we update our queries
         query = """DROP TABLE IF EXISTS COUNTER;"""
         cursor.execute(query)
@@ -145,7 +152,7 @@ def initialize_database():
         CONTENT VARCHAR(80) NOT NULL,
         SENDDATE TIMESTAMP NOT NULL);"""
         cursor.execute(query)
-
+        
         query = """CREATE TABLE DRINKS(
         ID SERIAL PRIMARY KEY,
         NAME VARCHAR(20) NOT NULL,
@@ -164,7 +171,25 @@ def initialize_database():
         NAME VARCHAR(140) NOT NULL,
         ICON VARCHAR(255)); """
         cursor.execute(query)
+        
+        query = """CREATE TABLE DEALS (
+        ID SERIAL PRIMARY KEY,
+        FOOD_ID INTEGER NOT NULL,
+        REST_ID INTEGER NOT NULL,
+        DATE DATE NOT NULL,
+        DISCOUNT_RATE INTEGER NOT NULL CHECK(DISCOUNT_RATE >= 0 AND DISCOUNT_RATE <= 100)
+        );"""
+        cursor.execute(query)
 
+        query = """CREATE TABLE ORDERS (
+        ID SERIAL PRIMARY KEY,
+        USER_ID INTEGER NOT NULL,
+        REST_ID INTEGER NOT NULL,
+        PRICE VARCHAR(80) NOT NULL,
+        DATE DATE NOT NULL,
+        STATUS VARCHAR(80) NOT NULL);"""
+        cursor.execute(query)
+        
         connection.commit()
         return redirect(url_for('site.home_page'))
 
