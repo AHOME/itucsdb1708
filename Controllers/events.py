@@ -4,7 +4,7 @@ from flask_login import UserMixin
 from passlib.apps import custom_app_context as pwd_context
 
 
-class Events(Event):
+class Events():
     def __init__(self, Id, content, address, startDate, endDate ,name, iconPath):
         self.Id = Id
         self.content = content

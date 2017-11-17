@@ -3,7 +3,7 @@ from flask import current_app
 from flask_login import UserMixin
 
 
-class Drinks(Drink):
+class Drinks():
     def __init__(self, Id, name, drinkType, calorie, drinkCold ,alcohol):
         self.Id = Id
         self.name = name
