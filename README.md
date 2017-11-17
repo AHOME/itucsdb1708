@@ -4,7 +4,7 @@ Restoranlandın is a website in which restaurant owners can display their restau
 
 ## Requirements to Deploy Project
 - Python 3
-  - Flask 
+  - Flask
   - flask_login
   - Psycopg2
   - Sphinx
@@ -22,4 +22,4 @@ Restoranlandın is a website in which restaurant owners can display their restau
 
 ## License
 
-This project is licensed under the BSD 3-clause - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the BSD 3-clause - see the [LICENSE](LICENSE) file for details.
