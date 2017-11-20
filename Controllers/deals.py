@@ -5,11 +5,10 @@ from flask_login import UserMixin
 from passlib.apps import custom_app_context as pwd_context
 #from passlib.ext.django.models import password_context
 
-class Orders(UserMixin):
-    def __init__(self, primaryId, userId, restaurantId, price, date, status):
+class Deals():
+    def __init__(self, primaryId, foodId, restaurantId, date, discountRate):
         self.primaryId = primaryId
-        self.userId = userId
+        self.foodId = foodId
         self.restaurantId = restaurantId
-        self.price = price
         self.date = date
-        self.status = status
+        self.discountRate = discountRate
