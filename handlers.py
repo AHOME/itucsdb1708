@@ -121,7 +121,6 @@ def initialize_database():
         );"""
         cursor.execute(query)
 
-
         query = """CREATE TABLE RESTAURANTS (
            ID SERIAL PRIMARY KEY,
            NAME VARCHAR(80) NOT NULL,
@@ -145,6 +144,8 @@ def initialize_database():
         CITY VARCHAR(80) NOT NULL,
         GENDER VARCHAR(20),
         USERTYPE INTEGER NOT NULL,
+
+
         AVATAR VARCHAR(255)
         );"""
         cursor.execute(query)
@@ -166,7 +167,8 @@ def initialize_database():
         CALORIE INTEGER,
         DRINKCOLD BOOLEAN,
         ALCOHOL BOOLEAN
-        ); """
+        );"""
+
         cursor.execute(query)
 
         query = """CREATE TABLE EVENTS(
@@ -177,7 +179,8 @@ def initialize_database():
         ENDINGDATE DATE NOT NULL,
         NAME VARCHAR(140) NOT NULL,
         ICON VARCHAR(255)
-        ); """
+        );"""
+
         cursor.execute(query)
         
         query = """CREATE TABLE DEALS (
