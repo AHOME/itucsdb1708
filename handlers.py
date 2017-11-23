@@ -216,35 +216,38 @@ def restaurant_new_page():
 @site.route('/register', methods=['GET','POST'])
 def register_home_page():
     if request.method == 'GET':
-        return render_template('register/index.html')
+        return render_template('register/index.html',form=None)
     else:
-        name = request.form['firstName']
-        nameList= name.split(" ")
-        if(len(nameList) >= 2):
-            firstName = nameList[0]
-            lastName = nameList[1]
-        elif(len(nameList) <2):
-            firstName = nameList[0]
-            lastName=""
-        email = request.form['email']
-        password = request.form['password']
-        hashed_password = pwd_context.encrypt(password)
-        birthDate = request.form['birthDate']
-        city = request.form['city']
-        gender = request.form['gender']
-        userType = request.form['userType']
+        valid = validate_user_data(request.form)
+        if valid:
+            name = request.form['firstName']
+            nameList= name.split(" ")
+            if(len(nameList) >= 2):
+                firstName = nameList[0]
+                lastName = nameList[1]
+            elif(len(nameList) <2):
+                firstName = nameList[0]
+                lastName=""
+            email = request.form['email']
+            password = request.form['password']
+            hashed_password = pwd_context.encrypt(password)
+            birthDate = request.form['birthDate']
+            city = request.form['city']
+            gender = request.form['gender']
+            userType = request.form['userType']
 
-        with dbapi2.connect(current_app.config['dsn']) as connection:
-            cursor = connection.cursor()
-            query = """
-                INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR) 
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+            with dbapi2.connect(current_app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """
+                    INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR) 
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
-            cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate, city,gender,userType,"avatar"))
-            connection.commit()
-
-        return redirect(url_for('site.home_page'))
-
+                cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate, city,gender,userType,"avatar"))
+                connection.commit()
+            return redirect(url_for('site.home_page'))
+        
+        form = request.form
+        return render_template('register/index.html',form=form)
 
 @site.route('/user/12/message')
 def messages_home_page():
@@ -277,3 +280,40 @@ def achievement_create_page():
 @site.route('/event/12')
 def event_show_page():
         return render_template('event/show.html')
+
+
+def validate_user_data(form):
+    if form == None: 
+        return true
+
+    form.data = {}
+    form.errors = {}
+
+    if len(form['firstName'].strip()) == 0:
+        form.errors['firstName'] = 'Name can not be blank'
+    else:
+        form.data['firstName'] = form['firstName']
+
+    if len(form['email'].strip()) == 0:
+        form.errors['email'] = 'Email can not be blank'
+    else:
+        form.data['email'] = form['email']
+
+    if not form['birthDate']:
+        form.data['birthDate'] = None
+    else:
+        form.data['birthDate'] = form['birthDate']
+
+    if not form['userType']:
+        form.errors['userType'] = 'User type can not be blank' 
+    else:
+        form.data['userType'] = form['userType']
+
+    if form['terms'] == 0:
+        form.errors['terms'] = 'You should accept the terms'
+    else:
+        form.data['terms'] = form['terms']
+
+    return len(form.errors) == 0
+
+
