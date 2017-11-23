@@ -29,18 +29,19 @@
                     <label for="email" class="col-sm-3 control-label">Email</label>
                     <div class="col-sm-9">
                         <input type="email" id="email" name="email" placeholder="Email" class="form-control">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="password" class="col-sm-3 control-label">Password</label>
-                    <div class="col-sm-9">
-                        <input type="password" id="password" name="password" placeholder="Password" class="form-control">
 
                         {% if 'email' in form.errors %}
                         <div class="alert alert-danger">
                              {{ form.errors['email'] }}
                          </div>
                         {% endif %}
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password" class="col-sm-3 control-label">Password</label>
+                    <div class="col-sm-9">
+                        <input type="password" id="password" name="password" placeholder="Password" class="form-control">
 
                     </div>
                 </div>
@@ -198,7 +199,7 @@
                                 {% if 'terms' in form.errors %}
                                  <div class="alert alert-danger">
                                  {{ form.errors['terms'] }}
-                                 
+
                          </div>
                         {% endif %}
                             </label>

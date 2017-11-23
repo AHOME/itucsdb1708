@@ -145,7 +145,8 @@ def initialize_database():
         CITY VARCHAR(80) NOT NULL,
         GENDER VARCHAR(20),
         USERTYPE INTEGER NOT NULL,
-        AVATAR VARCHAR(255) );"""
+        AVATAR VARCHAR(255)
+        );"""
         cursor.execute(query)
 
         query = """CREATE TABLE MESSAGES (
@@ -154,7 +155,8 @@ def initialize_database():
         RECEIVER INTEGER NOT NULL,
         TOPIC VARCHAR(80) NOT NULL,
         CONTENT VARCHAR(80) NOT NULL,
-        SENDDATE TIMESTAMP NOT NULL);"""
+        SENDDATE TIMESTAMP NOT NULL
+        );"""
         cursor.execute(query)
         
         query = """CREATE TABLE DRINKS(
@@ -163,7 +165,8 @@ def initialize_database():
         TYPE BOOLEAN,
         CALORIE INTEGER,
         DRINKCOLD BOOLEAN,
-        ALCOHOL BOOLEAN); """
+        ALCOHOL BOOLEAN
+        ); """
         cursor.execute(query)
 
         query = """CREATE TABLE EVENTS(
@@ -173,7 +176,8 @@ def initialize_database():
         STARTINGDATE DATE NOT NULL,
         ENDINGDATE DATE NOT NULL,
         NAME VARCHAR(140) NOT NULL,
-        ICON VARCHAR(255)); """
+        ICON VARCHAR(255)
+        ); """
         cursor.execute(query)
         
         query = """CREATE TABLE DEALS (
@@ -191,7 +195,8 @@ def initialize_database():
         REST_ID INTEGER NOT NULL,
         PRICE VARCHAR(80) NOT NULL,
         DATE DATE NOT NULL,
-        STATUS VARCHAR(80) NOT NULL);"""
+        STATUS VARCHAR(80) NOT NULL
+        );"""
         cursor.execute(query)
         
         connection.commit()
@@ -299,8 +304,8 @@ def validate_user_data(form):
     else:
         form.data['email'] = form['email']
 
-    if not form['birthDate']:
-        form.data['birthDate'] = None
+    if len(form['birthDate'].strip()) == 0:
+        form.errors['birthDate'] = 'Birthdate can not be blank'
     else:
         form.data['birthDate'] = form['birthDate']
 
