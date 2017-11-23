@@ -79,7 +79,7 @@ def initialize_database():
         query = """CREATE TABLE EVENT_RESTAURANTS (
            ID SERIAL PRIMARY KEY,
            EVENT_ID INTEGER  NOT NULL,
-           RESTAURANT_ID INTEGER  NOT NULL,
+           RESTAURANT_ID INTEGER  NOT NULL
         );"""
         cursor.execute(query)
 
@@ -117,7 +117,6 @@ def initialize_database():
         );"""
         cursor.execute(query)
 
-
         query = """CREATE TABLE RESTAURANTS (
            ID SERIAL PRIMARY KEY,
            NAME VARCHAR(80) NOT NULL,
@@ -141,7 +140,8 @@ def initialize_database():
         CITY VARCHAR(80) NOT NULL,
         GENDER VARCHAR(20),
         USERTYPE VARCHAR(80) NOT NULL,
-        AVATAR VARCHAR(255) );"""
+        AVATAR VARCHAR(255)
+        );"""
         cursor.execute(query)
 
         query = """CREATE TABLE MESSAGES (
@@ -150,7 +150,8 @@ def initialize_database():
         RECEIVER INTEGER NOT NULL,
         TOPIC VARCHAR(80) NOT NULL,
         CONTENT VARCHAR(80) NOT NULL,
-        SENDDATE TIMESTAMP NOT NULL);"""
+        SENDDATE TIMESTAMP NOT NULL
+        );"""
         cursor.execute(query)
         
         query = """CREATE TABLE DRINKS(
@@ -159,17 +160,19 @@ def initialize_database():
         TYPE BOOLEAN,
         CALORIE INTEGER,
         DRINKCOLD BOOLEAN,
-        ALCOHOL BOOLEAN); """
+        ALCOHOL BOOLEAN
+        );"""
         cursor.execute(query)
 
-        query = """CREATE TABLE EVENT(
+        query = """CREATE TABLE EVENTS(
         ID SERIAL PRIMARY KEY,
         CONTENT VARCHAR(255) NOT NULL,
         ADDRESS VARCHAR(255) NOT NULL,
         STARTINGDATE DATE NOT NULL,
         ENDINGDATE DATE NOT NULL,
         NAME VARCHAR(140) NOT NULL,
-        ICON VARCHAR(255)); """
+        ICON VARCHAR(255)
+        );"""
         cursor.execute(query)
         
         query = """CREATE TABLE DEALS (
@@ -187,7 +190,8 @@ def initialize_database():
         REST_ID INTEGER NOT NULL,
         PRICE VARCHAR(80) NOT NULL,
         DATE DATE NOT NULL,
-        STATUS VARCHAR(80) NOT NULL);"""
+        STATUS VARCHAR(80) NOT NULL
+        );"""
         cursor.execute(query)
         
         connection.commit()
