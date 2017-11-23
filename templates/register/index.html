@@ -6,7 +6,7 @@
 
 
   <div class="container" align="left">
-            <form class="form-horizontal" method="POST" role="form">
+            <form class="form-horizontal" method="POST" role="form" name="user_edit">
                 <h2>Registration Form</h2>
 
                
@@ -39,40 +39,89 @@
                 <div class="form-group">
                     <label for="city" class="col-sm-3 control-label">City</label>
                     <div class="col-sm-9">
-                        <select id="city" class="form-control">
-                        <option>Adıyaman</option>
-                        <option>Afyon </option>
-                        <option>Ağrı </option>
-                        <option>Amasya</option>
-                        <option>Ankara</option>
-                        <option>Antalya</option>
-                        <option>Artvin</option>
-                        <option>Aydın</option>
-                        <option>Balıkesir</option>
-                        <option>Bilecik</option>
-                        <option>Bingöl</option>
-                        <option>Bitlis</option>
-                        <option>Bolu</option>
-                        <option>Burdur</option>
-                        <option>Bursa</option>
-                        <option>Çanakkale</option>
-                        <option>Çankırı</option>
-                        <option>Çorum</option>
-                        <option>Denizli</option>
-                        <option>Edirne</option>
-                        <option>Elazığ</option>
-                        <option>Erzincan</option>
-                        <option>Erzurum</option>
-                        <option>Eskişehir</option>
-                        <option>Gaziantep</option>
-                        <option>Giresun</option>
-                        <option>Gümüşhane</option>
-                        <option>Hakkari</option>
-                        <option>Hatay</option>
-                        <option>Isparta</option>
-                        <option>İçel (Mersin)</option>
-                        <option>İstanbul</option>
-                        <option>İzmir</option>
+                        <select id="city" name ="city" class="form-control">
+                    <option>Adana</option>
+                    <option>Adiyaman</option>
+                    <option>Afyon</option>
+                    <option>Agri</option>
+                    <option>Aksaray</option>
+                    <option>Amasya</option>
+                    <option>Ankara</option>
+                    <option>Antalya</option>
+                    <option>Ardahan</option>
+                    <option>Artvin</option>
+                    <option>Aydin</option>
+                    <option>Balikesir</option>
+                    <option>Bartin</option>
+                    <option>Batman</option>
+                    <option>Bayburt</option>
+                    <option>Bilecik</option>
+                    <option>Bingol</option>
+                    <option>Bitlis</option>
+                    <option>Bolu</option>
+                    <option>Burdur</option>
+                    <option>Bursa</option>
+                    <option>Canakkale</option>
+                    <option>Cankiri</option>
+                    <option>Corum</option>
+                    <option>Denizli</option>
+                    <option>Diyarbakir</option>
+                    <option>Duzce</option>
+                    <option>Edirne</option>
+                    <option>Elazig</option>
+                    <option>Erzincan</option>
+                    <option>Erzurum</option>
+                    <option>Eskisehir</option>
+                    <option>Gaziantep</option>
+                    <option>Giresun</option>
+                    <option>Gumushane</option>
+                    <option>Hakkari</option>
+                    <option>Hatay</option>
+                    <option>Igdir</option>
+                    <option>Isparta</option>
+                    <option>Icel</option>
+                    <option>Istanbul</option>
+                    <option>Izmir</option>
+                    <option>Kahraman Maras</option>
+                    <option>Karabuk</option>
+                    <option>Karaman</option>
+                    <option>Kars</option>
+                    <option>Kastamonu</option>
+                    <option>Kayseri</option>
+                    <option>Kirikkale</option>
+                    <option>Kirklareli</option>
+                    <option>Kirsehir</option>
+                    <option>Kilis</option>
+                    <option>Kocaeli</option>
+                    <option>Konya</option>
+                    <option>Kutahya</option>
+                    <option>Malatya</option>
+                    <option>Manisa</option>
+                    <option>Mardin</option>
+                    <option>Mugla</option>
+                    <option>Mus</option>
+                    <option>Nevsehir</option>
+                    <option>Nigde</option>
+                    <option>Ordu</option>
+                    <option>Osmaniye</option>
+                    <option>Rize</option>
+                    <option>Sakarya</option>
+                    <option>Samsun</option>
+                    <option>Siirt</option>
+                    <option>Sinop</option>
+                    <option>Sivas</option>
+                    <option>Sanliurfa</option>
+                    <option>Sirnak</option>
+                    <option>Tekirdag</option>
+                    <option>Tokat</option>
+                    <option>Trabzon</option>
+                    <option>Tunceli</option>
+                    <option>Usak</option>
+                    <option>Van</option>
+                    <option>Yalova</option>
+                    <option>Yozgat</option>
+                    <option>Zonguldak</option>
+
                         </select>
                     </div>
                 </div> <!-- /.form-group -->
@@ -103,12 +152,12 @@
                     <div class="col-sm-9">
                         <div class="radio">
                             <label>
-                                <input type="radio" name ="userType" id="regularUserCheckbox" value="Customer">Customer
+                                <input type="radio" name ="userType" id="regularUserCheckbox" value="2">Customer
                             </label>
                         </div>
                         <div class="radio">
                             <label>
-                                <input type="radio" name ="userType"  id="restaurantOwnerCheckbox" value="Restaurant Owner">Restaurant Owner
+                                <input type="radio" name ="userType"  id="restaurantOwnerCheckbox" value="1">Restaurant Owner
                             </label>
                         </div>
                     </div>

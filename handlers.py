@@ -1,4 +1,8 @@
 from flask import Blueprint, render_template , redirect , current_app,url_for
+from flask import request
+from flask_login import LoginManager
+from passlib.apps import custom_app_context as pwd_context
+
 import psycopg2 as dbapi2
 
 
@@ -79,7 +83,7 @@ def initialize_database():
         query = """CREATE TABLE EVENT_RESTAURANTS (
            ID SERIAL PRIMARY KEY,
            EVENT_ID INTEGER  NOT NULL,
-           RESTAURANT_ID INTEGER  NOT NULL,
+           RESTAURANT_ID INTEGER  NOT NULL
         );"""
         cursor.execute(query)
 
@@ -136,11 +140,11 @@ def initialize_database():
         FIRSTNAME VARCHAR(80) NOT NULL,
         LASTNAME VARCHAR(80) NOT NULL,
         MAIL VARCHAR(80) NOT NULL,
-        PASSWORD VARCHAR(80) NOT NULL,
+        PASSWORD VARCHAR(500) NOT NULL,
         BIRTHDATE DATE NOT NULL,
         CITY VARCHAR(80) NOT NULL,
         GENDER VARCHAR(20),
-        USERTYPE VARCHAR(80) NOT NULL,
+        USERTYPE INTEGER NOT NULL,
         AVATAR VARCHAR(255) );"""
         cursor.execute(query)
 
@@ -162,7 +166,7 @@ def initialize_database():
         ALCOHOL BOOLEAN); """
         cursor.execute(query)
 
-        query = """CREATE TABLE EVENT(
+        query = """CREATE TABLE EVENTS(
         ID SERIAL PRIMARY KEY,
         CONTENT VARCHAR(255) NOT NULL,
         ADDRESS VARCHAR(255) NOT NULL,
@@ -209,9 +213,38 @@ def restaurant_edit_page():
 def restaurant_new_page():
     return render_template('restaurant/new.html')
 
-@site.route('/register')
+@site.route('/register', methods=['GET','POST'])
 def register_home_page():
-    return render_template('register/index.html')
+    if request.method == 'GET':
+        return render_template('register/index.html')
+    else:
+        name = request.form['firstName']
+        nameList= name.split(" ")
+        if(len(nameList) >= 2):
+            firstName = nameList[0]
+            lastName = nameList[1]
+        elif(len(nameList) <2):
+            firstName = nameList[0]
+            lastName=""
+        email = request.form['email']
+        password = request.form['password']
+        hashed_password = pwd_context.encrypt(password)
+        birthDate = request.form['birthDate']
+        city = request.form['city']
+        gender = request.form['gender']
+        userType = request.form['userType']
+
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """
+                INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR) 
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+
+            cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate, city,gender,userType,"avatar"))
+            connection.commit()
+
+        return redirect(url_for('site.home_page'))
+
 
 @site.route('/user/12/message')
 def messages_home_page():
