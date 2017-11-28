@@ -1,4 +1,8 @@
 from flask import Blueprint, render_template , redirect , current_app,url_for
+from flask import request
+from flask_login import LoginManager
+from passlib.apps import custom_app_context as pwd_context
+
 import psycopg2 as dbapi2
 
 
@@ -135,11 +139,13 @@ def initialize_database():
         FIRSTNAME VARCHAR(80) NOT NULL,
         LASTNAME VARCHAR(80) NOT NULL,
         MAIL VARCHAR(80) NOT NULL,
-        PASSWORD VARCHAR(80) NOT NULL,
+        PASSWORD VARCHAR(500) NOT NULL,
         BIRTHDATE DATE NOT NULL,
         CITY VARCHAR(80) NOT NULL,
         GENDER VARCHAR(20),
-        USERTYPE VARCHAR(80) NOT NULL,
+        USERTYPE INTEGER NOT NULL,
+
+
         AVATAR VARCHAR(255)
         );"""
         cursor.execute(query)
@@ -162,6 +168,7 @@ def initialize_database():
         DRINKCOLD BOOLEAN,
         ALCOHOL BOOLEAN
         );"""
+
         cursor.execute(query)
 
         query = """CREATE TABLE EVENTS(
@@ -173,6 +180,7 @@ def initialize_database():
         NAME VARCHAR(140) NOT NULL,
         ICON VARCHAR(255)
         );"""
+
         cursor.execute(query)
         
         query = """CREATE TABLE DEALS (
@@ -213,9 +221,41 @@ def restaurant_edit_page():
 def restaurant_new_page():
     return render_template('restaurant/new.html')
 
-@site.route('/register')
+@site.route('/register', methods=['GET','POST'])
 def register_home_page():
-    return render_template('register/index.html')
+    if request.method == 'GET':
+        return render_template('register/index.html',form=None)
+    else:
+        valid = validate_user_data(request.form)
+        if valid:
+            name = request.form['firstName']
+            nameList= name.split(" ")
+            if(len(nameList) >= 2):
+                firstName = nameList[0]
+                lastName = nameList[1]
+            elif(len(nameList) <2):
+                firstName = nameList[0]
+                lastName=""
+            email = request.form['email']
+            password = request.form['password']
+            hashed_password = pwd_context.encrypt(password)
+            birthDate = request.form['birthDate']
+            city = request.form['city']
+            gender = request.form['gender']
+            userType = request.form['userType']
+
+            with dbapi2.connect(current_app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """
+                    INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR) 
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+
+                cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate, city,gender,userType,"avatar"))
+                connection.commit()
+            return redirect(url_for('site.home_page'))
+        
+        form = request.form
+        return render_template('register/index.html',form=form)
 
 @site.route('/user/12/message')
 def messages_home_page():
@@ -248,3 +288,40 @@ def achievement_create_page():
 @site.route('/event/12')
 def event_show_page():
         return render_template('event/show.html')
+
+
+def validate_user_data(form):
+    if form == None: 
+        return true
+
+    form.data = {}
+    form.errors = {}
+
+    if len(form['firstName'].strip()) == 0:
+        form.errors['firstName'] = 'Name can not be blank'
+    else:
+        form.data['firstName'] = form['firstName']
+
+    if len(form['email'].strip()) == 0:
+        form.errors['email'] = 'Email can not be blank'
+    else:
+        form.data['email'] = form['email']
+
+    if len(form['birthDate'].strip()) == 0:
+        form.errors['birthDate'] = 'Birthdate can not be blank'
+    else:
+        form.data['birthDate'] = form['birthDate']
+
+    if not form['userType']:
+        form.errors['userType'] = 'User type can not be blank' 
+    else:
+        form.data['userType'] = form['userType']
+
+    if form['terms'] == 0:
+        form.errors['terms'] = 'You should accept the terms'
+    else:
+        form.data['terms'] = form['terms']
+
+    return len(form.errors) == 0
+
+
