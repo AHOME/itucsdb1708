@@ -1,5 +1,4 @@
-- Python 3
-  - Flask 
-  - flask_login
-  - Psycopg2
-  - Sphinx
+Flask
+psycopg2
+passlib
+flask_login
