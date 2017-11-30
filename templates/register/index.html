@@ -9,7 +9,7 @@
             <form class="form-horizontal" method="POST" role="form" name="user_edit">
                 <h2>Registration Form</h2>
 
-               
+
 
                 <div class="form-group">
                     <label for="firstName" class="col-sm-3 control-label">Full Name</label>
@@ -55,6 +55,13 @@
                              {{ form.errors['birthDate'] }}
                          </div>
                         {% endif %}
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password" class="col-sm-3 control-label">Bio</label>
+                    <div class="col-sm-9">
+                        <input type="bio" id="bio" name="bio" placeholder="Bio" class="form-control">
 
                     </div>
                 </div>
@@ -206,15 +213,15 @@
                         </div>
                     </div>
                 </div> <!-- /.form-group -->
-                
-                <div>    
 
-            
+                <div>
+
+
              <div class="pull-right" id="imageUpload">
-                <input type="file" name="...">  
+                <input type="file" name="...">
               </div>
             </div>
-                   
+
                 <div class="form-group">
                     <div class="col-sm-9 col-sm-offset-3">
                         <button type="submit" class="btn btn-danger btn-block">Register</button>

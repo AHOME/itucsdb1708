@@ -17,7 +17,7 @@ def home_page():
 def counter_page():
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
-        
+
         query = "UPDATE COUNTER SET N = N + 1"
         cursor.execute(query)
         connection.commit()
@@ -141,6 +141,7 @@ def initialize_database():
         MAIL VARCHAR(80) NOT NULL,
         PASSWORD VARCHAR(500) NOT NULL,
         BIRTHDATE DATE NOT NULL,
+        BIO VARCHAR(500) NOT NULL,
         CITY VARCHAR(80) NOT NULL,
         GENDER VARCHAR(20),
         USERTYPE INTEGER NOT NULL,
@@ -159,7 +160,7 @@ def initialize_database():
         SENDDATE TIMESTAMP NOT NULL
         );"""
         cursor.execute(query)
-        
+
         query = """CREATE TABLE DRINKS(
         ID SERIAL PRIMARY KEY,
         NAME VARCHAR(20) NOT NULL,
@@ -182,7 +183,7 @@ def initialize_database():
         );"""
 
         cursor.execute(query)
-        
+
         query = """CREATE TABLE DEALS (
         ID SERIAL PRIMARY KEY,
         FOOD_ID INTEGER NOT NULL,
@@ -201,7 +202,7 @@ def initialize_database():
         STATUS VARCHAR(80) NOT NULL
         );"""
         cursor.execute(query)
-        
+
         connection.commit()
         return redirect(url_for('site.home_page'))
 
@@ -240,6 +241,7 @@ def register_home_page():
             password = request.form['password']
             hashed_password = pwd_context.encrypt(password)
             birthDate = request.form['birthDate']
+            bio = request.form['bio']
             city = request.form['city']
             gender = request.form['gender']
             userType = request.form['userType']
@@ -247,13 +249,13 @@ def register_home_page():
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()
                 query = """
-                    INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR) 
-                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+                    INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, BIO, CITY, GENDER, USERTYPE, AVATAR)
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
-                cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate, city,gender,userType,"avatar"))
+                cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate, bio, city, gender, userType, "avatar"))
                 connection.commit()
-            return redirect(url_for('site.home_page'))
-        
+            return redirect(url_for('site.user_show_page'))
+
         form = request.form
         return render_template('register/index.html',form=form)
 
@@ -271,7 +273,49 @@ def user_show_page():
 
 @site.route('/user/15/edit') #Change me with model [ID]
 def user_edit_page():
-    return render_template('user/edit.html')
+    if request.method == 'GET':
+        return render_template('user/edit.html',form=None)
+    else:
+        valid = validate_user_data(request.form)
+        if valid:
+            name = request.form['firstName']
+            nameList= name.split(" ")
+            if(len(nameList) >= 2):
+                firstName = nameList[0]
+                lastName = nameList[1]
+            elif(len(nameList) <2):
+                firstName = nameList[0]
+                lastName=""
+            email = request.form['email']
+            password = request.form['password']
+            hashed_password = pwd_context.encrypt(password)
+            birthDate = request.form['birthDate']
+            bio = request.form['bio']
+            city = request.form['city']
+            gender = request.form['gender']
+            userType = request.form['userType']
+
+            with dbapi2.connect(current_app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """
+                    UPDATE USERS
+                        SET FIRSTNAME = %s,
+                            LASTNAME = %s,
+                            MAIL = %s,
+                            PASSWORD = %s,
+                            BIRTHDATE = %s,
+                            BIO = %s,
+                            CITY = %s,
+                            GENDER = %s,
+                            USERTYPE = %s,
+                            AVATAR = %s WHERE (ID = %s)"""
+
+                cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate, bio, city, gender, userType, "avatar", Id))
+                connection.commit()
+            return redirect(url_for('site.user_show_page'))
+
+        form = request.form
+        return render_template('user/edit.html',form=form)
 
 @site.route('/admin')
 def admin_page():
@@ -291,7 +335,7 @@ def event_show_page():
 
 
 def validate_user_data(form):
-    if form == None: 
+    if form == None:
         return true
 
     form.data = {}
@@ -313,7 +357,7 @@ def validate_user_data(form):
         form.data['birthDate'] = form['birthDate']
 
     if not form['userType']:
-        form.errors['userType'] = 'User type can not be blank' 
+        form.errors['userType'] = 'User type can not be blank'
     else:
         form.data['userType'] = form['userType']
 
@@ -323,5 +367,3 @@ def validate_user_data(form):
         form.data['terms'] = form['terms']
 
     return len(form.errors) == 0
-
-
