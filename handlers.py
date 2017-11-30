@@ -230,8 +230,6 @@ def restaurant_create_page():
         photoInput = request.form['Photo']
         workingHoursInput = request.form['WorkingHours']
         currentStatusInput = request.form['CurrentStatus']
-
-
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             query = """
@@ -241,23 +239,15 @@ def restaurant_create_page():
             connection.commit()
         return redirect(url_for('site.restaurant_home_page'))
 
-
-
-
-
-
-
-
-
 @site.route('/restaurant/<int:restaurant_id>/')
 def restaurant_show_page(restaurant_id):
+    print("sa")
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
         query = """SELECT * FROM RESTAURANTS WHERE id = %s"""
         cursor.execute(query, [restaurant_id])
         value = cursor.fetchall()
         sendedValue = value[0]
-        print(sendedValue)
     return render_template('restaurant/show.html', sendedValue = sendedValue)
 
 
@@ -280,18 +270,29 @@ def restaurant_edit_page(restaurant_id):
             value = cursor.fetchall()
             name = value[0][1]
             address = value[0][2]
+            contactName = value[0][3]
+            contactPhone = value[0][4]
+            score = value[0][5]
+            pp = value[0][6]
+            hours = value[0][7]
+            currentStatus = value[0][8]
     else:
-        nameInput = request.form['nameInput']
-        addressInput = request.form['addressInput']
+        nameInput = request.form['Name']
+        addressInput = request.form['Address']
+        contactNameInput = request.form['ContanctName']
+        contactPhoneInput = request.form['ContanctPhone']
+        photoInput = request.form['Photo']
+        workingHoursInput = request.form['WorkingHours']
+        currentStatusInput = request.form['CurrentStatus']
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
-            query = """UPDATE RESTAURANTS SET NAME = %s, ADDRESS = %s WHERE ID = %s"""
-            cursor.execute(query, [nameInput, addressInput, restaurant_id])
+            query = """UPDATE RESTAURANTS SET NAME = %s, ADDRESS = %s, CONTACT_NAME = %s, CONTACT_PHONE = %s, PROFILE_PICTURE = %s, HOURS = %s, CURRENT_STATUS = %s WHERE ID = %s"""
+            cursor.execute(query, [nameInput, addressInput, contactNameInput, contactPhoneInput, photoInput, workingHoursInput, currentStatusInput, restaurant_id])
             connection.commit()
-        return redirect(url_for('site.restaurant_show_page', restaurant_id))
+        return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
 
     form = request.form
-    return render_template('restaurant/edit.html',form = form , address = address, name = name, restaurant_id = restaurant_id)
+    return render_template('restaurant/edit.html', form = form , address = address, name = name, contactName = contactName, contactPhone = contactPhone, pp = pp, hours = hours, currentStatus = currentStatus)
 
 
 
