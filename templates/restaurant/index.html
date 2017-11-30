@@ -29,7 +29,7 @@
             <td>{{r[5]}}/5</td>
             <td>Porsiyon 4 kofte</td>
             <td><a href="{{ url_for('site.restaurant_edit_page', restaurant_id = r[0]) }}">Edit</a></td>
-            <td><a href="#">Delete</a></td>
+            <td><a href="{{ url_for('site.restaurant_delete_func', restaurant_id = r[0]) }}">Delete</a></td>
           </tr>
             {% endfor %}
         </tbody>

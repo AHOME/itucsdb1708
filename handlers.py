@@ -205,7 +205,7 @@ def initialize_database():
         connection.commit()
         return redirect(url_for('site.home_page'))
 
-@site.route('/restaurant')
+@site.route('/restaurants')
 def restaurant_home_page():
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
@@ -216,9 +216,16 @@ def restaurant_home_page():
 
 @site.route('/restaurant/<int:restaurant_id>/')
 def restaurant_show_page(restaurant_id):
-    print("sa")
     return render_template('restaurant/show.html')
 
+@site.route('/restaurant/<int:restaurant_id>/delete')
+def restaurant_delete_func(restaurant_id):
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        query = """DELETE FROM RESTAURANTS WHERE ID = %s"""
+        cursor.execute(query, [restaurant_id])
+        connection.commit()
+    return redirect(url_for('site.restaurant_home_page'))
 
 @site.route('/restaurant/<int:restaurant_id>/edit', methods=['GET','POST'])
 def restaurant_edit_page(restaurant_id):
