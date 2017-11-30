@@ -17,7 +17,7 @@ def home_page():
 def counter_page():
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
-        
+
         query = "UPDATE COUNTER SET N = N + 1"
         cursor.execute(query)
         connection.commit()
@@ -124,7 +124,7 @@ def initialize_database():
         query = """CREATE TABLE RESTAURANTS (
            ID SERIAL PRIMARY KEY,
            NAME VARCHAR(80) NOT NULL,
-           ADDRESS INTEGER NOT NULL,
+           ADDRESS VARCHAR(150) NOT NULL,
            CONTACT_NAME VARCHAR(80) NOT NULL,
            CONTACT_PHONE VARCHAR(80) NOT NULL,
            SCORE INTEGER NOT NULL DEFAULT 0 CHECK( SCORE >= 0 AND SCORE <= 5),
@@ -159,7 +159,7 @@ def initialize_database():
         SENDDATE TIMESTAMP NOT NULL
         );"""
         cursor.execute(query)
-        
+
         query = """CREATE TABLE DRINKS(
         ID SERIAL PRIMARY KEY,
         NAME VARCHAR(20) NOT NULL,
@@ -182,7 +182,7 @@ def initialize_database():
         );"""
 
         cursor.execute(query)
-        
+
         query = """CREATE TABLE DEALS (
         ID SERIAL PRIMARY KEY,
         FOOD_ID INTEGER NOT NULL,
@@ -201,21 +201,49 @@ def initialize_database():
         STATUS VARCHAR(80) NOT NULL
         );"""
         cursor.execute(query)
-        
+
         connection.commit()
         return redirect(url_for('site.home_page'))
 
 @site.route('/restaurant')
 def restaurant_home_page():
-    return render_template('restaurant/index.html')
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        query = """SELECT * FROM RESTAURANTS"""
+        cursor.execute(query)
+        allValues = cursor.fetchall()
+    return render_template('restaurant/index.html', allValues = allValues)
 
-@site.route('/restaurant/12') #Change me with model [ID]
-def restaurant_show_page():
+@site.route('/restaurant/<int:restaurant_id>/')
+def restaurant_show_page(restaurant_id):
+    print("sa")
     return render_template('restaurant/show.html')
 
-@site.route('/restaurant/12/edit')
-def restaurant_edit_page():
-    return render_template('restaurant/edit.html')
+
+@site.route('/restaurant/<int:restaurant_id>/edit', methods=['GET','POST'])
+def restaurant_edit_page(restaurant_id):
+    if request.method == 'GET':
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """SELECT * FROM RESTAURANTS WHERE id = %s"""
+            cursor.execute(query, [restaurant_id])
+            value = cursor.fetchall()
+            name = value[0][1]
+            address = value[0][2]
+    else:
+        nameInput = request.form['nameInput']
+        addressInput = request.form['addressInput']
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """UPDATE RESTAURANTS SET NAME = %s, ADDRESS = %s WHERE ID = %s"""
+            cursor.execute(query, [nameInput, addressInput, restaurant_id])
+            connection.commit()
+        return redirect(url_for('site.restaurant_show_page', restaurant_id))
+
+    form = request.form
+    return render_template('restaurant/edit.html',form = form , address = address, name = name, restaurant_id = restaurant_id)
+
+
 
 @site.route('/user/12/restaurant/new')
 def restaurant_new_page():
@@ -247,13 +275,13 @@ def register_home_page():
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()
                 query = """
-                    INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR) 
+                    INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR)
                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
                 cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate, city,gender,userType,"avatar"))
                 connection.commit()
             return redirect(url_for('site.home_page'))
-        
+
         form = request.form
         return render_template('register/index.html',form=form)
 
@@ -291,7 +319,7 @@ def event_show_page():
 
 
 def validate_user_data(form):
-    if form == None: 
+    if form == None:
         return true
 
     form.data = {}
@@ -313,7 +341,7 @@ def validate_user_data(form):
         form.data['birthDate'] = form['birthDate']
 
     if not form['userType']:
-        form.errors['userType'] = 'User type can not be blank' 
+        form.errors['userType'] = 'User type can not be blank'
     else:
         form.data['userType'] = form['userType']
 
@@ -323,5 +351,3 @@ def validate_user_data(form):
         form.data['terms'] = form['terms']
 
     return len(form.errors) == 0
-
-
