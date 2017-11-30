@@ -295,11 +295,6 @@ def restaurant_edit_page(restaurant_id):
     return render_template('restaurant/edit.html', form = form , address = address, name = name, contactName = contactName, contactPhone = contactPhone, pp = pp, hours = hours, currentStatus = currentStatus)
 
 
-
-@site.route('/user/12/restaurant/new')
-def restaurant_new_page():
-    return render_template('restaurant/new.html')
-
 @site.route('/register', methods=['GET','POST'])
 def register_home_page():
     if request.method == 'GET':
