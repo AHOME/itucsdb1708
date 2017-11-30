@@ -99,7 +99,8 @@ def initialize_database():
         query = """CREATE TABLE RESTAURANT_FOODS (
            ID SERIAL PRIMARY KEY,
            RESTAURANT_ID INTEGER  NOT NULL,
-           FOOD_ID INTEGER  NOT NULL
+           FOOD_ID INTEGER  NOT NULL,
+           SELL_COUNT INTEGER NOT NULL
         );"""
         cursor.execute(query)
 
@@ -128,7 +129,7 @@ def initialize_database():
            CONTACT_NAME VARCHAR(80) NOT NULL,
            CONTACT_PHONE VARCHAR(80) NOT NULL,
            SCORE INTEGER NOT NULL DEFAULT 0 CHECK( SCORE >= 0 AND SCORE <= 5),
-           PROFILE_PICTURE VARCHAR(80) NOT NULL,
+           PROFILE_PICTURE VARCHAR(150) NOT NULL,
            HOURS VARCHAR(80) NOT NULL,
            CURRENT_STATUS VARCHAR(80) NOT NULL
         );"""
@@ -214,9 +215,51 @@ def restaurant_home_page():
         allValues = cursor.fetchall()
     return render_template('restaurant/index.html', allValues = allValues)
 
+
+
+
+@site.route('/restaurant/create', methods=['GET','POST'])
+def restaurant_create_page():
+    if request.method == 'GET':
+        return render_template('restaurant/new.html')
+    else:
+        nameInput = request.form['Name']
+        addressInput = request.form['Address']
+        contactNameInput = request.form['ContanctName']
+        contactPhoneInput = request.form['ContanctPhone']
+        photoInput = request.form['Photo']
+        workingHoursInput = request.form['WorkingHours']
+        currentStatusInput = request.form['CurrentStatus']
+
+
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """
+                INSERT INTO RESTAURANTS (NAME, ADDRESS, CONTACT_NAME, CONTACT_PHONE, PROFILE_PICTURE,HOURS,CURRENT_STATUS)
+                VALUES (%s,%s,%s,%s,%s,%s,%s)"""
+            cursor.execute(query, [nameInput, addressInput, contactNameInput, contactPhoneInput, photoInput, workingHoursInput, currentStatusInput ])
+            connection.commit()
+        return redirect(url_for('site.restaurant_home_page'))
+
+
+
+
+
+
+
+
+
 @site.route('/restaurant/<int:restaurant_id>/')
 def restaurant_show_page(restaurant_id):
-    return render_template('restaurant/show.html')
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        query = """SELECT * FROM RESTAURANTS WHERE id = %s"""
+        cursor.execute(query, [restaurant_id])
+        value = cursor.fetchall()
+        sendedValue = value[0]
+        print(sendedValue)
+    return render_template('restaurant/show.html', sendedValue = sendedValue)
+
 
 @site.route('/restaurant/<int:restaurant_id>/delete')
 def restaurant_delete_func(restaurant_id):
