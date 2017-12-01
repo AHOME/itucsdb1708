@@ -125,7 +125,7 @@ def initialize_database():
         query = """CREATE TABLE RESTAURANTS (
            ID SERIAL PRIMARY KEY,
            NAME VARCHAR(80) NOT NULL,
-           ADDRESS VARCHAR(150) NOT NULL,
+           ADDRESS VARCHAR(255) NOT NULL,
            CONTACT_NAME VARCHAR(80) NOT NULL,
            CONTACT_PHONE VARCHAR(80) NOT NULL,
            SCORE INTEGER NOT NULL DEFAULT 0 CHECK( SCORE >= 0 AND SCORE <= 5),
@@ -215,9 +215,6 @@ def restaurant_home_page():
         allValues = cursor.fetchall()
     return render_template('restaurant/index.html', allValues = allValues)
 
-
-
-
 @site.route('/restaurant/create', methods=['GET','POST'])
 def restaurant_create_page():
     if request.method == 'GET':
@@ -293,6 +290,96 @@ def restaurant_edit_page(restaurant_id):
 
     form = request.form
     return render_template('restaurant/edit.html', form = form , address = address, name = name, contactName = contactName, contactPhone = contactPhone, pp = pp, hours = hours, currentStatus = currentStatus)
+
+
+@site.route('/foods')
+def food_home_page():
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        query = """SELECT * FROM FOODS"""
+        cursor.execute(query)
+        allValues = cursor.fetchall()
+    return render_template('food/index.html', allValues = allValues)
+
+@site.route('/food/create', methods=['GET','POST'])
+def food_create_page():
+    if request.method == 'GET':
+        return render_template('food/new.html')
+    else:
+        nameInput = request.form['name']
+        iconInput = request.form['icon']
+        typeNameInput = request.form['type']
+        priceInput = request.form['price']
+        calorieInput = request.form['calorie']
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """
+                INSERT INTO FOODS (NAME, ICON, FOOD_TYPE, PRICE, CALORIE)
+                VALUES (%s,%s,%s,%s,%s)"""
+            cursor.execute(query, [nameInput, iconInput, typeNameInput, priceInput, calorieInput])
+            connection.commit()
+        return redirect(url_for('site.food_home_page'))
+
+@site.route('/food/<int:food_id>/delete')
+def food_delete_func(food_id):
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        query = """DELETE FROM FOODS WHERE ID = %s"""
+        cursor.execute(query, [food_id])
+        connection.commit()
+    return redirect(url_for('site.food_home_page'))
+
+@site.route('/food/<int:food_id>/edit', methods=['GET','POST'])
+def food_edit_page(food_id):
+    if request.method == 'GET':
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """SELECT * FROM FOODS WHERE id = %s"""
+            cursor.execute(query, [food_id])
+            value = cursor.fetchall()
+            name = value[0][1]
+            icon = value[0][2]
+            food_type = value[0][3]
+            price = value[0][4]
+            calorie = value[0][5]
+    else:
+        nameInput = request.form['name']
+        iconInput = request.form['icon']
+        typeNameInput = request.form['type']
+        priceInput = request.form['price']
+        calorieInput = request.form['calorie']
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """UPDATE FOODS SET NAME = %s, ICON = %s, FOOD_TYPE = %s, PRICE = %s, CALORIE = %s WHERE ID = %s"""
+            cursor.execute(query, [nameInput, iconInput, typeNameInput, priceInput, calorieInput, food_id])
+            connection.commit()
+        return redirect(url_for('site.food_home_page'))
+
+    form = request.form
+    return render_template('food/edit.html', form = form, name = name, icon = icon, food_type = food_type, price = price, calorie = calorie)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @site.route('/register', methods=['GET','POST'])

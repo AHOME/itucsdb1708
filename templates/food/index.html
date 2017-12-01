@@ -1,0 +1,36 @@
+{% extends "layouts/layout.html" %}
+
+{% block title %} Food Page{% endblock %}
+{% block csslinks %} {% endblock %}
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="span12">
+      <table class="table table-condensed table-hover">
+        <thead>
+          <tr>
+            <th>Food Name</th>
+            <th>Food Type</th>
+            <th>Food Price</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for r in allValues %}
+          <tr>
+            <!-- Change me with model and use for loop for showing all item inside the database. -->
+            <td>{{r[1]}}</td>
+            <td>{{r[3]}}</td>
+            <td>{{r[4]}}</td>
+            <td><a href="{{ url_for('site.food_edit_page', food_id = r[0]) }}">Edit</a></td>
+            <td><a href="{{ url_for('site.food_delete_func', food_id = r[0]) }}">Delete</a></td>
+          </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
