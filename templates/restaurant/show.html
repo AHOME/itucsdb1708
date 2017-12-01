@@ -20,12 +20,12 @@
   <div class="span12">
   <div class="card hovercard">
     <div class="card-background">
-      <img class="card-bkimg" alt="" src="https://media-cdn.tripadvisor.com/media/photo-s/0d/bb/36/4f/photo3jpg.jpg">
+      <img class="card-bkimg" alt="" src="{{sendedValue[6]}}">
     </div>
     <div class="useravatar">
-      <img alt="" src="https://media-cdn.tripadvisor.com/media/photo-s/0d/bb/36/4f/photo3jpg.jpg">
+      <img alt="" src="{{sendedValue[6]}}">
     </div>
-    <div class="card-info"> <span class="card-title">Kofteci Ahmet</span>
+    <div class="card-info"> <span class="card-title">{{sendedValue[1]}}</span>
 
     </div>
   </div>
@@ -86,10 +86,10 @@
           <tbody>
             <tr>
               <!-- Change me with model and use for loop for showing all item inside the database. -->
-              <td><a href="{{ url_for('site.restaurant_show_page') }}">KemalPasa Koftecisi</a></td>
-              <td>Mahmut Hava</td>
-              <td>Taksim 42/5 Beyoglu/Istanbul</td>
-              <td>4/5</td>
+              <td>{{sendedValue[1]}}</td>
+              <td>{{sendedValue[3]}}</td>
+              <td>{{sendedValue[2]}}</td>
+              <td>{{sendedValue[5]}}/5</td>
               <td>Porsiyon 4 kofte</td>
             </tr>
           </tbody>
@@ -97,7 +97,7 @@
       </div>
       <div class="tab-pane fade in" id="tab3">
         <!-- Change me with model -->
-        <h3 class="text-center ">Restaurant is now 5/80</h3>
+        <h3 class="text-center ">Restaurant is now {{sendedValue[8]}}</h3>
       </div>
     </div>
     </div>

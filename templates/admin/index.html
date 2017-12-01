@@ -5,6 +5,7 @@
 {%block content %}
 
 <!--List restaurants-->
+{% if current_user.is_authenticated %}
 <div class="container">
     <div class="row">
         <div class="col-sm-6 col-md-12 col-lg-12" id = "title">
@@ -147,4 +148,5 @@
         </div>
     </div>
 </div>
+{% endif %}
 {% endblock %}

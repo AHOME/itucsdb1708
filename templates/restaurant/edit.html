@@ -1,37 +1,77 @@
 {% extends "layouts/layout.html" %}
 
-{% block title %} -Restaurant Name Edit- Page{% endblock %}
+{% block title %} New Restaurant Page{% endblock %}
 {% block csslinks %} {% endblock %}
 {% block content %}
-<form class="form-horizontal">
+<form class="form-horizontal" method="POST" role="form" name="restaurant_create">
 <fieldset>
 
-<!-- Text input-->
+<legend>New Restaurant</legend>
+
 <div class="form-group">
-  <label class="col-md-4 control-label" for="textinput">Name</label>
+  <label class="col-md-4 control-label" for="textinput" >Restaurant Name</label>
   <div class="col-md-4">
-  <input id="textinput" name="textinput" placeholder="" class="form-control input-md" required="" type="text">
+  <input id="textinput" name="Name" placeholder="" class="form-control input-md" type="text" value = {{name}}>
 
   </div>
 </div>
 
-<!-- Textarea -->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="textarea">Location</label>
+  <label class="col-md-4 control-label" for="textinput" >Restaurant Address</label>
   <div class="col-md-4">
-    <textarea class="form-control" id="textarea" name="textarea"></textarea>
+  <input id="textinput" name="Address" placeholder="" class="form-control input-md" type="text" value = {{address}}>
+
   </div>
 </div>
 
-<!-- Button (Double) -->
+
+<div class="form-group">
+  <label class="col-md-4 control-label" for="textinput" >Contact Name</label>
+  <div class="col-md-4">
+  <input id="textinput" name="ContanctName" placeholder="" class="form-control input-md" type="text" value = {{contactName}}>
+
+  </div>
+</div>
+
+<div class="form-group">
+  <label class="col-md-4 control-label" for="textinput" >Contact Phone</label>
+  <div class="col-md-4">
+  <input id="textinput" name="ContanctPhone" placeholder="" class="form-control input-md" type="text" value = {{contactPhone}}>
+
+  </div>
+</div>
+
+<div class="form-group">
+  <label class="col-md-4 control-label" for="textinput" >Photo</label>
+  <div class="col-md-4">
+  <input id="textinput" name="Photo" placeholder="" class="form-control input-md" type="text" value = {{pp}}>
+
+  </div>
+</div>
+
+<div class="form-group">
+  <label class="col-md-4 control-label" for="textinput" >Working Hours</label>
+  <div class="col-md-4">
+  <input id="textinput" name="WorkingHours" placeholder="" class="form-control input-md" type="text" value = {{hours}}>
+
+  </div>
+</div>
+
+<div class="form-group">
+  <label class="col-md-4 control-label" for="textinput" >Current Status</label>
+  <div class="col-md-4">
+  <input id="textinput" name="CurrentStatus" placeholder="" class="form-control input-md" type="text" value = {{currentStatus}}>
+
+  </div>
+</div>
+
 <div class="form-group">
   <div class="col-md-8 text-center">
-    <button id="btnCancel" name="btnCancel" class="btn btn-primary">Cancel</button>
-    <button id="btnSave" name="btnSave" class="btn btn-success">Save</button>
+    <button type="submit" class="btn btn-success">Save</button>
   </div>
 </div>
 
 </fieldset>
 </form>
-</form>
+
 {% endblock %}

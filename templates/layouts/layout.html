@@ -4,6 +4,7 @@
   <title>R E S T O R A N L A N D I N {% block title %} {% endblock %}</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+   <link rel="stylesheet"  type="text/css" href="/static/homepage/navbar.css" />
 {% block csslinks %} {% endblock %}
 </head>
 <body>
@@ -41,7 +42,41 @@
     <ul class="nav navbar-nav navbar-right">
       <li class="active"><a href="{{ url_for('site.user_show_page') }}" style="color: #ffffff;">Profile</a></li>
       <li class="active"><a href="{{ url_for('site.messages_home_page') }}" style="color: #ffffff;">Messages</a></li>
-      <li class="active"><a href="{{ url_for('site.register_home_page') }}" style="color: #ffffff;">Register</a></li>
+  {% with messages = get_flashed_messages() %}
+    {% if session['logged_in'] == True  %}
+     <li class="active"><a href="{{ url_for('site.logout_page') }}" style="color: #ffffff;">{{session['name']}}  Logout</a></li>
+    {% else %}
+
+      <li class="dropdown">
+          <a href="#" style="color: #ffffff;  class="dropdown-toggle" data-toggle="dropdown" ><b>Login</b> <span class="caret"></span></a>
+      <ul id="login-dp" class="dropdown-menu">
+        <li>
+           <div class="row">
+              <div class="col-md-12"> 
+                 <form class="form" role="form" method="POST" action="{{url_for('site.home_page')}}" accept-charset="UTF-8" id="login-nav">
+                    <div class="form-group" style="margin: 6px;">
+                       <label class="sr-only" for="InputEmail">Email address</label>
+                       <input type="email" class="form-control" name="InputEmail" id="InputEmail" placeholder="Email address" required>
+                    </div>
+                    <div class="form-group" style="margin: 6px;">
+                       <label class="sr-only" for="InputPassword">Password</label>
+                       <input type="password" class="form-control" name="InputPassword" id="InputPassword" placeholder="Password" required>
+                                             
+                    </div>
+                    <div class="form-group" style="margin: 6px;">
+                       <button type="submit" class="btn btn-danger btn-block">Sign in</button>
+                    </div>
+                 </form>
+              </div>
+              <div class="bottom text-center" ">
+                New here ? <a href="{{ url_for('site.register_home_page') }}"><b style="color: #D32F2F;">Register</b></a>
+              </div>
+           </div>
+        </li> 
+      </ul>
+        </li>
+        {% endif %}
+        {% endwith %}
     </ul>
   </div>
 
