@@ -4,7 +4,7 @@ from flask_login import LoginManager
 from passlib.apps import custom_app_context as pwd_context
 
 import psycopg2 as dbapi2
-
+from classes.achievements import Achievements
 
 site = Blueprint('site', __name__)
 
@@ -107,7 +107,9 @@ def initialize_database():
            ID SERIAL PRIMARY KEY,
            NAME VARCHAR(80) NOT NULL,
            ICON VARCHAR(255) NOT NULL,
-           CONTENT VARCHAR(80) NOT NULL
+           CONTENT VARCHAR(80) NOT NULL,
+           GOAL INTEGER NOT NULL,
+           ENDDATE DATE NOT NULL
         );"""
         cursor.execute(query)
 
@@ -325,9 +327,18 @@ def admin_page():
 def event_create_page():
     return render_template('event/new.html')
 
-@site.route('/achievement/new')
+@site.route('/achievement/new',methods = ['GET','POST'])
 def achievement_create_page():
-    return render_template('achievement/new.html')
+    if request.method == 'GET':
+        return render_template('achievement/new.html', form = None)
+    else:
+        isValid = validate_achievement_data(request.form)
+    if isValid:
+        #create an object from form and add it to database.
+        achievement = Achievements(form = request.form)
+        return redirect(url_for('site.home_page'))
+    form = request.form
+    return render_template('achievement/new.html',form=form)
 
 @site.route('/event/12')
 def event_show_page():
@@ -367,3 +378,31 @@ def validate_user_data(form):
         form.data['terms'] = form['terms']
 
     return len(form.errors) == 0
+
+def validate_achievement_data(form):
+    if form == None:
+        return True
+    form.data = {}
+    form.error = {}
+
+    if len(form['Name'].strip()) == 0:
+        form.error['Name'] = 'Name of the achievement can not be blank'
+    else:
+        form.data['Name'] = form['Name']
+
+    if len(form['Explanation'].strip()) == 0:
+        form.error['Explanation'] = 'Explanation of the achievement can not be blank'
+    else:
+        form.data['Explanation'] = form['Explanation']
+
+    if len(form['Goal'].strip()) == 0:
+        form.error['Goal'] = 'Goal of the achievement can not be blank'
+    else:
+        form.data['Explanation'] = form['Explanation']
+
+    if len(form['endDate'].strip()) == 0:
+        form.error['endDate'] = 'endDate of the achievement can not be blank'
+    else:
+        form.data['endDate'] = form['endDate']
+
+    return len(form.error) == 0
