@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template , redirect , current_app,url_for
-from flask import request,flash
-from flask_login import LoginManager,login_user,login_required
+from flask import request,flash,session
+from flask_login import LoginManager,login_user,login_required,current_user
+from flask_login import logout_user
 from passlib.apps import custom_app_context as pwd_context
 
 
@@ -17,6 +18,12 @@ from server import load_user
 def abort(code):
     if code == 401:
         return "You don't have authorize to access this page!"
+
+@site.route('/logout')
+def logout_page():
+    logout_user()
+    session['logged_in'] = False
+    return redirect(url_for('site.home_page'))
 
 @site.route('/', methods=['GET', 'POST'])
 def home_page():
@@ -37,7 +44,9 @@ def home_page():
                 cursor.execute(statement,[db_mail])
                 if pwd_context.verify(input_password,user.Password) is True:
                     login_user(user)
-                    flash( user.get_name() + ' ' + user.get_lastname() + ' Logout')
+                    session['logged_in'] = True
+                    session['name'] = user.get_name() + ' ' + user.get_lastname()
+                    flash( current_user.get_mail())
                     return redirect(url_for('site.home_page'))
                 else:
                     return redirect(url_for('site.home_page')) #Couldn't login
@@ -65,7 +74,8 @@ def counter_page():
 @site.route('/initdb')
 @login_required
 def initialize_database():
-    if not current_user.isAdmin():
+    user = load_user(current_user.get_id())
+    if not user.is_admin :
         abort(401)
 
     with dbapi2.connect(current_app.config['dsn']) as connection:
@@ -330,7 +340,8 @@ def user_edit_page():
 @site.route('/admin')
 @login_required
 def admin_page():
-    if not current_user.isAdmin():
+    user = load_user(current_user.get_id())
+    if not user.is_admin :
         abort(401)
     return render_template('admin/index.html')
 

@@ -14,14 +14,15 @@ class Users(UserMixin):
         self.Gender = Gender
         self.UserType = UserType
         self.Avatar = Avatar
-        self.Active = True
+        self.active = True
         if UserType == 0:
             self.is_admin = True
         else:
             self.is_admin = False
 
-    def get_id(self):
-        return self.Id
+    def get_mail(self):
+        return self.Mail
+
 
     def get_name(self):
         return self.FirstName
@@ -31,11 +32,22 @@ class Users(UserMixin):
 
     @property
     def is_active(self):
-        return self.Active
+        return True
 
     @property
     def is_authenticated(self):
-        return self.is_authenticated;
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+    
+    
+    def get_id(self):
+        return self.Mail
+
+    def get_Id(self):
+        return self.Id
 
 def get_user(db_mail):
     if db_mail == 1:
@@ -46,7 +58,7 @@ def get_user(db_mail):
         cursor.execute(statement, [db_mail])
         db_user = cursor.fetchall()
         user = Users(db_user[0][0],db_user[0][1], db_user[0][2], db_user[0][3],db_user[0][4], db_user[0][5], db_user[0][6], db_user[0][7], db_user[0][8], db_user[0][9])
-       
-        if user is not None:
-            user.is_admin = user.Mail in current_app.config['ADMIN_USERS']
+
+    if user is not None:
+        user.is_admin = user.Mail in current_app.config['ADMIN_USERS']
     return user
