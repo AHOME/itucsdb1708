@@ -6,7 +6,7 @@ from flask import Flask, session
 from flask import Blueprint, render_template
 from flask_login import LoginManager,login_user,login_required,current_user
 from flask_login import logout_user
-from users import get_user
+from classes.users import *
 from handlers import site
 
 

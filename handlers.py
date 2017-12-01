@@ -12,7 +12,7 @@ import psycopg2 as dbapi2
 site = Blueprint('site', __name__)
 
 
-from users import get_user
+from classes.users import *
 from server import load_user
 
 def abort(code):
