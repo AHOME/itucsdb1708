@@ -358,30 +358,6 @@ def food_edit_page(food_id):
     form = request.form
     return render_template('food/edit.html', form = form, name = name, icon = icon, food_type = food_type, price = price, calorie = calorie)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @site.route('/register', methods=['GET','POST'])
 def register_home_page():
     if request.method == 'GET':
