@@ -1,4 +1,4 @@
-#from server import app
+from server import app
 import psycopg2 as dbapi2
 from flask import current_app
 from flask_login import UserMixin
