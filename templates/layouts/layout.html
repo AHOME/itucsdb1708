@@ -42,10 +42,9 @@
     <ul class="nav navbar-nav navbar-right">
       <li class="active"><a href="{{ url_for('site.user_show_page') }}" style="color: #ffffff;">Profile</a></li>
       <li class="active"><a href="{{ url_for('site.messages_home_page') }}" style="color: #ffffff;">Messages</a></li>
-      <!--<li class="active"><a href="{{ url_for('site.register_home_page') }}" style="color: #ffffff;">Register</a></li>!-->
   {% with messages = get_flashed_messages() %}
     {% if session['logged_in'] == True  %}
-     <li class="active"><a href="{{ url_for('site.user_show_page') }}" style="color: #ffffff;">{{session['name']}}  Logout</a></li>
+     <li class="active"><a href="{{ url_for('site.logout_page') }}" style="color: #ffffff;">{{session['name']}}  Logout</a></li>
     {% else %}
 
       <li class="dropdown">

@@ -23,6 +23,7 @@ def abort(code):
 def logout_page():
     logout_user()
     session['logged_in'] = False
+    session['name'] = ''
     return redirect(url_for('site.home_page'))
 
 @site.route('/', methods=['GET', 'POST'])
