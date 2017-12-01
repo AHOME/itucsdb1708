@@ -74,7 +74,7 @@ def counter_page():
 
 
 @site.route('/initdb')
-@login_required
+#@login_required
 def initialize_database():
     user = load_user(current_user.get_id())
     if not user.is_admin :
@@ -299,7 +299,7 @@ def restaurant_create_page():
         return redirect(url_for('site.restaurant_home_page'))
 
 @site.route('/restaurant/<int:restaurant_id>/')
-@login_required
+#@login_required
 def restaurant_show_page(restaurant_id):
 
     with dbapi2.connect(current_app.config['dsn']) as connection:
@@ -312,7 +312,7 @@ def restaurant_show_page(restaurant_id):
 
 
 @site.route('/restaurant/<int:restaurant_id>/delete')
-@login_required
+#@login_required
 def restaurant_delete_func(restaurant_id):
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
@@ -460,22 +460,22 @@ def register_home_page():
         return render_template('register/index.html',form=form)
 
 @site.route('/user/12/message')
-@login_required
+#@login_required
 def messages_home_page():
     return render_template('messages/index.html')
 
 @site.route('/user/12/message/new') #Change me with model [ID]
-@login_required
+#@login_required
 def messages_new_page():
     return render_template('messages/new.html')
 
 @site.route('/user/15') #Change me with model [ID]
-@login_required
+#@login_required
 def user_show_page():
     return render_template('user/show.html')
 
 @site.route('/user/15/edit') #Change me with model [ID]
-@login_required
+#@login_required
 def user_edit_page():
     if request.method == 'GET':
         return render_template('user/edit.html',form=None)
@@ -522,20 +522,49 @@ def user_edit_page():
         return render_template('user/edit.html',form=form)
 
 @site.route('/admin')
-@login_required
+#@login_required
 def admin_page():
-    user = load_user(current_user.get_id())
+    """user = load_user(current_user.get_id())
     if not user.is_admin :
-        abort(401)
+        abort(401)"""
     return render_template('admin/index.html')
 
+@site.route('/temp', methods=['GET','POST'])
+def temp_page():
+    if request.method == 'GET':
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """SELECT * FROM ACHIEVEMENTS"""
+            cursor.execute(query)
+            achievements = cursor.fetchall()
+            achievementList = []
+
+            for achievement in achievements:
+                achievementList.append(Achievements(select = achievement))
+            connection.commit()
+
+        return render_template('temp.html', achievements = achievementList)
+
+    else:
+        achievement_ids = request.form.getlist('achievement_ids')
+        print(achievement_ids)
+        query = """DELETE FROM ACHIEVEMENTS WHERE ID = %s"""
+
+        for ach_id in achievement_ids:
+            with dbapi2.connect(current_app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                cursor.execute(query, [ach_id])
+                connection.commit()
+
+        return redirect(url_for('site.temp_page'))
+
 @site.route('/event/new')
-@login_required
+#@login_required
 def event_create_page():
     return render_template('event/new.html')
 
 @site.route('/achievement/new',methods = ['GET','POST'])
-@login_required
+#@login_required
 def achievement_create_page():
     if request.method == 'GET':
         return render_template('achievement/new.html', form = None)
@@ -549,7 +578,7 @@ def achievement_create_page():
     return render_template('achievement/new.html',form=form)
 
 @site.route('/event/12')
-@login_required
+#@login_required
 def event_show_page():
         return render_template('event/show.html')
 
