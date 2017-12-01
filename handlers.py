@@ -7,8 +7,10 @@ from passlib.apps import custom_app_context as pwd_context
 
 
 import psycopg2 as dbapi2
-
-
+from classes.drinks import *
+from classes.events import *
+from classes.event_control_functions import *
+from classes.drink_control_functions import *
 site = Blueprint('site', __name__)
 
 
@@ -28,8 +30,16 @@ def logout_page():
 
 @site.route('/', methods=['GET', 'POST'])
 def home_page():
+    events = select_all_events()
+    eventList = []
+    for eventNum,eventSelect in enumerate(events):
+        if eventNum == 0:#Create event objects
+            firstEvent = Events(select = eventSelect)
+        else:
+            eventList.append(Events(select = eventSelect))
+    #return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
     if request.method == 'GET':
-        return render_template('home/index.html',form=None)
+        return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
     else:
         input_mail = request.form['InputEmail']
         input_password = request.form['InputPassword']
@@ -38,7 +48,6 @@ def home_page():
             statement = """SELECT MAIL FROM USERS WHERE MAIL = %s"""
             cursor.execute(statement, [input_mail])
             db_mail = cursor.fetchone()
-
             if db_mail is not None:  # check whether the user exists
                 user = load_user(db_mail)
                 statement = """SELECT PASSWORD FROM USERS WHERE MAIL = %s"""
@@ -53,16 +62,16 @@ def home_page():
                     return redirect(url_for('site.home_page')) #Couldn't login
             else:
                 return redirect(url_for('site.home_page'))
-        
 
-    
+
+
 
 
 @site.route('/count') #This page meant for test the database, will be deleted after stability updates
 def counter_page():
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
-        
+
         query = "UPDATE COUNTER SET N = N + 1"
         cursor.execute(query)
         connection.commit()
@@ -74,7 +83,7 @@ def counter_page():
 
 
 @site.route('/initdb')
-@login_required
+#@login_required
 def initialize_database():
     user = load_user(current_user.get_id())
     if not user.is_admin :
@@ -210,7 +219,7 @@ def initialize_database():
         SENDDATE TIMESTAMP NOT NULL
         );"""
         cursor.execute(query)
-        
+
         query = """CREATE TABLE DRINKS(
         ID SERIAL PRIMARY KEY,
         NAME VARCHAR(20) NOT NULL,
@@ -233,7 +242,7 @@ def initialize_database():
         );"""
 
         cursor.execute(query)
-        
+
         query = """CREATE TABLE DEALS (
         ID SERIAL PRIMARY KEY,
         FOOD_ID INTEGER NOT NULL,
@@ -252,11 +261,11 @@ def initialize_database():
         STATUS VARCHAR(80) NOT NULL
         );"""
         cursor.execute(query)
-        
+
         connection.commit()
 
         query = """
-               INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR) 
+               INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR)
                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
         hashed_password = pwd_context.encrypt("12345")
@@ -296,7 +305,7 @@ def restaurant_create_page():
         return redirect(url_for('site.restaurant_home_page'))
 
 @site.route('/restaurant/<int:restaurant_id>/')
-@login_required
+#@login_required
 def restaurant_show_page(restaurant_id):
 
     with dbapi2.connect(current_app.config['dsn']) as connection:
@@ -309,7 +318,7 @@ def restaurant_show_page(restaurant_id):
 
 
 @site.route('/restaurant/<int:restaurant_id>/delete')
-@login_required
+#@login_required
 def restaurant_delete_func(restaurant_id):
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
@@ -360,7 +369,13 @@ def food_home_page():
         query = """SELECT * FROM FOODS"""
         cursor.execute(query)
         allValues = cursor.fetchall()
-    return render_template('food/index.html', allValues = allValues)
+        #Fetch all drinks from database
+        drinks = select_all_drinks()
+        drinkList = []
+        for drink in drinks:
+            drinkList.append(Drinks(select = drink))
+
+    return render_template('food/index.html', allValues = allValues,drinks = drinkList)
 
 @site.route('/food/create', methods=['GET','POST'])
 def food_create_page():
@@ -445,59 +460,133 @@ def register_home_page():
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()
                 query = """
-                    INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR) 
+                    INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR)
                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
                 cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate, city,gender,userType,"avatar"))
                 connection.commit()
             return redirect(url_for('site.home_page'))
-        
+
         form = request.form
         return render_template('register/index.html',form=form)
 
 @site.route('/user/12/message')
-@login_required
+#@login_required
 def messages_home_page():
     return render_template('messages/index.html')
 
 @site.route('/user/12/message/new') #Change me with model [ID]
-@login_required
+#@login_required
 def messages_new_page():
     return render_template('messages/new.html')
 
 @site.route('/user/15') #Change me with model [ID]
-@login_required
+#@login_required
 def user_show_page():
     return render_template('user/show.html')
 
 @site.route('/user/15/edit') #Change me with model [ID]
-@login_required
+#@login_required
 def user_edit_page():
     return render_template('user/edit.html')
 
-@site.route('/admin')
-@login_required
+@site.route('/admin',methods = ['GET','POST'])
+#@login_required
 def admin_page():
-    user = load_user(current_user.get_id())
-    if not user.is_admin :
-        abort(401)
-    return render_template('admin/index.html')
+#    user = load_user(current_user.get_id())
+#    if not user.is_admin :
+#        abort(401)
+    if request.method == 'POST':
+        eventIds = request.form.getlist('eventIDs')
+        #delete events which have ids in eventIds list
+        for Id in eventIds:
+            delete_event_by_id(Id)
+            #Fetch all events to list.
+    events = select_all_events()
+    eventDic = {}
+    for event in events:
+        eventDic[event[0]] = event[5]
+    return render_template('admin/index.html',eventDic = eventDic)
 
-@site.route('/event/new')
-@login_required
+@site.route('/event/new',methods = ['GET','POST'])
+#@login_required
 def event_create_page():
-    return render_template('event/new.html')
+    if request.method == 'GET':
+        return render_template('event/new.html',form = None)
+    else:
+        isValid = validate_event_data(request.form)
+        if isValid:
+            #create an object from form and add it to database.
+            event = Events(form = request.form)
+            return redirect(url_for('site.home_page'))
+        form = request.form
+        return render_template('event/new.html',form=form)
+
+@site.route('/event/edit/<int:eventId>',methods = ['GET','POST'])
+def event_edit_page(eventId):
+    #select one element from id
+    event = Events(select = select_event_by_id(eventId))
+    if request.method == 'GET':
+        return render_template('event/edit.html',event = event,form = None)
+    else:
+        form = request.form
+        isValid = validate_event_data(form)
+        if isValid:
+            #Update this object
+            update_event_by_id(form,eventId)
+            #After update take it from database again
+            event = Events(select = select_event_by_id(eventId))
+            return render_template('event/show.html',event = event)
+        else:
+            return render_template('event/edit.html',event = event,form = form)
 
 @site.route('/achievement/new')
-@login_required
+#@login_required
 def achievement_create_page():
     return render_template('achievement/new.html')
 
-@site.route('/event/12')
-@login_required
-def event_show_page():
-        return render_template('event/show.html')
+@site.route('/event/<int:eventId>')
+#@login_required
+def event_show_page(eventId):
+    #select specific event from databse
+    select = select_event_by_id(eventId)
+    event = Events(select = select)
+    return render_template('event/show.html',event = event)
 
+@site.route('/drink/create',methods = ['GET','POST'])
+def drink_create_page():
+    if request.method == 'GET':
+        return render_template('drinks/new.html',form = None)
+    else:
+        valid = validate_drink_data(request.form)
+        if valid:
+            drink = Drinks(request.form)
+            return render_template('drinks/new.html',form = None)
+        form = request.form
+        return render_template('drinks/new.html',form=form)
+
+@site.route('/drink/edit/<int:drinkId>',methods = ['GET','POST'])
+def drink_edit_page(drinkId):
+    #select one element from id
+    drink = Drinks(select = select_drink_by_id(drinkId))
+    if request.method == 'GET':
+        return render_template('drinks/edit.html',drink = drink,form = None)
+    else:
+        form = request.form
+        isValid = validate_drink_data(form)
+        if isValid:
+            #Update this object
+            update_drink_by_id(form,drinkId)
+            #After update take it from database again
+            drink = Drinks(select = select_drink_by_id(drinkId))
+            return redirect(url_for('site.food_home_page'))
+        else:
+            return render_template('drink/drink.html',drink = drink,form = form)
+
+@site.route('/drink/delete/<int:drinkId>')
+def drink_delete_function(drinkId):
+    delete_drink_by_id(drinkId)
+    return redirect(url_for('site.food_home_page'))
 
 def validate_user_data(form):
     if form == None:
@@ -533,4 +622,53 @@ def validate_user_data(form):
 
     return len(form.errors) == 0
 
+def validate_event_data(form):
+    if form == None:
+        return True
+    form.data = {}
+    form.error = {}
 
+    if len(form['Name'].strip()) == 0:
+        form.error['Name'] = 'Name of the event can not be blank'
+    else:
+        form.data['Name'] = form['Name']
+
+    if len(form['Explanations'].strip()) == 0:
+        form.error['Explanations'] = 'Explanations of the event can not be blank'
+    else:
+        form.data['Explanations'] = form['Explanations']
+
+    if len(form['place'].strip()) == 0:
+        form.error['place'] = 'Place of the event can not be blank'
+    else:
+        form.data['place'] = form['place']
+
+    if len(form['startDate'].strip()) == 0:
+        form.error['startDate'] = 'Starting date of the event can not be blank'
+    else:
+        form.data['startDate'] = form['startDate']
+
+    if len(form['endDate'].strip()) == 0:
+        form.error['endDate'] = 'Ending date of the event can not be blank'
+    else:
+        form.data['endDate'] = form['endDate']
+
+    return len(form.error) == 0
+
+def validate_drink_data(form):
+    if form == None:
+        return True
+    form.data = {}
+    form.error = {}
+    print(len(form['Name'].strip()))
+    if len(form['Name'].strip()) == 0:
+        form.error['Name'] = 'Name of the drink can not be blank'
+    else:
+        form.data['Name'] = form['Name']
+
+    if len(form['calorie'].strip()) == 0:
+        form.error['calorie'] = 'Calorie value must be specified'
+    else:
+        form.data['calorie'] = form['calorie']
+
+    return len(form.error) == 0
