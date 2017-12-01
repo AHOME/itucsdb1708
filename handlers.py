@@ -1,7 +1,9 @@
 from flask import Blueprint, render_template , redirect , current_app,url_for
-from flask import request
-from flask_login import LoginManager
+from flask import request,flash
+from flask_login import LoginManager,login_user,login_required
 from passlib.apps import custom_app_context as pwd_context
+
+
 
 import psycopg2 as dbapi2
 
@@ -9,9 +11,42 @@ import psycopg2 as dbapi2
 site = Blueprint('site', __name__)
 
 
-@site.route('/')
+from users import get_user
+from server import load_user
+
+def abort(code):
+    if code == 401:
+        return "You don't have authorize to access this page!"
+
+@site.route('/', methods=['GET', 'POST'])
 def home_page():
-    return render_template('home/index.html')
+    if request.method == 'GET':
+        return render_template('home/index.html',form=None)
+    else:
+        input_mail = request.form['InputEmail']
+        input_password = request.form['InputPassword']
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            statement = """SELECT MAIL FROM USERS WHERE MAIL = %s"""
+            cursor.execute(statement, [input_mail])
+            db_mail = cursor.fetchone()
+
+            if db_mail is not None:  # check whether the user exists
+                user = load_user(db_mail)
+                statement = """SELECT PASSWORD FROM USERS WHERE MAIL = %s"""
+                cursor.execute(statement,[db_mail])
+                if pwd_context.verify(input_password,user.Password) is True:
+                    login_user(user)
+                    flash( user.get_name() + ' ' + user.get_lastname() + ' Logout')
+                    return redirect(url_for('site.home_page'))
+                else:
+                    return redirect(url_for('site.home_page')) #Couldn't login
+            else:
+                return redirect(url_for('site.home_page'))
+        
+
+    
+
 
 @site.route('/count') #This page meant for test the database, will be deleted after stability updates
 def counter_page():
@@ -27,9 +62,12 @@ def counter_page():
         count = cursor.fetchone()[0]
     return "This page was accessed %d times." % count
 
-
 @site.route('/initdb')
+@login_required
 def initialize_database():
+    if not current_user.isAdmin():
+        abort(401)
+
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
 
@@ -203,21 +241,33 @@ def initialize_database():
         cursor.execute(query)
         
         connection.commit()
+
+        query = """
+               INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR) 
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+
+        hashed_password = pwd_context.encrypt("12345")
+        cursor.execute(query, ("admin", "admin", "admin@restoranlandin.com", hashed_password, "10.10.2012", "","",0,"avatar"))
+        connection.commit()
+
         return redirect(url_for('site.home_page'))
 
 @site.route('/restaurant')
 def restaurant_home_page():
     return render_template('restaurant/index.html')
 
+
 @site.route('/restaurant/12') #Change me with model [ID]
 def restaurant_show_page():
     return render_template('restaurant/show.html')
 
 @site.route('/restaurant/12/edit')
+@login_required
 def restaurant_edit_page():
     return render_template('restaurant/edit.html')
 
 @site.route('/user/12/restaurant/new')
+@login_required
 def restaurant_new_page():
     return render_template('restaurant/new.html')
 
@@ -258,34 +308,44 @@ def register_home_page():
         return render_template('register/index.html',form=form)
 
 @site.route('/user/12/message')
+@login_required
 def messages_home_page():
     return render_template('messages/index.html')
 
 @site.route('/user/12/message/new') #Change me with model [ID]
+@login_required
 def messages_new_page():
     return render_template('messages/new.html')
 
 @site.route('/user/15') #Change me with model [ID]
+@login_required
 def user_show_page():
     return render_template('user/show.html')
 
 @site.route('/user/15/edit') #Change me with model [ID]
+@login_required
 def user_edit_page():
     return render_template('user/edit.html')
 
 @site.route('/admin')
+@login_required
 def admin_page():
+    if not current_user.isAdmin():
+        abort(401)
     return render_template('admin/index.html')
 
 @site.route('/event/new')
+@login_required
 def event_create_page():
     return render_template('event/new.html')
 
 @site.route('/achievement/new')
+@login_required
 def achievement_create_page():
     return render_template('achievement/new.html')
 
 @site.route('/event/12')
+@login_required
 def event_show_page():
         return render_template('event/show.html')
 

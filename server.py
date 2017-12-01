@@ -5,12 +5,27 @@ import re
 from flask import Flask
 from flask import Blueprint, render_template
 from flask_login import LoginManager
+from users import get_user
 from handlers import site
+
+
+login_manager = LoginManager()
+
+@login_manager.user_loader
+def load_user( db_mail ):
+    return get_user(db_mail)
+
+@login_manager.request_loader
+def request_loader(request):
+    return get_user(request.form['InputEmail'])
+     
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object('settings')
     app.register_blueprint(site)
+    login_manager.init_app(app)
+    #login_manager.login_view = 'site.home_page'
     return app
 
 
