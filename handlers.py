@@ -1,7 +1,10 @@
 from flask import Blueprint, render_template , redirect , current_app,url_for
-from flask import request
-from flask_login import LoginManager
+from flask import request,flash,session
+from flask_login import LoginManager,login_user,login_required,current_user
+from flask_login import logout_user
 from passlib.apps import custom_app_context as pwd_context
+
+
 
 import psycopg2 as dbapi2
 
@@ -9,9 +12,51 @@ import psycopg2 as dbapi2
 site = Blueprint('site', __name__)
 
 
-@site.route('/')
+from users import get_user
+from server import load_user
+
+def abort(code):
+    if code == 401:
+        return "You don't have authorize to access this page!"
+
+@site.route('/logout')
+def logout_page():
+    logout_user()
+    session['logged_in'] = False
+    session['name'] = ''
+    return redirect(url_for('site.home_page'))
+
+@site.route('/', methods=['GET', 'POST'])
 def home_page():
-    return render_template('home/index.html')
+    if request.method == 'GET':
+        return render_template('home/index.html',form=None)
+    else:
+        input_mail = request.form['InputEmail']
+        input_password = request.form['InputPassword']
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            statement = """SELECT MAIL FROM USERS WHERE MAIL = %s"""
+            cursor.execute(statement, [input_mail])
+            db_mail = cursor.fetchone()
+
+            if db_mail is not None:  # check whether the user exists
+                user = load_user(db_mail)
+                statement = """SELECT PASSWORD FROM USERS WHERE MAIL = %s"""
+                cursor.execute(statement,[db_mail])
+                if pwd_context.verify(input_password,user.Password) is True:
+                    login_user(user)
+                    session['logged_in'] = True
+                    session['name'] = user.get_name() + ' ' + user.get_lastname()
+                    flash( current_user.get_mail())
+                    return redirect(url_for('site.home_page'))
+                else:
+                    return redirect(url_for('site.home_page')) #Couldn't login
+            else:
+                return redirect(url_for('site.home_page'))
+
+
+
+
 
 @site.route('/count') #This page meant for test the database, will be deleted after stability updates
 def counter_page():
@@ -29,7 +74,12 @@ def counter_page():
 
 
 @site.route('/initdb')
+@login_required
 def initialize_database():
+    user = load_user(current_user.get_id())
+    if not user.is_admin :
+        abort(401)
+
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
 
@@ -125,7 +175,7 @@ def initialize_database():
         query = """CREATE TABLE RESTAURANTS (
            ID SERIAL PRIMARY KEY,
            NAME VARCHAR(80) NOT NULL,
-           ADDRESS VARCHAR(150) NOT NULL,
+           ADDRESS VARCHAR(255) NOT NULL,
            CONTACT_NAME VARCHAR(80) NOT NULL,
            CONTACT_PHONE VARCHAR(80) NOT NULL,
            SCORE INTEGER NOT NULL DEFAULT 0 CHECK( SCORE >= 0 AND SCORE <= 5),
@@ -204,6 +254,15 @@ def initialize_database():
         cursor.execute(query)
 
         connection.commit()
+
+        query = """
+               INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR)
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+
+        hashed_password = pwd_context.encrypt("12345")
+        cursor.execute(query, ("admin", "admin", "admin@restoranlandin.com", hashed_password, "10.10.2012", "","",0,"avatar"))
+        connection.commit()
+
         return redirect(url_for('site.home_page'))
 
 @site.route('/restaurants')
@@ -246,6 +305,7 @@ def submit_comment():
 
 
 @site.route('/restaurant/<int:restaurant_id>/')
+@login_required
 def restaurant_show_page(restaurant_id):
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
@@ -256,6 +316,7 @@ def restaurant_show_page(restaurant_id):
     return render_template('restaurant/show.html', sendedValue = sendedValue)
 
 @site.route('/restaurant/<int:restaurant_id>/delete')
+@login_required
 def restaurant_delete_func(restaurant_id):
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
@@ -299,6 +360,72 @@ def restaurant_edit_page(restaurant_id):
     return render_template('restaurant/edit.html', form = form , address = address, name = name, contactName = contactName, contactPhone = contactPhone, pp = pp, hours = hours, currentStatus = currentStatus)
 
 
+@site.route('/foods')
+def food_home_page():
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        query = """SELECT * FROM FOODS"""
+        cursor.execute(query)
+        allValues = cursor.fetchall()
+    return render_template('food/index.html', allValues = allValues)
+
+@site.route('/food/create', methods=['GET','POST'])
+def food_create_page():
+    if request.method == 'GET':
+        return render_template('food/new.html')
+    else:
+        nameInput = request.form['name']
+        iconInput = request.form['icon']
+        typeNameInput = request.form['type']
+        priceInput = request.form['price']
+        calorieInput = request.form['calorie']
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """
+                INSERT INTO FOODS (NAME, ICON, FOOD_TYPE, PRICE, CALORIE)
+                VALUES (%s,%s,%s,%s,%s)"""
+            cursor.execute(query, [nameInput, iconInput, typeNameInput, priceInput, calorieInput])
+            connection.commit()
+        return redirect(url_for('site.food_home_page'))
+
+@site.route('/food/<int:food_id>/delete')
+def food_delete_func(food_id):
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        query = """DELETE FROM FOODS WHERE ID = %s"""
+        cursor.execute(query, [food_id])
+        connection.commit()
+    return redirect(url_for('site.food_home_page'))
+
+@site.route('/food/<int:food_id>/edit', methods=['GET','POST'])
+def food_edit_page(food_id):
+    if request.method == 'GET':
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """SELECT * FROM FOODS WHERE id = %s"""
+            cursor.execute(query, [food_id])
+            value = cursor.fetchall()
+            name = value[0][1]
+            icon = value[0][2]
+            food_type = value[0][3]
+            price = value[0][4]
+            calorie = value[0][5]
+    else:
+        nameInput = request.form['name']
+        iconInput = request.form['icon']
+        typeNameInput = request.form['type']
+        priceInput = request.form['price']
+        calorieInput = request.form['calorie']
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """UPDATE FOODS SET NAME = %s, ICON = %s, FOOD_TYPE = %s, PRICE = %s, CALORIE = %s WHERE ID = %s"""
+            cursor.execute(query, [nameInput, iconInput, typeNameInput, priceInput, calorieInput, food_id])
+            connection.commit()
+        return redirect(url_for('site.food_home_page'))
+
+    form = request.form
+    return render_template('food/edit.html', form = form, name = name, icon = icon, food_type = food_type, price = price, calorie = calorie)
+
 @site.route('/register', methods=['GET','POST'])
 def register_home_page():
     if request.method == 'GET':
@@ -336,34 +463,45 @@ def register_home_page():
         return render_template('register/index.html',form=form)
 
 @site.route('/user/12/message')
+@login_required
 def messages_home_page():
     return render_template('messages/index.html')
 
 @site.route('/user/12/message/new') #Change me with model [ID]
+@login_required
 def messages_new_page():
     return render_template('messages/new.html')
 
 @site.route('/user/15') #Change me with model [ID]
+@login_required
 def user_show_page():
     return render_template('user/show.html')
 
 @site.route('/user/15/edit') #Change me with model [ID]
+@login_required
 def user_edit_page():
     return render_template('user/edit.html')
 
 @site.route('/admin')
+@login_required
 def admin_page():
+    user = load_user(current_user.get_id())
+    if not user.is_admin :
+        abort(401)
     return render_template('admin/index.html')
 
 @site.route('/event/new')
+@login_required
 def event_create_page():
     return render_template('event/new.html')
 
 @site.route('/achievement/new')
+@login_required
 def achievement_create_page():
     return render_template('achievement/new.html')
 
 @site.route('/event/12')
+@login_required
 def event_show_page():
         return render_template('event/show.html')
 
