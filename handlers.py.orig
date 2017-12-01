@@ -62,7 +62,7 @@ def home_page():
 def counter_page():
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
-        
+
         query = "UPDATE COUNTER SET N = N + 1"
         cursor.execute(query)
         connection.commit()
@@ -71,7 +71,6 @@ def counter_page():
         cursor.execute(query)
         count = cursor.fetchone()[0]
     return "This page was accessed %d times." % count
-
 
 @site.route('/initdb')
 @login_required
@@ -210,7 +209,7 @@ def initialize_database():
         SENDDATE TIMESTAMP NOT NULL
         );"""
         cursor.execute(query)
-        
+
         query = """CREATE TABLE DRINKS(
         ID SERIAL PRIMARY KEY,
         NAME VARCHAR(20) NOT NULL,
@@ -233,7 +232,7 @@ def initialize_database():
         );"""
 
         cursor.execute(query)
-        
+
         query = """CREATE TABLE DEALS (
         ID SERIAL PRIMARY KEY,
         FOOD_ID INTEGER NOT NULL,
@@ -252,7 +251,7 @@ def initialize_database():
         STATUS VARCHAR(80) NOT NULL
         );"""
         cursor.execute(query)
-        
+
         connection.commit()
 
         query = """
@@ -296,9 +295,8 @@ def restaurant_create_page():
         return redirect(url_for('site.restaurant_home_page'))
 
 @site.route('/restaurant/<int:restaurant_id>/')
-@login_required
 def restaurant_show_page(restaurant_id):
-
+    print("sa")
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
         query = """SELECT * FROM RESTAURANTS WHERE id = %s"""
@@ -309,7 +307,6 @@ def restaurant_show_page(restaurant_id):
 
 
 @site.route('/restaurant/<int:restaurant_id>/delete')
-@login_required
 def restaurant_delete_func(restaurant_id):
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
@@ -318,6 +315,22 @@ def restaurant_delete_func(restaurant_id):
         connection.commit()
     return redirect(url_for('site.restaurant_home_page'))
 
+<<<<<<< HEAD
+
+@site.route('/restaurant/12') #Change me with model [ID]
+def restaurant_show_page():
+    return render_template('restaurant/show.html')
+
+@site.route('/restaurant/12/edit')
+@login_required
+def restaurant_edit_page():
+    return render_template('restaurant/edit.html')
+
+@site.route('/user/12/restaurant/new')
+@login_required
+def restaurant_new_page():
+    return render_template('restaurant/new.html')
+=======
 @site.route('/restaurant/<int:restaurant_id>/edit', methods=['GET','POST'])
 def restaurant_edit_page(restaurant_id):
     if request.method == 'GET':
@@ -418,6 +431,7 @@ def food_edit_page(food_id):
 
     form = request.form
     return render_template('food/edit.html', form = form, name = name, icon = icon, food_type = food_type, price = price, calorie = calorie)
+>>>>>>> master
 
 @site.route('/register', methods=['GET','POST'])
 def register_home_page():
@@ -445,13 +459,13 @@ def register_home_page():
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()
                 query = """
-                    INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR) 
+                    INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR)
                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
                 cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate, city,gender,userType,"avatar"))
                 connection.commit()
             return redirect(url_for('site.home_page'))
-        
+
         form = request.form
         return render_template('register/index.html',form=form)
 
@@ -532,5 +546,3 @@ def validate_user_data(form):
         form.data['terms'] = form['terms']
 
     return len(form.errors) == 0
-
-
