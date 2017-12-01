@@ -30,7 +30,7 @@ def main():
     if VCAP_APP_PORT is not None:
         port, debug = int(VCAP_APP_PORT), False
     else:
-        port,debug = 5000, True  
+        port,debug = 5000, True
 
     VCAP_SERVICES = os.getenv('VCAP_SERVICES')
     if VCAP_SERVICES is not None:
