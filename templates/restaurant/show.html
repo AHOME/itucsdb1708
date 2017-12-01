@@ -104,7 +104,36 @@
   </div>
   </div>
   </div>
+  <hr>
+  <hr>
+  <div class="text-center">
+    <div class="comment">
+      <div class="h3">
+        <p>ahmet</p>
+      </div>
+      <div class="jumbotron text-center">
+        <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+      </div>
+    </div>
 
-</div>
-
+    <div class="comment">
+      <div class="h3">
+        <p>ahmet</p>
+      </div>
+      <div class="jumbotron text-center">
+        <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <form class="form-horizontal" action="/submit_comment"  method="POST" role="form" name="restaurant_create">
+      <label for="comment">Comment:</label>
+      <input type="hidden" name="restaurant_id" value={{sendedValue[0]}}>
+      <textarea class="form-control" rows="5" id="comment" name="comment"></textarea>
+      <br>
+      <div class="col-md-8 text-right">
+        <button type="submit" class="btn btn-success">Save</button>
+      </div>
+    </form>
+  </div>
 {% endblock %}

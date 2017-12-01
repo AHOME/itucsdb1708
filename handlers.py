@@ -215,9 +215,6 @@ def restaurant_home_page():
         allValues = cursor.fetchall()
     return render_template('restaurant/index.html', allValues = allValues)
 
-
-
-
 @site.route('/restaurant/create', methods=['GET','POST'])
 def restaurant_create_page():
     if request.method == 'GET':
@@ -239,9 +236,17 @@ def restaurant_create_page():
             connection.commit()
         return redirect(url_for('site.restaurant_home_page'))
 
+
+@site.route('/submit_comment', methods=['POST'])
+def submit_comment():
+  restaurant_id = request.form['restaurant_id']
+  comment = request.form['comment']
+  # YOU GOTTA CREATE THE USER OVER WHERE
+  return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
+
+
 @site.route('/restaurant/<int:restaurant_id>/')
 def restaurant_show_page(restaurant_id):
-    print("sa")
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
         query = """SELECT * FROM RESTAURANTS WHERE id = %s"""
@@ -249,7 +254,6 @@ def restaurant_show_page(restaurant_id):
         value = cursor.fetchall()
         sendedValue = value[0]
     return render_template('restaurant/show.html', sendedValue = sendedValue)
-
 
 @site.route('/restaurant/<int:restaurant_id>/delete')
 def restaurant_delete_func(restaurant_id):
