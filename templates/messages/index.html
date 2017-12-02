@@ -47,7 +47,7 @@
 
             
             <div class="btn-panel">
-                <a href="{{ url_for('site.messages_new_page') }}" class=" col-lg-4 text-right btn   send-message-btn pull-right" role="button"><i class="fa fa-plus"></i> Send New Message</a>
+                <a href="{{ url_for('site.messages_new_page',user_id = session['id']) }}" class=" col-lg-4 text-right btn   send-message-btn pull-right" role="button"><i class="fa fa-plus"></i> Send New Message</a>
             </div>
         </div>
     </div>

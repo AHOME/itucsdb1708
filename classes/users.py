@@ -50,12 +50,12 @@ class Users(UserMixin):
         return self.Id
 
 def get_user(db_mail):
-    if db_mail == 1:
+    if type(db_mail) is int:
         return None
 
     if db_mail in current_app.config['ADMIN_USERS']:
         user = Users(1,'admin','admin','admin@restoranlandin.com',current_app.config['PASSWORD'], '10.10.2012', '', '',0, 'avatar')
-
+        return user
 
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()

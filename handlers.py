@@ -39,7 +39,7 @@ def home_page():
             login_user(user)
             session['logged_in'] = True
             session['name'] = user.get_name() + ' ' + user.get_lastname()
-            session['id'] = user.getId()
+            session['id'] = user.get_Id()
             flash( current_user.get_mail())
             return redirect(url_for('site.home_page'))
             
@@ -50,14 +50,14 @@ def home_page():
             db_mail = cursor.fetchone()
 
             if db_mail is not None:  # check whether the user exists
-                user = load_user(db_mail)
+                user = load_user(db_mail.get_mail())
                 statement = """SELECT PASSWORD FROM USERS WHERE MAIL = %s"""
                 cursor.execute(statement,[db_mail])
                 if pwd_context.verify(input_password,user.Password) is True:
                     login_user(user)
                     session['logged_in'] = True
                     session['name'] = user.get_name() + ' ' + user.get_lastname()
-                    session['id'] = user.getId()
+                    session['id'] = user.get_Id()
                     flash( current_user.get_mail())
                     return redirect(url_for('site.home_page'))
                 else:
@@ -468,14 +468,14 @@ def register_home_page():
         form = request.form
         return render_template('register/index.html',form=form)
 
-@site.route('/user/15/messages')
+@site.route('/user/<int:user_id>/messages')
 @login_required
-def messages_home_page():
+def messages_home_page(user_id):
     return render_template('messages/index.html')
 
-@site.route('/user/15/messages/new') #Change me with model [ID]
+@site.route('/user/<int:user_id>/messages/new') 
 @login_required
-def messages_new_page():
+def messages_new_page(user_id):
     return render_template('messages/new.html')
 
 @site.route('/user/15') #Change me with model [ID]

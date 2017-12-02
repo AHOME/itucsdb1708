@@ -14,7 +14,6 @@ login_manager = LoginManager()
 
 @login_manager.user_loader
 def load_user( db_mail ):
-    
     return get_user(db_mail)
      
 

@@ -7,21 +7,21 @@
 {% block content %}
 
 
-<form method="POST" class="w3-container w3-card-4 w3-light-grey w3-text-red w3-margin" style="width: 50%; max-height: 4000px; float: left; position: relative;
+<form method="POST" action ={{url_for('site.messages_home_page', user_id= session['id'])}} class="w3-container w3-card-4 w3-light-grey w3-text-red w3-margin" style="width: 50%; max-height: 4000px; float: left; position: relative;
 left: 25%  " >
 <h2 class="w3-center">Send Message</h2>
  
 <div class="w3-row w3-section">
   <div class="w3-col" style="width:25%"><i class="w3-xxlarge fa fa-user"></i></div>
     <div class="w3-rest">
-      <input class="w3-input w3-border" name="first" type="text" placeholder="To">
+      <input class="w3-input w3-border" name="message_target" type="text" placeholder="To">
     </div>
 </div>
 
 <div class="w3-row w3-section">
   <div class="w3-col" style="width:25%"><i class="w3-xxlarge fa fa-info-circle"></i></div>
     <div class="w3-rest">
-      <input class="w3-input w3-border" name="last" type="text" placeholder="Topic">
+      <input class="w3-input w3-border" name="message_topic" type="text" placeholder="Topic">
     </div>
 </div>
 
@@ -29,7 +29,7 @@ left: 25%  " >
 <div class="w3-row w3-section">
   <div class="w3-col " style="width:25%"><i class="w3-xxlarge fa fa-envelope"></i></div>
     <div class="w3-rest">
-      <textarea class="form-control send-message" rows="5" placeholder="Write a message..."></textarea>
+      <textarea name=message_body class="form-control send-message" rows="5" placeholder="Write a message..."></textarea>
     </div>
 </div>
 
