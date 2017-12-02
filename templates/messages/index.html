@@ -7,50 +7,68 @@
 
 <div class="container">
    {% if messages %}
+
+   
     <div class="row">
-        <div class="message-wrap col-lg-8" id="msg-wrap">
-            <div class="msg-wrap " id="message_1" >
-                <div class="media msg">
-                    <a class="pull-left" >
-                        <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 32px; height: 32px;" src="">
-                    </a>
-                    <div class="media-body">
-                        <small class="pull-right time"><i class="fa fa-clock-o"></i> 12:10am</small>
-                        <h5 class="media-heading">Lorem ipsum</h5>
-                        <small class="col-lg-10">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse iaculis ullamcorper justo. Suspendisse placerat erat sit amet nisl viverra tincidunt. Nulla vel urna quis ante faucibus tristique eget nec tellus. Donec a nisi porttitor, pellentesque augue et, malesuada odio. Ut vitae nunc ullamcorper, hendrerit velit eu, egestas nisl. Maecenas at elit ex. Integer neque ex, viverra in bibendum vel, congue vitae ex. Nunc ac turpis erat. Nulla ac mauris vulputate, ornare nibh a, porta velit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Suspendisse potenti. Aenean gravida est nec mauris tristique, a blandit risus pellentesque.
+        
+        <div class="col-md-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-comment"></span> Chat
+                <div class="panel-body">
+                    <ul class="chat">
+                        {% for message in messages%}
+                        
 
-                        </small>
-                    </div>
+                        <li class="left clearfix"><span class="chat-img pull-left">
+                            <img src="http://placehold.it/50/55C1E7/fff&text=U" alt="User Avatar" class="img-circle" />
+                        </span>
+                            <div class="chat-body clearfix">
+                                <div class="header">
+                                    <strong class="primary-font"> {{message[2]}} </strong> <small class="pull-right text-muted">
+                                        <span class="glyphicon glyphicon-time"></span>12 mins ago</small>
+                                </div>
+                                <p>
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare
+                                    dolor, quis ullamcorper ligula sodales.
+                                </p>
+                            </div>
+                        </li>
+                        
+                        <!--
+                        <li class="right clearfix"><span class="chat-img pull-right">
+                            <img src="http://placehold.it/50/FA6F57/fff&text=ME" alt="User Avatar" class="img-circle" />
+                        </span>
+                            <div class="chat-body clearfix">
+                                <div class="header">
+                                    <small class=" text-muted"><span class="glyphicon glyphicon-time"></span>15 mins ago</small>
+                                    <strong class="pull-right primary-font">Bhaumik Patel</strong>
+                                </div>
+                                <p>
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare
+                                    dolor, quis ullamcorper ligula sodales.
+                                </p>
+                            </div>
+                        </li> !-->
+
+                         {% endfor%}
+                    </ul>
+                   
                 </div>
-                
-
-            </div>
-            
-           <div class="message-wrap col-lg-12" id="msg-wrap">
-            <div class="msg-wrap " id="message_2" >
-                <div class="media msg">
-                    <a class="pull-left" >
-                        <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 32px; height: 32px;" src="">
-                    </a>
-                    <div class="media-body">
-                        <small class="pull-right time"><i class="fa fa-clock-o"></i> 12:10am</small>
-                        <h5 class="media-heading">Lorem ipsum</h5>
-                        <small class="col-lg-10">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse iaculis ullamcorper justo. Suspendisse placerat erat sit amet nisl viverra tincidunt. Nulla vel urna quis ante faucibus tristique eget nec tellus. Donec a nisi porttitor, pellentesque augue et, malesuada odio. Ut vitae nunc ullamcorper, hendrerit velit eu, egestas nisl. Maecenas at elit ex. Integer neque ex, viverra in bibendum vel, congue vitae ex. Nunc ac turpis erat. Nulla ac mauris vulputate, ornare nibh a, porta velit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Suspendisse potenti. Aenean gravida est nec mauris tristique, a blandit risus pellentesque.
-
-                        </small>
-                    </div>
-                </div>
-                
-
-            </div>
-            
-
-            
-            <div class="btn-panel">
-                <a href="{{ url_for('site.messages_new_page',user_id = session['id']) }}" class=" col-lg-4 text-right btn   send-message-btn pull-right" role="button"><i class="fa fa-plus"></i> Send New Message</a>
             </div>
         </div>
+
     </div>
+
+        
+            
+            <div class="btn-panel" style="font-size: 18px; max-width:500px; margin: auto; margin-top: 10%">  
+                <a href="{{ url_for('site.messages_new_page',user_id = session['id']) }}">
+                <button type="submit" formaction="" class="btn btn-danger btn-block">Send New Message</button></a>
+                
+            </div>
+
+        
     {% else %}
 
     <p style="max-width: 200px; margin: auto; margin-top: 2%; font-size: medium; font-weight: bold"> You have no messages! </p>
