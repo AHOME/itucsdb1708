@@ -1,9 +1,10 @@
 from flask import Blueprint, render_template , redirect , current_app,url_for
 from flask import request,flash,session
+from datetime import datetime
 from flask_login import LoginManager,login_user,login_required,current_user
 from flask_login import logout_user
 from passlib.apps import custom_app_context as pwd_context
-
+from classes.messages_controller import *
 
 
 import psycopg2 as dbapi2
@@ -206,18 +207,16 @@ def initialize_database():
         CITY VARCHAR(80) NOT NULL,
         GENDER VARCHAR(20),
         USERTYPE INTEGER NOT NULL,
-
-
         AVATAR VARCHAR(255)
         );"""
         cursor.execute(query)
 
         query = """CREATE TABLE MESSAGES (
         ID SERIAL PRIMARY KEY,
-        SENDER INTEGER NOT NULL,
-        RECEIVER INTEGER NOT NULL,
+        SENDER INTEGER REFERENCES USERS(ID) NOT NULL,
+        RECEIVER INTEGER REFERENCES USERS(ID) NOT NULL,
         TOPIC VARCHAR(80) NOT NULL,
-        CONTENT VARCHAR(80) NOT NULL,
+        CONTENT VARCHAR(800) NOT NULL,
         SENDDATE TIMESTAMP NOT NULL
         );"""
         cursor.execute(query)
@@ -471,12 +470,22 @@ def register_home_page():
 @site.route('/user/<int:user_id>/messages')
 @login_required
 def messages_home_page(user_id):
-    return render_template('messages/index.html')
+    all_messages = select_all_messages(user_id)
+    return render_template('messages/index.html',messages = all_messages)
 
-@site.route('/user/<int:user_id>/messages/new') 
+@site.route('/user/<int:user_id>/messages/new',methods=['GET','POST']) 
 @login_required
 def messages_new_page(user_id):
-    return render_template('messages/new.html')
+    if request.method == 'GET':
+        return render_template('messages/new.html')
+    else:
+        receiver = request.form['message_target']
+        sender = session['id']
+        topic = request.form['message_topic']
+        body = request.form['message_body']
+        time = datetime.now()
+        
+        return redirect(url_for('site.messages_home_page'))
 
 @site.route('/user/15') #Change me with model [ID]
 @login_required
