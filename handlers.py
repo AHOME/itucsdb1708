@@ -24,6 +24,7 @@ def logout_page():
     logout_user()
     session['logged_in'] = False
     session['name'] = ''
+    session['id'] = 0
     return redirect(url_for('site.home_page'))
 
 @site.route('/', methods=['GET', 'POST'])
@@ -38,6 +39,7 @@ def home_page():
             login_user(user)
             session['logged_in'] = True
             session['name'] = user.get_name() + ' ' + user.get_lastname()
+            session['id'] = user.getId()
             flash( current_user.get_mail())
             return redirect(url_for('site.home_page'))
             
@@ -55,6 +57,7 @@ def home_page():
                     login_user(user)
                     session['logged_in'] = True
                     session['name'] = user.get_name() + ' ' + user.get_lastname()
+                    session['id'] = user.getId()
                     flash( current_user.get_mail())
                     return redirect(url_for('site.home_page'))
                 else:
@@ -465,12 +468,12 @@ def register_home_page():
         form = request.form
         return render_template('register/index.html',form=form)
 
-@site.route('/user/12/message')
+@site.route('/user/15/messages')
 @login_required
 def messages_home_page():
     return render_template('messages/index.html')
 
-@site.route('/user/12/message/new') #Change me with model [ID]
+@site.route('/user/15/messages/new') #Change me with model [ID]
 @login_required
 def messages_new_page():
     return render_template('messages/new.html')
