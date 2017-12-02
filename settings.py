@@ -5,3 +5,4 @@ WTF_CSRF_ENABLED = True
 
 
 ADMIN_USERS = ['admin@restoranlandin.com']
+PASSWORD = ['$6$rounds=656000$Pspnh7hoPkZQC0/6$xkRuWFC61ZKV8UAS0ocT.MN77BQFw4yth3s2Skkv6jAOCaJRxmI8tGaGMS3JfM34MSeu1TUZ/acNIFRMVnepL0']

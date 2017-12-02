@@ -33,6 +33,14 @@ def home_page():
     else:
         input_mail = request.form['InputEmail']
         input_password = request.form['InputPassword']
+        if input_mail in current_app.config['ADMIN_USERS'] and pwd_context.verify(input_password,current_app.config['PASSWORD'][0]) is True:
+            user= load_user(input_mail)
+            login_user(user)
+            session['logged_in'] = True
+            session['name'] = user.get_name() + ' ' + user.get_lastname()
+            flash( current_user.get_mail())
+            return redirect(url_for('site.home_page'))
+            
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             statement = """SELECT MAIL FROM USERS WHERE MAIL = %s"""
@@ -252,7 +260,6 @@ def initialize_database():
         STATUS VARCHAR(80) NOT NULL
         );"""
         cursor.execute(query)
-        
         connection.commit()
 
         query = """
@@ -262,6 +269,9 @@ def initialize_database():
         hashed_password = pwd_context.encrypt("12345")
         cursor.execute(query, ("admin", "admin", "admin@restoranlandin.com", hashed_password, "10.10.2012", "","",0,"avatar"))
         connection.commit()
+
+
+       
 
         return redirect(url_for('site.home_page'))
 
