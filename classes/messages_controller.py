@@ -1,5 +1,6 @@
 import psycopg2 as dbapi2
 from flask import current_app
+from flask import request,flash,session
 
 def select_all_messages(user_id):
 
@@ -18,29 +19,32 @@ def validate_message_data(form):
     form.data = {}
     form.errors = {}
 
-    if len(form['firstName'].strip()) == 0:
-        form.errors['firstName'] = 'Name can not be blank'
-    else:
-        form.data['firstName'] = form['firstName']
+    receiver = request.form['message_target']
+    sender = session['id']
+    topic = request.form['message_topic']
+    body = request.form['message_body']
 
-    if len(form['email'].strip()) == 0:
-        form.errors['email'] = 'Email can not be blank'
+    if len(body) == 0:
+        form.errors['body'] = 'Message body can not be empty!'
     else:
-        form.data['email'] = form['email']
+        form.data['body'] = body
 
-    if len(form['birthDate'].strip()) == 0:
-        form.errors['birthDate'] = 'Birthdate can not be blank'
+    if len(topic) == 0:
+        form.errors['message_topic'] = 'Topic body can not be empty!'
     else:
-        form.data['birthDate'] = form['birthDate']
+        form.data['message_topic'] = topic
 
-    if not form['userType']:
-        form.errors['userType'] = 'User type can not be blank'
+    if len(receiver) == 0:
+        form.errors['message_target'] = 'Target  user can not be blank'
     else:
-        form.data['userType'] = form['userType']
-
-    if form['terms'] == 0:
-        form.errors['terms'] = 'You should accept the terms'
-    else:
-        form.data['terms'] = form['terms']
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                statement = """SELECT ID FROM USERS WHERE MAIL = %s"""
+                cursor.execute(statement,[receiver])
+                receiver_id = cursor.fetchone()
+        if receiver_id is None:
+            form.errors['message_target'] = 'Target mail is not valid.'
+        else:
+            form.data['message_target'] = receiver_id
 
     return len(form.errors) == 0

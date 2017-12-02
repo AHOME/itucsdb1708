@@ -484,8 +484,26 @@ def messages_new_page(user_id):
         topic = request.form['message_topic']
         body = request.form['message_body']
         time = datetime.now()
-        
-        return redirect(url_for('site.messages_home_page'))
+        form = request.form
+        valid = validate_message_data(form)
+        if valid:
+            with dbapi2.connect(current_app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                statement = """SELECT ID FROM USERS WHERE MAIL = %s"""
+                cursor.execute(statement,[receiver])
+                receiver_id = cursor.fetchone()
+                
+            with dbapi2.connect(current_app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """
+                    INSERT INTO MESSAGES (SENDER,RECEIVER,TOPIC,CONTENT,SENDDATE) 
+                    VALUES (%s,%s,%s,%s,%s)"""
+
+                cursor.execute(query, (sender,receiver_id,topic,body,time))
+                connection.commit()
+            return redirect(url_for('site.messages_home_page',user_id=sender))
+        else:
+            return  render_template('messages/new.html',form=form)
 
 @site.route('/user/15') #Change me with model [ID]
 @login_required
