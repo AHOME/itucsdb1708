@@ -477,7 +477,7 @@ def messages_home_page(user_id):
 @login_required
 def messages_new_page(user_id):
     if request.method == 'GET':
-        return render_template('messages/new.html')
+        return render_template('messages/new.html',form=None)
     else:
         receiver = request.form['message_target']
         sender = session['id']
@@ -492,7 +492,7 @@ def messages_new_page(user_id):
                 statement = """SELECT ID FROM USERS WHERE MAIL = %s"""
                 cursor.execute(statement,[receiver])
                 receiver_id = cursor.fetchone()
-                
+
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()
                 query = """

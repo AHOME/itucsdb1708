@@ -25,9 +25,9 @@ def validate_message_data(form):
     body = request.form['message_body']
 
     if len(body) == 0:
-        form.errors['body'] = 'Message body can not be empty!'
+        form.errors['message_body'] = 'Message body can not be empty!'
     else:
-        form.data['body'] = body
+        form.data['message_body'] = body
 
     if len(topic) == 0:
         form.errors['message_topic'] = 'Topic body can not be empty!'
