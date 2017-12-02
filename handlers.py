@@ -547,7 +547,6 @@ def temp_page():
 
     else:
         achievement_ids = request.form.getlist('achievement_ids')
-        print(achievement_ids)
         query = """DELETE FROM ACHIEVEMENTS WHERE ID = %s"""
 
         for ach_id in achievement_ids:
@@ -557,6 +556,30 @@ def temp_page():
                 connection.commit()
 
         return redirect(url_for('site.temp_page'))
+
+@site.route('/achievement/<int:achievement_id>', methods=['GET','POST'])
+def achievement_show_page(achievement_id):
+    if request.method == 'GET':
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            statement = """SELECT * FROM ACHIEVEMENTS WHERE (ID = %s)"""
+            cursor.execute(statement,[achievement_id])
+            select = cursor.fetchone()
+            achievement = Achievements(select=select)
+            return render_template('show.html',achievement = achievement, form=None)
+    else:
+        name = request.form['Name']
+        content = request.form['Explanation']
+        goal = request.form['Goal']
+        endDate = request.form['endDate']
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            statement = """UPDATE ACHIEVEMENTS SET NAME=%s, CONTENT=%s, GOAL=%s, ENDDATE=%s  WHERE (ID = %s)"""
+            cursor.execute(statement,[name, content, goal, endDate, achievement_id])
+            connection.commit()
+            return redirect(url_for('site.temp_page'))
+            #select = cursor.fetchone()
+            #achievement = Achievements(select=select)
 
 @site.route('/event/new')
 #@login_required
