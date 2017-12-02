@@ -10,40 +10,43 @@ def select_all_messages(user_id):
         cursor.execute(statement,(user_id,user_id))
         messages = cursor.fetchall()
         
-    for message in messages:
+    for i in range(len(messages)):
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             statement = """SELECT FIRSTNAME FROM USERS WHERE ID = (SELECT SENDER FROM MESSAGES WHERE ID = %s)"""
-            cursor.execute(statement,[message[0]])
+            cursor.execute(statement,[ messages[i][0]])
             sender_name =  (cursor.fetchone())[0]
+
 
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             statement = """SELECT LASTNAME FROM USERS WHERE ID = (SELECT SENDER FROM MESSAGES WHERE ID = %s)"""
-            cursor.execute(statement,[message[0]])
+            cursor.execute(statement,[messages[i][0]])
             sender_name += " " + (cursor.fetchone())[0]
 
-        message = list(message)
-        message[1] = sender_name
-        message = tuple(message)
+
+        messages[i] = list(messages[i])
+        messages[i][1] = sender_name
+        messages[i] = tuple(messages[i])
 
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             statement = """SELECT FIRSTNAME FROM USERS WHERE ID = (SELECT RECEIVER FROM MESSAGES WHERE ID = %s)"""
-            cursor.execute(statement,[message[0]])
+            cursor.execute(statement,[messages[i][0]])
             receiver_name = (cursor.fetchone())[0]
 
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             statement = """SELECT LASTNAME FROM USERS WHERE ID = (SELECT RECEIVER FROM MESSAGES WHERE ID = %s)"""
-            cursor.execute(statement,[message[0]])
+            cursor.execute(statement,[messages[i][0]])
             receiver_name += " " + (cursor.fetchone())[0]
 
-        message = list(message)
-        message[2] = receiver_name
-        message = tuple(message)
-        
-        return messages
+        messages[i] = list(messages[i])
+        messages[i][2] = receiver_name
+        messages[i] = tuple(messages[i])
+
+    print(messages)    
+    return messages
 
 def validate_message_data(form):
     if form == None:
