@@ -10,6 +10,39 @@ def select_all_messages(user_id):
         cursor.execute(statement,(user_id,user_id))
         messages = cursor.fetchall()
         
+    for message in messages:
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            statement = """SELECT FIRSTNAME FROM USERS WHERE ID = (SELECT SENDER FROM MESSAGES WHERE ID = %s)"""
+            cursor.execute(statement,[message[0]])
+            sender_name =  (cursor.fetchone())[0]
+
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            statement = """SELECT LASTNAME FROM USERS WHERE ID = (SELECT SENDER FROM MESSAGES WHERE ID = %s)"""
+            cursor.execute(statement,[message[0]])
+            sender_name += " " + (cursor.fetchone())[0]
+
+        message = list(message)
+        message[1] = sender_name
+        message = tuple(message)
+
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            statement = """SELECT FIRSTNAME FROM USERS WHERE ID = (SELECT RECEIVER FROM MESSAGES WHERE ID = %s)"""
+            cursor.execute(statement,[message[0]])
+            receiver_name = (cursor.fetchone())[0]
+
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            statement = """SELECT LASTNAME FROM USERS WHERE ID = (SELECT RECEIVER FROM MESSAGES WHERE ID = %s)"""
+            cursor.execute(statement,[message[0]])
+            receiver_name += " " + (cursor.fetchone())[0]
+
+        message = list(message)
+        message[2] = receiver_name
+        message = tuple(message)
+        
         return messages
 
 def validate_message_data(form):
