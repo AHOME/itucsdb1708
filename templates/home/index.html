@@ -9,38 +9,38 @@
             <div id="myCarousel" class="carousel slide">
                 <div class="carousel-inner">
                     <div class="item active">
-                    	<a href="{{ url_for('site.event_show_page') }}"><img class="thumbnail" src="https://www.cicis.com/media/1176/pizza_trad_pepperonibeef.png" alt="Slide1"></a>
+                      {% if firstEvent %}
+                    	<a href="{{ url_for('site.event_show_page',eventId = firstEvent.Id) }}"><img class="thumbnail" src="https://www.cicis.com/media/1176/pizza_trad_pepperonibeef.png" alt="Slide1"></a>
                         <div class="caption">
-                       	  <h4>Pizza Günleri</h4>
-						  <p>10 Ocak 2018</p>
-                            <p>Saat: 10:00-20:00</p>
-							   <p>Yer: Beşiktaş İskele</p>
+                       	  <h4>{{ firstEvent.name }}</h4>
+						  <p>{{ firstEvent.startDate }} - {{ firstEvent.endDate }}</p>
+							   <p>{{ firstEvent.address }}</p>
                         </div>
                     </div>
+                  {% endif %}
+                  {% if eventDic %}
+                    {% for event in eventDic %}
                     <div class="item">
-                    	<a href="{{ url_for('site.event_show_page') }}"><img class="thumbnail" src="http://www.muslumkebap.com/Contents/Upload/MuslumAdana_qyz0b34a.p3w.jpg" alt="Slide2"></a>
+                    	<a href="{{ url_for('site.event_show_page',eventId =event.Id) }}"><img class="thumbnail" src="http://www.focabalik.com/wp-content/uploads/2016/08/levrek-%C4%B1zgara-1-1200x480.jpg" alt="Slide3"></a>
                         <div class="caption">
-                       	  <h4>Kebap Buluşması</h4>
-						  <p>27 Ekim 2017</p>
-						  <p>Saat: 10:00-20:00</p>
-							 <p>Yer: Yenikapı Metro İstasyonu</p>
-                        </div>
-                     </div>
-                    <div class="item">
-                    	<a href="{{ url_for('site.event_show_page') }}"><img class="thumbnail" src="http://www.focabalik.com/wp-content/uploads/2016/08/levrek-%C4%B1zgara-1-1200x480.jpg" alt="Slide3"></a>
-                        <div class="caption">
-                       	  <h4>Balık Av ve Pişirme Günleri</h4>
-						  <p>15 Kasım 2017</p>
-						  <p>Saat: 10:00-20:00</p>
-						   <p>Yer: Beşiktaş - Tarabya Kordonu</p>
+                          <h4>{{ event.name }}</h4>
+						  <p>{{ event.startDate }} - {{ event.endDate }}</p>
+							   <p>{{ event.address }}</p>
                         </div>
                     </div>
+                    {% endfor %}
+                  {% endif %}
                 </div>
                  <!-- Indicators -->
                   <ol class="carousel-indicators">
+                    {% if firstEvent %}
                     <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-                    <li data-target="#myCarousel" data-slide-to="1"></li>
-                    <li data-target="#myCarousel" data-slide-to="2"></li>
+                  {% endif %}
+                  {% if eventDic %}
+                    {% for event in eventDic %}
+                      <li data-target="#myCarousel" data-slide-to="{{ loop.index }}"></li>
+                  {% endfor %}
+                {% endif %}
                   </ol>
             </div><!-- End Carousel -->
     	</div>
