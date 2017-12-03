@@ -110,3 +110,47 @@ class Restaurant():
             query = """DELETE FROM COMMENTS WHERE ID = %s"""
             cursor.execute(query, [c_id])
             connection.commit()
+
+    def check_user_gave_a_star_or_not(self, user_id, restaurant_id):
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """SELECT * FROM STAR_RESTAURANTS WHERE USER_ID = %s"""
+            cursor.execute(query,[user_id])
+            users = cursor.fetchall()
+        if(users == []):
+            return True
+        return False
+
+    def give_star_by_id(self, user_id, restaurant_id , score):
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """SELECT * FROM STAR_RESTAURANTS WHERE USER_ID = %s"""
+            cursor.execute(query,[user_id])
+            users = cursor.fetchall()
+        if (users == []):
+            with dbapi2.connect(current_app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """INSERT INTO STAR_RESTAURANTS (USER_ID, RESTAURANT_ID, STAR)
+                    VALUES (%s,%s,%s)"""
+                cursor.execute(query, [int(user_id), int(restaurant_id), int(score)])
+                connection.commit()
+            with dbapi2.connect(current_app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """SELECT * FROM STAR_RESTAURANTS WHERE RESTAURANT_ID = %s"""
+                cursor.execute(query,[restaurant_id])
+                stars = cursor.fetchall()
+
+            totalStar = 0;
+            count = 0;
+            for i in stars:
+                totalStar += i[3]
+                count += 1
+            updatedScore = totalStar/count
+
+
+            print(updatedScore)
+            with dbapi2.connect(current_app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """UPDATE RESTAURANTS SET SCORE = %s WHERE ID = %s"""
+                cursor.execute(query, [updatedScore, restaurant_id])
+                connection.commit()

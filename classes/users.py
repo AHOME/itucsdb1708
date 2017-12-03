@@ -21,7 +21,7 @@ class Users(UserMixin):
             self.is_admin = False
 
     def get_mail(self):
-        return self.Mail
+        return self.UserType
 
 
     def get_name(self):
@@ -41,8 +41,8 @@ class Users(UserMixin):
     @property
     def is_anonymous(self):
         return False
-    
-    
+
+
     def get_id(self):
         return self.Mail
 
@@ -66,8 +66,8 @@ def get_user(db_mail):
             adminuser=Users(1,'admin','admin','admin@restoranlandin.com',current_app.config['PASSWORD'], '10.10.2012', '', '',0, 'avatar')
             return adminuser
         user = Users(db_user[0],db_user[1], db_user[2], db_user[3],db_user[4], db_user[5], db_user[6], db_user[7], db_user[8], db_user[9])
-    
-    
+
+
     if user is not None:
         user.is_admin = user.Mail in current_app.config['ADMIN_USERS']
 

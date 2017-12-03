@@ -42,7 +42,7 @@
     </div>
     <div class="btn-group" role="group">
       <button type="button" id="following" class="btn btn-danger" href="#tab3" data-toggle="tab"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-              <div class="hidden-xs">Occupancy Status</div>
+              <div class="hidden-xs">Current Status</div>
           </button>
     </div>
   </div>
@@ -62,7 +62,6 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <!-- Change me with model and use for loop for showing all item inside the database. -->
                     <td>Porsiyon Kofte</a></td>
                     <td>15₺</td>
                     <td>145 Calorie</td>
@@ -89,7 +88,17 @@
               <td>{{restaurant.name}}</td>
               <td>{{restaurant.contactName}}</td>
               <td>{{restaurant.address}}</td>
-              <td>{{restaurant.score}}/5</td>
+              <td>{{restaurant.score}}/5
+                {% if (current_user.is_authenticated and check)%}
+                <br>
+                <b>Rate: </b>
+                <a href="{{ url_for('site.give_star_func', user_id = current_user.Id, restaurant_id = restaurant.primaryId, score = 1) }}">1</a>
+                <a href="{{ url_for('site.give_star_func', user_id = current_user.Id, restaurant_id = restaurant.primaryId, score = 2) }}">2</a>
+                <a href="{{ url_for('site.give_star_func', user_id = current_user.Id, restaurant_id = restaurant.primaryId, score = 3) }}">3</a>
+                <a href="{{ url_for('site.give_star_func', user_id = current_user.Id, restaurant_id = restaurant.primaryId, score = 4) }}">4</a>
+                <a href="{{ url_for('site.give_star_func', user_id = current_user.Id, restaurant_id = restaurant.primaryId, score = 5) }}">5</a>
+                {% endif %}
+              </td>
               <td>Porsiyon 4 kofte</td>
             </tr>
           </tbody>
@@ -111,11 +120,11 @@
     <div class="h3">
       {% if current_user.is_admin %}
       <div class="">
-        <a href="{{ url_for('site.comment_delete_func', comment_id = c[0], restaurant_id = c[2]) }}">{{c[6]}}</a>        
+        <a href="{{ url_for('site.comment_delete_func', comment_id = c[0], restaurant_id = c[2]) }}">{{c[6]}}</a>
       </div>
       {% else %}
         <p>{{c[6]}}</p>
-      {%endif%}
+      {% endif %}
     </div>
     <div class="jumbotron text-center">
       <p class="lead">{{c[3]}}</p>

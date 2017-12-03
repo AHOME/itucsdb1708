@@ -9,6 +9,7 @@ import psycopg2 as dbapi2
 from classes.messages import *
 from classes.drinks import *
 from classes.events import *
+from classes.restaurants import *
 from classes.event_control_functions import *
 from classes.drink_control_functions import *
 site = Blueprint('site', __name__)
@@ -109,6 +110,9 @@ def initialize_database():
         query = """DROP TABLE IF EXISTS FOODS;"""
         cursor.execute(query)
 
+        query = """DROP TABLE IF EXISTS STAR_RESTAURANTS;"""
+        cursor.execute(query)
+
         query = """DROP TABLE IF EXISTS RESTAURANTS;"""
         cursor.execute(query)
 
@@ -205,6 +209,15 @@ def initialize_database():
         );"""
         cursor.execute(query)
 
+        query = """CREATE TABLE STAR_RESTAURANTS(
+            ID SERIAL PRIMARY KEY,
+            USER_ID INTEGER NOT NULL,
+            RESTAURANT_ID INTEGER NOT NULL,
+            STAR INTEGER NOT NULL
+        )
+        """
+        cursor.execute(query)
+
         query = """CREATE TABLE USERS (
         ID SERIAL PRIMARY KEY,
         FIRSTNAME VARCHAR(80) NOT NULL,
@@ -293,12 +306,14 @@ def restaurant_home_page():
     return render_template('restaurant/index.html', allValues = allValues)
 
 @site.route('/restaurant/<int:restaurant_id>/')
-#@login_required
 def restaurant_show_page(restaurant_id, methods=['GET','POST']):
     restaurant = Restaurant()
     restaurant.select_restaurant_by_id(restaurant_id)
+    check = True
+    if( current_user.is_authenticated ):
+        check = restaurant.check_user_gave_a_star_or_not(current_user.Id,restaurant_id)
     comments = restaurant.select_all_comments(restaurant_id)
-    return render_template('restaurant/show.html', restaurant = restaurant, comments = comments)
+    return render_template('restaurant/show.html', restaurant = restaurant, comments = comments, check = check)
 
 @site.route('/restaurant/create', methods=['GET','POST'])
 def restaurant_create_page():
@@ -310,39 +325,56 @@ def restaurant_create_page():
         return redirect(url_for('site.restaurant_home_page'))
 
 @site.route('/restaurant/<int:restaurant_id>/delete')
-#@login_required
+@login_required
 def restaurant_delete_func(restaurant_id):
-    restaurant = Restaurant()
-    restaurant.delete_restaurant_by_id(restaurant_id)
+    if(current_user.is_admin):
+        restaurant = Restaurant()
+        restaurant.delete_restaurant_by_id(restaurant_id)
     return redirect(url_for('site.restaurant_home_page'))
 
 @site.route('/restaurant/<int:restaurant_id>/edit', methods=['GET','POST'])
 def restaurant_edit_page(restaurant_id):
-    restaurant = Restaurant()
-    form = request.form
-    if request.method == 'GET':
-        restaurant.select_restaurant_by_id(restaurant_id)
+    if(current_user.is_admin):
+        restaurant = Restaurant()
+        form = request.form
+        if request.method == 'GET':
+            restaurant.select_restaurant_by_id(restaurant_id)
+        else:
+            restaurant.update_restaurant_by_id(form, restaurant_id)
+            return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
+        return render_template('restaurant/edit.html', form = form , address = restaurant.address, name = restaurant.name, contactName = restaurant.contactName, contactPhone = restaurant.contactPhone, pp = restaurant.profilePicture, hours = restaurant.hours, currentStatus = restaurant.currentStatus)
     else:
-        restaurant.update_restaurant_by_id(form, restaurant_id)
-        return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
-    return render_template('restaurant/edit.html', form = form , address = restaurant.address, name = restaurant.name, contactName = restaurant.contactName, contactPhone = restaurant.contactPhone, pp = restaurant.profilePicture, hours = restaurant.hours, currentStatus = restaurant.currentStatus)
+        return redirect(url_for('site.restaurant_home_page'))
 
 
 @site.route('/submit_comment', methods=['POST'])
 def submit_comment():
-  restaurant_id = request.form['restaurant_id']
-  restaurant = Restaurant()
-  restaurant.create_comment(request.form)
-  return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
+    if(current_user.is_admin):
+        restaurant_id = request.form['restaurant_id']
+        restaurant = Restaurant()
+        restaurant.create_comment(request.form)
+        return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
+    else:
+        return redirect(url_for('site.restaurant_home_page'))
 
 @site.route('/comment/<int:comment_id>/<int:restaurant_id>/delete_comment')
 def comment_delete_func(comment_id, restaurant_id):
-    print("ali")
-    restaurant = Restaurant()
-    print("ali")
-    restaurant.delete_comment_by_id(comment_id)
-    print("ali")
-    return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
+    if(current_user.is_admin):
+        restaurant = Restaurant()
+        restaurant.delete_comment_by_id(comment_id)
+        return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
+    return redirect(url_for('site.restaurant_home_page'))
+
+@site.route('/give_star/<user_id>/<restaurant_id>/<score>')
+def give_star_func(user_id, restaurant_id, score):
+    if current_user.is_authenticated:
+        restaurant = Restaurant()
+        restaurant.give_star_by_id(user_id, restaurant_id, score)
+        return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
+    return redirect(url_for('site.restaurant_home_page'))
+
+
+
 
 
 @site.route('/foods')
