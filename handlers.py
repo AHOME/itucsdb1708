@@ -317,7 +317,7 @@ def restaurant_create_page():
         return redirect(url_for('site.restaurant_home_page'))
 
 @site.route('/restaurant/<int:restaurant_id>/')
-#@login_required
+@login_required
 def restaurant_show_page(restaurant_id):
 
     with dbapi2.connect(current_app.config['dsn']) as connection:
@@ -330,7 +330,7 @@ def restaurant_show_page(restaurant_id):
 
 
 @site.route('/restaurant/<int:restaurant_id>/delete')
-#@login_required
+@login_required
 def restaurant_delete_func(restaurant_id):
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
@@ -523,21 +523,21 @@ def messages_new_page(user_id):
 
 
 @site.route('/user/15') #Change me with model [ID]
-#@login_required
+@login_required
 def user_show_page():
     return render_template('user/show.html')
 
 @site.route('/user/15/edit') #Change me with model [ID]
-#@login_required
+@login_required
 def user_edit_page():
     return render_template('user/edit.html')
 
 @site.route('/admin',methods = ['GET','POST'])
-#@login_required
+@login_required
 def admin_page():
-#    user = load_user(current_user.get_id())
-#    if not user.is_admin :
-#        abort(401)
+    user = load_user(current_user.get_id())
+    if not user.is_admin :
+        abort(401)
     if request.method == 'POST':
         eventIds = request.form.getlist('eventIDs')
         #delete events which have ids in eventIds list
@@ -551,7 +551,7 @@ def admin_page():
     return render_template('admin/index.html',eventDic = eventDic)
 
 @site.route('/event/new',methods = ['GET','POST'])
-#@login_required
+@login_required
 def event_create_page():
     if request.method == 'GET':
         return render_template('event/new.html',form = None)
@@ -583,12 +583,12 @@ def event_edit_page(eventId):
             return render_template('event/edit.html',event = event,form = form)
 
 @site.route('/achievement/new')
-#@login_required
+@login_required
 def achievement_create_page():
     return render_template('achievement/new.html')
 
 @site.route('/event/<int:eventId>')
-#@login_required
+@login_required
 def event_show_page(eventId):
     #select specific event from databse
     select = select_event_by_id(eventId)
