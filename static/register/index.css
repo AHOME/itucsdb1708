@@ -18,6 +18,10 @@
     margin-left: 60px;
 }
 
+.panel-primary {
+     background-color: #CC0000 !important;
+}
+
 .chat li.right .chat-body
 {
     margin-right: 60px;
@@ -33,12 +37,14 @@
 .panel .slidedown .glyphicon, .chat .glyphicon
 {
     margin-right: 5px;
+
 }
 
 .panel-body
 {
     overflow-y: scroll;
-    height: 250px;
+    height: 250px;,
+
 }
 
 ::-webkit-scrollbar-track

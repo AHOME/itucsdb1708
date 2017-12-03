@@ -5,25 +5,25 @@
 {% block content %}
 
 
-<div class="container">
+<div class="container" >
    {% if messages %}
-    <div class="row">
-        
-        <div class="col-md-6">
-            <div class="panel panel-primary">
+    <div class="row"   >
+        <div class="col-md-8" style="margin-left: 15%; margin-right: auto;" >
+            <div class="panel panel-primary" style="margin-right: 5px;">
                 <div class="panel-heading">
-                    <span class="glyphicon glyphicon-comment"></span> Chat
+                    <span class="glyphicon glyphicon-comment" style="margin-right: 5px;"></span> Chat
                 <div class="panel-body">
                     <ul class="chat">
                         {% for message in messages%}
                             {% if message[6] != session['id'] %}
                         
-                                <li class="left clearfix"><span class="chat-img pull-left">
-                                    <img src="http://placehold.it/50/55C1E7/fff&text=U" alt="User Avatar" class="img-circle" />
+                                <li class="left clearfix" style="margin: 0;
+    color: #ffffff;"><span class="chat-img pull-left">
+                                    <img src="http://placehold.it/50/55C1E7/fff&text={{message[1][0]}}" alt="User Avatar" class="img-circle" />
                                 </span>
                             {% else %}
                                 <li class="right clearfix"><span class="chat-img pull-right">
-                                    <img src="http://placehold.it/50/FA6F57/fff&text=ME" alt="User Avatar" class="img-circle" />
+                                    <img src="http://placehold.it/50/55C1E7/fff&text={{message[1][0]}}" alt="User Avatar" class="img-circle" />
                                 </span>
                             {% endif %}   
                                 <div class="chat-body clearfix">

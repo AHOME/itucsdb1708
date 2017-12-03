@@ -59,7 +59,7 @@ def select_all_messages(user_id):
         messages[i][2] = receiver_name
         messages[i] = tuple(messages[i])
 
-    print(messages)    
+    print(messages[0][1][0])    
     return messages
 
 def validate_message_data(form):
