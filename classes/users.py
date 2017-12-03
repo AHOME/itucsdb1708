@@ -50,15 +50,25 @@ class Users(UserMixin):
         return self.Id
 
 def get_user(db_mail):
-    if db_mail == 1:
+    if type(db_mail) is int:
         return None
+
+    if db_mail in current_app.config['ADMIN_USERS']:
+        user = Users(1,'admin','admin','admin@restoranlandin.com',current_app.config['PASSWORD'], '10.10.2012', '', '',0, 'avatar')
+        return user
+
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
         statement = """SELECT * FROM USERS WHERE MAIL = %s"""
         cursor.execute(statement, [db_mail])
-        db_user = cursor.fetchall()
-        user = Users(db_user[0][0],db_user[0][1], db_user[0][2], db_user[0][3],db_user[0][4], db_user[0][5], db_user[0][6], db_user[0][7], db_user[0][8], db_user[0][9])
+        db_user = cursor.fetchone()
+        if db_user is None:
+            adminuser=Users(1,'admin','admin','admin@restoranlandin.com',current_app.config['PASSWORD'], '10.10.2012', '', '',0, 'avatar')
+            return adminuser
+        user = Users(db_user[0],db_user[1], db_user[2], db_user[3],db_user[4], db_user[5], db_user[6], db_user[7], db_user[8], db_user[9])
+
 
     if user is not None:
         user.is_admin = user.Mail in current_app.config['ADMIN_USERS']
+
     return user

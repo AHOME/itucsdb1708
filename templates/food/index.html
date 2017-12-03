@@ -30,6 +30,31 @@
             {% endfor %}
         </tbody>
       </table>
+      <table class="table table-condensed table-hover">
+        <thead>
+          <tr>
+            <th>Drink Name</th>
+            <th>Drink Type</th>
+            <th>Alcohol</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if drinks %}
+            {% for drink in drinks %}
+          <tr>
+            <!-- Change me with model and use for loop for showing all item inside the database. -->
+            <td>{{drink.name}}</td>
+            <td>{{drink.drinkType}}</td>
+            <td>{{drink.alcohol }}</td>
+            <td><a href="{{ url_for('site.drink_edit_page', drinkId = drink.Id) }}">Edit</a></td>
+            <td><a href="{{ url_for('site.drink_delete_function', drinkId = drink.Id) }}">Delete</a></td>
+          </tr>
+            {% endfor %}
+            {% endif %}
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
