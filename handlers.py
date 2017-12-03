@@ -4,19 +4,15 @@ from datetime import datetime
 from flask_login import LoginManager,login_user,login_required,current_user
 from flask_login import logout_user
 from passlib.apps import custom_app_context as pwd_context
-from classes.messages_controller import *
-
-
-
 import psycopg2 as dbapi2
 
-site = Blueprint('site', __name__)
-from classes.restaurants import *
-
+from classes.messages import *
 from classes.drinks import *
 from classes.events import *
 from classes.event_control_functions import *
 from classes.drink_control_functions import *
+site = Blueprint('site', __name__)
+
 
 from classes.users import *
 from server import load_user
