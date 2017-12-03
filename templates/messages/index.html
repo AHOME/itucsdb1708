@@ -9,16 +9,15 @@
    {% if messages %}
     <div class="row"   >
         <div class="col-md-8" style="margin-left: 15%; margin-right: auto;" >
-            <div class="panel panel-primary" style="margin-right: 5px;">
-                <div class="panel-heading">
+            <div class="panel panel-primary" id="mainpanel" style="margin-right: 5px;border-color: #D32F2F">
+                <div class="panel-heading" style="background: #D32F2F;border-color: #D32F2F">
                     <span class="glyphicon glyphicon-comment" style="margin-right: 5px;"></span> Chat
-                <div class="panel-body">
-                    <ul class="chat">
+                <div class="panel-body" style="background: #D32F2F;">
+                    <ul class="chat" >
                         {% for message in messages%}
                             {% if message[6] != session['id'] %}
                         
-                                <li class="left clearfix" style="margin: 0;
-    color: #ffffff;"><span class="chat-img pull-left">
+                                <li class="left clearfix" style="margin: 0;color: #ffffff;"><span class="chat-img pull-left">
                                     <img src="http://placehold.it/50/55C1E7/fff&text={{message[1][0]}}" alt="User Avatar" class="img-circle" />
                                 </span>
                             {% else %}
@@ -28,14 +27,14 @@
                             {% endif %}   
                                 <div class="chat-body clearfix">
                                 <div class="header">
-                                    <strong class="primary-font"> {{message[1]}} Topic:  
+                                    <strong class="primary-font" style="color: black"> {{message[1]}} Topic:  
                                     {{message[3]}}
                                     </strong> 
 
-                                    <small class="pull-right text-muted">
-                                        <span class="glyphicon glyphicon-time"></span>{{message[5]}}</small>
+                                    <small class="pull-right text-muted"  style="color: LightSlateGray ">
+                                        <span class="glyphicon glyphicon-time"  style="color: LightSlateGray"></span>{{message[5]}}</small>
                                 </div>
-                                <p>
+                                <p style="color: white">
                                     {{message[4]}}
                                 </p>
                                

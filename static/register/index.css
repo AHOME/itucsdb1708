@@ -22,6 +22,15 @@
      background-color: #CC0000 !important;
 }
 
+.panel-heading {
+background-color: #CCff00 !important;}
+
+
+
+#mainpanel{
+    background-color: #CCff00 !important;
+}
+
 .chat li.right .chat-body
 {
     margin-right: 60px;
