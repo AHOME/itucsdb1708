@@ -4,10 +4,9 @@ from datetime import datetime
 from flask_login import LoginManager,login_user,login_required,current_user
 from flask_login import logout_user
 from passlib.apps import custom_app_context as pwd_context
-from classes.messages_controller import *
-
-
 import psycopg2 as dbapi2
+
+from classes.messages import *
 from classes.drinks import *
 from classes.events import *
 from classes.event_control_functions import *
@@ -28,7 +27,7 @@ def logout_page():
     session['logged_in'] = False
     session['name'] = ''
     session['id'] = 0
-    return redirect(url_for('site.home_page'))
+    return redirect(url_for('site.home_page',firstEvent=None,eventDic=None))
 
 @site.route('/', methods=['GET', 'POST'])
 def home_page():
@@ -41,7 +40,7 @@ def home_page():
             eventList.append(Events(select = eventSelect))
     #return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
     if request.method == 'GET':
-        return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
+        return render_template('home/index.html',firstEvent = None,eventDic = None)
     else:
         input_mail = request.form['InputEmail']
         input_password = request.form['InputPassword']
@@ -52,7 +51,7 @@ def home_page():
             session['name'] = user.get_name() + ' ' + user.get_lastname()
             session['id'] = user.get_Id()
             flash( current_user.get_mail())
-            return redirect(url_for('site.home_page'))
+            return redirect(url_for('site.home_page',firstEvent = None,eventDic = None))
             
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
@@ -60,7 +59,7 @@ def home_page():
             cursor.execute(statement, [input_mail])
             db_mail = cursor.fetchone()
             if db_mail is not None:  # check whether the user exists
-                user = load_user(db_mail.get_mail())
+                user = load_user(db_mail)
                 statement = """SELECT PASSWORD FROM USERS WHERE MAIL = %s"""
                 cursor.execute(statement,[db_mail])
                 if pwd_context.verify(input_password,user.Password) is True:
@@ -69,11 +68,11 @@ def home_page():
                     session['name'] = user.get_name() + ' ' + user.get_lastname()
                     session['id'] = user.get_Id()
                     flash( current_user.get_mail())
-                    return redirect(url_for('site.home_page'))
+                    return redirect(url_for('site.home_page',firstEvent = None,eventDic = None))
                 else:
-                    return redirect(url_for('site.home_page')) #Couldn't login
+                    return redirect(url_for('site.home_page',firstEvent = None,eventDic = None)) #Couldn't login
             else:
-                return redirect(url_for('site.home_page'))
+                return redirect(url_for('site.home_page',firstEvent = None,eventDic = None))
 
 
 
