@@ -1,9 +1,10 @@
 from flask import Blueprint, render_template , redirect , current_app,url_for
 from flask import request,flash,session
+from datetime import datetime
 from flask_login import LoginManager,login_user,login_required,current_user
 from flask_login import logout_user
 from passlib.apps import custom_app_context as pwd_context
-
+from classes.messages_controller import *
 
 
 import psycopg2 as dbapi2
@@ -26,6 +27,7 @@ def logout_page():
     logout_user()
     session['logged_in'] = False
     session['name'] = ''
+    session['id'] = 0
     return redirect(url_for('site.home_page'))
 
 @site.route('/', methods=['GET', 'POST'])
@@ -43,19 +45,29 @@ def home_page():
     else:
         input_mail = request.form['InputEmail']
         input_password = request.form['InputPassword']
+        if input_mail in current_app.config['ADMIN_USERS'] and pwd_context.verify(input_password,current_app.config['PASSWORD'][0]) is True:
+            user= load_user(input_mail)
+            login_user(user)
+            session['logged_in'] = True
+            session['name'] = user.get_name() + ' ' + user.get_lastname()
+            session['id'] = user.get_Id()
+            flash( current_user.get_mail())
+            return redirect(url_for('site.home_page'))
+            
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             statement = """SELECT MAIL FROM USERS WHERE MAIL = %s"""
             cursor.execute(statement, [input_mail])
             db_mail = cursor.fetchone()
             if db_mail is not None:  # check whether the user exists
-                user = load_user(db_mail)
+                user = load_user(db_mail.get_mail())
                 statement = """SELECT PASSWORD FROM USERS WHERE MAIL = %s"""
                 cursor.execute(statement,[db_mail])
                 if pwd_context.verify(input_password,user.Password) is True:
                     login_user(user)
                     session['logged_in'] = True
                     session['name'] = user.get_name() + ' ' + user.get_lastname()
+                    session['id'] = user.get_Id()
                     flash( current_user.get_mail())
                     return redirect(url_for('site.home_page'))
                 else:
@@ -204,18 +216,16 @@ def initialize_database():
         CITY VARCHAR(80) NOT NULL,
         GENDER VARCHAR(20),
         USERTYPE INTEGER NOT NULL,
-
-
         AVATAR VARCHAR(255)
         );"""
         cursor.execute(query)
 
         query = """CREATE TABLE MESSAGES (
         ID SERIAL PRIMARY KEY,
-        SENDER INTEGER NOT NULL,
-        RECEIVER INTEGER NOT NULL,
+        SENDER INTEGER REFERENCES USERS(ID) NOT NULL,
+        RECEIVER INTEGER REFERENCES USERS(ID) NOT NULL,
         TOPIC VARCHAR(80) NOT NULL,
-        CONTENT VARCHAR(80) NOT NULL,
+        CONTENT VARCHAR(800) NOT NULL,
         SENDDATE TIMESTAMP NOT NULL
         );"""
         cursor.execute(query)
@@ -271,6 +281,9 @@ def initialize_database():
         hashed_password = pwd_context.encrypt("12345")
         cursor.execute(query, ("admin", "admin", "admin@restoranlandin.com", hashed_password, "10.10.2012", "","",0,"avatar"))
         connection.commit()
+
+
+       
 
         return redirect(url_for('site.home_page'))
 
@@ -470,15 +483,45 @@ def register_home_page():
         form = request.form
         return render_template('register/index.html',form=form)
 
-@site.route('/user/12/message')
-#@login_required
-def messages_home_page():
-    return render_template('messages/index.html')
 
-@site.route('/user/12/message/new') #Change me with model [ID]
-#@login_required
-def messages_new_page():
-    return render_template('messages/new.html')
+@site.route('/user/<int:user_id>/messages')
+@login_required
+def messages_home_page(user_id):
+    all_messages = select_all_messages(user_id)
+    return render_template('messages/index.html',messages = all_messages)
+
+@site.route('/user/<int:user_id>/messages/new',methods=['GET','POST']) 
+@login_required
+def messages_new_page(user_id):
+    if request.method == 'GET':
+        return render_template('messages/new.html',form=None)
+    else:
+        receiver = request.form['message_target']
+        sender = session['id']
+        topic = request.form['message_topic']
+        body = request.form['message_body']
+        time = datetime.now()
+        form = request.form
+        valid = validate_message_data(form)
+        if valid:
+            with dbapi2.connect(current_app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                statement = """SELECT ID FROM USERS WHERE MAIL = %s"""
+                cursor.execute(statement,[receiver])
+                receiver_id = cursor.fetchone()
+
+            with dbapi2.connect(current_app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """
+                    INSERT INTO MESSAGES (SENDER,RECEIVER,TOPIC,CONTENT,SENDDATE) 
+                    VALUES (%s,%s,%s,%s,%s)"""
+
+                cursor.execute(query, (sender,receiver_id,topic,body,time))
+                connection.commit()
+            return redirect(url_for('site.messages_home_page',user_id=sender))
+        else:
+            return  render_template('messages/new.html',form=form)
+
 
 @site.route('/user/15') #Change me with model [ID]
 #@login_required
