@@ -51,7 +51,7 @@ class Restaurants():
             cursor.execute(query, [restaurant_id])
             value = cursor.fetchall()
             selectedRestaurant = value[0]
-            self.primaryId  =  selectedRestaurant[10
+            self.primaryId  =  selectedRestaurant[0]
             self.name =  selectedRestaurant[1]
             self.address =  selectedRestaurant[2]
             self.contactName =  selectedRestaurant[3]

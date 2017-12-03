@@ -5,6 +5,7 @@ from flask_login import LoginManager,login_user,login_required,current_user
 from flask_login import logout_user
 from passlib.apps import custom_app_context as pwd_context
 from classes.messages_controller import *
+from classes.restaurants import *
 
 
 import psycopg2 as dbapi2
@@ -282,10 +283,9 @@ def initialize_database():
         cursor.execute(query, ("admin", "admin", "admin@restoranlandin.com", hashed_password, "10.10.2012", "","",0,"avatar"))
         connection.commit()
 
-
-
-
         return redirect(url_for('site.home_page'))
+
+
 
 @site.route('/restaurants')
 def restaurant_home_page():
