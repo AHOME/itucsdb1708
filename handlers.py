@@ -4,7 +4,6 @@ from datetime import datetime
 from flask_login import LoginManager,login_user,login_required,current_user
 from flask_login import logout_user
 from passlib.apps import custom_app_context as pwd_context
-<<<<<<< HEAD
 from classes.messages_controller import *
 
 
@@ -13,11 +12,7 @@ import psycopg2 as dbapi2
 
 site = Blueprint('site', __name__)
 from classes.restaurants import *
-=======
-import psycopg2 as dbapi2
 
-from classes.messages import *
->>>>>>> 1b9f703af5046cd338ffe304dc74a8f64a5551e8
 from classes.drinks import *
 from classes.events import *
 from classes.event_control_functions import *
@@ -60,13 +55,8 @@ def home_page():
             session['name'] = user.get_name() + ' ' + user.get_lastname()
             session['id'] = user.get_Id()
             flash( current_user.get_mail())
-<<<<<<< HEAD
-            return redirect(url_for('site.home_page'))
-
-=======
             return redirect(url_for('site.home_page',firstEvent = None,eventDic = None))
-            
->>>>>>> 1b9f703af5046cd338ffe304dc74a8f64a5551e8
+
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             statement = """SELECT MAIL FROM USERS WHERE MAIL = %s"""
