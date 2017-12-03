@@ -17,9 +17,6 @@ site = Blueprint('site', __name__)
 from classes.users import *
 from server import load_user
 
-def abort(code):
-    if code == 401:
-        return "You don't have authorize to access this page!"
 
 @site.route('/logout')
 def logout_page():
@@ -94,11 +91,15 @@ def counter_page():
 
 
 @site.route('/initdb')
-#@login_required
+@login_required
 def initialize_database():
     user = load_user(current_user.get_id())
     if not user.is_admin :
-        abort(401)
+        return """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<title>401 Unauthorized</title>
+<h1>Unauthorized</h1>
+<p>The server could not verify that you are authorized to access the URL requested.  You either supplied the wrong credentials (e.g. a bad password), or your browser doesn't understand how to supply the credentials required.</p>"""
+
 
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
@@ -537,7 +538,11 @@ def user_edit_page():
 def admin_page():
     user = load_user(current_user.get_id())
     if not user.is_admin :
-        abort(401)
+        return """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<title>401 Unauthorized</title>
+<h1>Unauthorized</h1>
+<p>The server could not verify that you are authorized to access the URL requested.  You either supplied the wrong credentials (e.g. a bad password), or your browser doesn't understand how to supply the credentials required.</p>"""
+
     if request.method == 'POST':
         eventIds = request.form.getlist('eventIDs')
         #delete events which have ids in eventIds list
