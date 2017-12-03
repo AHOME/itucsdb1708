@@ -39,3 +39,36 @@ class Achievements():
                 cursor.execute(statement,[self.name,self.icon, self.content, self.goal, self.endDate])
                 IdofCurrent = cursor.fetchone()[0]
                 self.Id = IdofCurrent
+
+
+def achievement_update(form, achievement_id):
+    name = form['Name']
+    content = form['Explanation']
+    goal = form['Goal']
+    endDate = form['endDate']
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        statement = """UPDATE ACHIEVEMENTS SET NAME=%s, CONTENT=%s, GOAL=%s, ENDDATE=%s  WHERE (ID = %s)"""
+        cursor.execute(statement,[name, content, goal, endDate, achievement_id])
+        connection.commit()
+
+def achievement_select_by_Id(Id):
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        statement = """SELECT * FROM ACHIEVEMENTS WHERE (ID = %s)"""
+        cursor.execute(statement,[Id])
+        return cursor.fetchone()
+
+def achievement_delete_by_Id(Id):
+    query = """DELETE FROM ACHIEVEMENTS WHERE ID = %s"""
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        cursor.execute(query, [Id])
+        connection.commit()
+
+def achievement_select_all():
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        query = """SELECT * FROM ACHIEVEMENTS"""
+        cursor.execute(query)
+        return cursor.fetchall()

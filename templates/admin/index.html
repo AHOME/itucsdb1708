@@ -58,18 +58,19 @@
 <!--List Achievements-->
 <div class="col-xs-8 col-sm-8 col-md-3 col-lg-3" id = "achievements">
   <h2>Achievements</h2>
+<form method="post">
   <div class="achievementscroll" id="achievementscroll">
-  <form>
-    <div class="checkbox">
-      <label><input type="checkbox" value="">100 Farklı Pizza Siparişi </label>
-    </div>
-    <div class="checkbox">
-      <label><input type="checkbox" value="">Bir günde 10 kebap</label>
-    </div>
-</div>
+    {% if achievements %}
+        {% for achievement in achievements %}
+            <div class="checkbox">
+              <label><input type="checkbox" name="achievement_ids" value="{{achievement.Id}}"><a href="{{ url_for('site.achievement_show_page',achievement_id = achievement.Id) }}">{{ achievement.name }}</label>
+            </div>
+        {% endfor %}
+    {% endif %}
+  </div>
     <button type="submit" name="delete"
-    class="btn btn-primary" id="delete_button">Delete Restaurants</button>
-  </form>
+    class="btn btn-primary" id="delete_button">Delete Achievements</button>
+</form>
 </div>
 
 <!--List users-->

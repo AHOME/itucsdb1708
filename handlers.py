@@ -12,7 +12,8 @@ from classes.drinks import *
 from classes.events import *
 from classes.event_control_functions import *
 from classes.drink_control_functions import *
-from classes.achievements import Achievements
+import classes.achievements as achievementMod
+from classes.deals import Deals
 site = Blueprint('site', __name__)
 
 
@@ -62,7 +63,7 @@ def home_page():
             cursor.execute(statement, [input_mail])
             db_mail = cursor.fetchone()
             if db_mail is not None:  # check whether the user exists
-                user = load_user(db_mail.get_mail())
+                user = load_user(db_mail)
                 statement = """SELECT PASSWORD FROM USERS WHERE MAIL = %s"""
                 cursor.execute(statement,[db_mail])
                 if pwd_context.verify(input_password,user.Password) is True:
@@ -584,76 +585,68 @@ def user_edit_page():
 @site.route('/admin',methods = ['GET','POST'])
 @login_required
 def admin_page():
-#    user = load_user(current_user.get_id())
-#    if not user.is_admin :
-#        abort(401)
+    user = load_user(current_user.get_id())
+    if not user.is_admin :
+        abort(401)
     if request.method == 'POST':
         eventIds = request.form.getlist('eventIDs')
         #delete events which have ids in eventIds list
         for Id in eventIds:
             delete_event_by_id(Id)
-            #Fetch all events to list.
+
+        achievement_ids = request.form.getlist('achievement_ids')
+
+        for ach_id in achievement_ids:
+            achievementMod.achievement_delete_by_Id(ach_id)
+
+
+    achievements = achievementMod.achievement_select_all()
+    achievementList = []
+
+    for achievement in achievements:
+        achievementList.append(achievementMod.Achievements(select = achievement))
+
+    #Fetch all events to list.
     events = select_all_events()
     eventDic = {}
     for event in events:
         eventDic[event[0]] = event[5]
-    return render_template('admin/index.html',eventDic = eventDic)
 
-@site.route('/temp', methods=['GET','POST'])
-def temp_page():
-    if request.method == 'GET':
-        with dbapi2.connect(current_app.config['dsn']) as connection:
-            cursor = connection.cursor()
-            query = """SELECT * FROM ACHIEVEMENTS"""
-            cursor.execute(query)
-            achievements = cursor.fetchall()
-            achievementList = []
+    return render_template('admin/index.html', achievements = achievementList, eventDic = eventDic)
 
-            for achievement in achievements:
-                achievementList.append(Achievements(select = achievement))
-            connection.commit()
-
-        return render_template('temp.html', achievements = achievementList)
-
-    else:
-        achievement_ids = request.form.getlist('achievement_ids')
-        query = """DELETE FROM ACHIEVEMENTS WHERE ID = %s"""
-
-        for ach_id in achievement_ids:
-            with dbapi2.connect(current_app.config['dsn']) as connection:
-                cursor = connection.cursor()
-                cursor.execute(query, [ach_id])
-                connection.commit()
-
-        return redirect(url_for('site.temp_page'))
 
 @site.route('/achievement/<int:achievement_id>', methods=['GET','POST'])
 def achievement_show_page(achievement_id):
     if request.method == 'GET':
-        with dbapi2.connect(current_app.config['dsn']) as connection:
-            cursor = connection.cursor()
-            statement = """SELECT * FROM ACHIEVEMENTS WHERE (ID = %s)"""
-            cursor.execute(statement,[achievement_id])
-            select = cursor.fetchone()
-            achievement = Achievements(select=select)
-            return render_template('show.html',achievement = achievement, form=None)
+        select = achievementMod.achievement_select_by_Id(achievement_id)
+        achievement = achievementMod.Achievements(select=select)
+        return render_template('achievement/show.html',achievement = achievement, form=None)
     else:
-        name = request.form['Name']
-        content = request.form['Explanation']
-        goal = request.form['Goal']
-        endDate = request.form['endDate']
-        with dbapi2.connect(current_app.config['dsn']) as connection:
-            cursor = connection.cursor()
-            statement = """UPDATE ACHIEVEMENTS SET NAME=%s, CONTENT=%s, GOAL=%s, ENDDATE=%s  WHERE (ID = %s)"""
-            cursor.execute(statement,[name, content, goal, endDate, achievement_id])
-            connection.commit()
-            return redirect(url_for('site.temp_page'))
-            #select = cursor.fetchone()
-            #achievement = Achievements(select=select)
+        achievementMod.achievement_update(request.form, achievement_id)
+        return redirect(url_for('site.admin_page'))
+        #select = cursor.fetchone()
+        #achievement = Achievements(select=select)
 
-@site.route('/event/new')
+
+@site.route('/achievement/new',methods = ['GET','POST'])
+@login_required
+def achievement_create_page():
+    if request.method == 'GET':
+        return render_template('achievement/new.html', form = None)
+    else:
+        isValid = validate_achievement_data(request.form)
+    if isValid:
+        #create an object from form and add it to database.
+        achievement = achievementMod.Achievements(form = request.form)
+        return redirect(url_for('site.admin_page'))
+    form = request.form
+    return render_template('achievement/new.html',form=form)
+
+
+@site.route('/event/new',methods = ['GET','POST'])
 @login_required
 def event_create_page():
+    print('ss')
     if request.method == 'GET':
         return render_template('event/new.html',form = None)
     else:
@@ -661,6 +654,7 @@ def event_create_page():
         if isValid:
             #create an object from form and add it to database.
             event = Events(form = request.form)
+            print('ss')
             return redirect(url_for('site.home_page'))
         form = request.form
         return render_template('event/new.html',form=form)
@@ -683,19 +677,7 @@ def event_edit_page(eventId):
         else:
             return render_template('event/edit.html',event = event,form = form)
 
-@site.route('/achievement/new',methods = ['GET','POST'])
-@login_required
-def achievement_create_page():
-    if request.method == 'GET':
-        return render_template('achievement/new.html', form = None)
-    else:
-        isValid = validate_achievement_data(request.form)
-    if isValid:
-        #create an object from form and add it to database.
-        achievement = Achievements(form = request.form)
-        return redirect(url_for('site.home_page'))
-    form = request.form
-    return render_template('achievement/new.html',form=form)
+
 
 @site.route('/event/<int:eventId>')
 @login_required
@@ -739,6 +721,20 @@ def drink_edit_page(drinkId):
 def drink_delete_function(drinkId):
     delete_drink_by_id(drinkId)
     return redirect(url_for('site.food_home_page'))
+
+@site.route('/deals/new', methods = ['GET','POST'])
+def deals_add_function():
+    if request.method == 'GET':
+        return render_template('deals/new.html', form=None)
+    else:
+        form = request.form
+        isValid = validate_deal_data(form)
+
+        if isValid:
+            deal = Deals(form = form, foodId = 1, restaurantId = 1)
+            return render_template('deals/new.html', form=None)
+
+
 
 def validate_user_data(form):
     if form == None:
@@ -853,5 +849,23 @@ def validate_achievement_data(form):
     else:
         form.data['endDate'] = form['endDate']
 
+
+    return len(form.error) == 0
+
+def validate_deal_data(form):
+    if form == None:
+        return True
+    form.data = {}
+    form.error = {}
+
+    if len(form['rate'].strip()) == 0:
+        form.error['rate'] = 'Discount rate of the deal can not be blank'
+    else:
+        form.data['rate'] = form['rate']
+
+    if len(form['ValidDate'].strip()) == 0:
+        form.error['ValidDate'] = 'Valid date of the deal can not be blank'
+    else:
+        form.data['ValidDate'] = form['ValidDate']
 
     return len(form.error) == 0
