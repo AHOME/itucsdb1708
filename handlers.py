@@ -267,11 +267,8 @@ def initialize_database():
 
 @site.route('/restaurants')
 def restaurant_home_page():
-    with dbapi2.connect(current_app.config['dsn']) as connection:
-        cursor = connection.cursor()
-        query = """SELECT * FROM RESTAURANTS"""
-        cursor.execute(query)
-        allValues = cursor.fetchall()
+    restaurants = Restaurant()
+    allValues = restaurants.select_all_restaurants()        
     return render_template('restaurant/index.html', allValues = allValues)
 
 @site.route('/restaurant/create', methods=['GET','POST'])
