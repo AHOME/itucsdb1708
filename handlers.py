@@ -5,16 +5,17 @@ from flask_login import LoginManager,login_user,login_required,current_user
 from flask_login import logout_user
 from passlib.apps import custom_app_context as pwd_context
 from classes.messages_controller import *
-from classes.restaurants import *
+
 
 
 import psycopg2 as dbapi2
+
+site = Blueprint('site', __name__)
+from classes.restaurants import *
 from classes.drinks import *
 from classes.events import *
 from classes.event_control_functions import *
 from classes.drink_control_functions import *
-site = Blueprint('site', __name__)
-
 
 from classes.users import *
 from server import load_user
@@ -61,7 +62,7 @@ def home_page():
             cursor.execute(statement, [input_mail])
             db_mail = cursor.fetchone()
             if db_mail is not None:  # check whether the user exists
-                user = load_user(db_mail.get_mail())
+                user = load_user(db_mail)
                 statement = """SELECT PASSWORD FROM USERS WHERE MAIL = %s"""
                 cursor.execute(statement,[db_mail])
                 if pwd_context.verify(input_password,user.Password) is True:
@@ -105,9 +106,6 @@ def initialize_database():
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
 
-        query = """DROP TABLE IF EXISTS USERS;"""
-        cursor.execute(query)
-
         query = """DROP TABLE IF EXISTS MESSAGES;"""
         cursor.execute(query)
 
@@ -139,6 +137,9 @@ def initialize_database():
         cursor.execute(query)
 
         query = """DROP TABLE IF EXISTS ORDERS;"""
+        cursor.execute(query)
+
+        query = """DROP TABLE IF EXISTS USERS;"""
         cursor.execute(query)
 
         # Next three queries will be removed after we update our queries
@@ -201,7 +202,7 @@ def initialize_database():
            CONTACT_NAME VARCHAR(80) NOT NULL,
            CONTACT_PHONE VARCHAR(80) NOT NULL,
            SCORE INTEGER NOT NULL DEFAULT 0 CHECK( SCORE >= 0 AND SCORE <= 5),
-           PROFILE_PICTURE VARCHAR(150) NOT NULL,
+           PROFILE_PICTURE VARCHAR(500) NOT NULL,
            HOURS VARCHAR(80) NOT NULL,
            CURRENT_STATUS VARCHAR(80) NOT NULL
         );"""
@@ -287,96 +288,64 @@ def initialize_database():
 
 
 
+
 @site.route('/restaurants')
 def restaurant_home_page():
     restaurants = Restaurant()
     allValues = restaurants.select_all_restaurants()
     return render_template('restaurant/index.html', allValues = allValues)
 
+@site.route('/restaurant/<int:restaurant_id>/')
+#@login_required
+def restaurant_show_page(restaurant_id, methods=['GET','POST']):
+    restaurant = Restaurant()
+    restaurant.select_restaurant_by_id(restaurant_id)
+    comments = restaurant.select_all_comments(restaurant_id)
+    return render_template('restaurant/show.html', restaurant = restaurant, comments = comments)
+
 @site.route('/restaurant/create', methods=['GET','POST'])
 def restaurant_create_page():
     if request.method == 'GET':
         return render_template('restaurant/new.html')
     else:
-        nameInput = request.form['Name']
-        addressInput = request.form['Address']
-        contactNameInput = request.form['ContanctName']
-        contactPhoneInput = request.form['ContanctPhone']
-        photoInput = request.form['Photo']
-        workingHoursInput = request.form['WorkingHours']
-        currentStatusInput = request.form['CurrentStatus']
-        with dbapi2.connect(current_app.config['dsn']) as connection:
-            cursor = connection.cursor()
-            query = """
-                INSERT INTO RESTAURANTS (NAME, ADDRESS, CONTACT_NAME, CONTACT_PHONE, PROFILE_PICTURE,HOURS,CURRENT_STATUS)
-                VALUES (%s,%s,%s,%s,%s,%s,%s)"""
-            cursor.execute(query, [nameInput, addressInput, contactNameInput, contactPhoneInput, photoInput, workingHoursInput, currentStatusInput ])
-            connection.commit()
+        restaurant = Restaurant()
+        restaurant.create_restaurant(request.form)
         return redirect(url_for('site.restaurant_home_page'))
+
+@site.route('/restaurant/<int:restaurant_id>/delete')
+#@login_required
+def restaurant_delete_func(restaurant_id):
+    restaurant = Restaurant()
+    restaurant.delete_restaurant_by_id(restaurant_id)
+    return redirect(url_for('site.restaurant_home_page'))
+
+@site.route('/restaurant/<int:restaurant_id>/edit', methods=['GET','POST'])
+def restaurant_edit_page(restaurant_id):
+    restaurant = Restaurant()
+    form = request.form
+    if request.method == 'GET':
+        restaurant.select_restaurant_by_id(restaurant_id)
+    else:
+        restaurant.update_restaurant_by_id(form, restaurant_id)
+        return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
+    return render_template('restaurant/edit.html', form = form , address = restaurant.address, name = restaurant.name, contactName = restaurant.contactName, contactPhone = restaurant.contactPhone, pp = restaurant.profilePicture, hours = restaurant.hours, currentStatus = restaurant.currentStatus)
 
 
 @site.route('/submit_comment', methods=['POST'])
 def submit_comment():
   restaurant_id = request.form['restaurant_id']
-  comment = request.form['comment']
-  # YOU GOTTA CREATE THE USER OVER WHERE
+  restaurant = Restaurant()
+  restaurant.create_comment(request.form)
   return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
 
-
-@site.route('/restaurant/<int:restaurant_id>/')
-#@login_required
-def restaurant_show_page(restaurant_id):
-    with dbapi2.connect(current_app.config['dsn']) as connection:
-        cursor = connection.cursor()
-        query = """SELECT * FROM RESTAURANTS WHERE id = %s"""
-        cursor.execute(query, [restaurant_id])
-        value = cursor.fetchall()
-        sendedValue = value[0]
-    return render_template('restaurant/show.html', sendedValue = sendedValue)
-
-@site.route('/restaurant/<int:restaurant_id>/delete')
-#@login_required
-def restaurant_delete_func(restaurant_id):
-    with dbapi2.connect(current_app.config['dsn']) as connection:
-        cursor = connection.cursor()
-        query = """DELETE FROM RESTAURANTS WHERE ID = %s"""
-        cursor.execute(query, [restaurant_id])
-        connection.commit()
-    return redirect(url_for('site.restaurant_home_page'))
-
-@site.route('/restaurant/<int:restaurant_id>/edit', methods=['GET','POST'])
-def restaurant_edit_page(restaurant_id):
-    if request.method == 'GET':
-        with dbapi2.connect(current_app.config['dsn']) as connection:
-            cursor = connection.cursor()
-            query = """SELECT * FROM RESTAURANTS WHERE id = %s"""
-            cursor.execute(query, [restaurant_id])
-            value = cursor.fetchall()
-            name = value[0][1]
-            address = value[0][2]
-            contactName = value[0][3]
-            contactPhone = value[0][4]
-            score = value[0][5]
-            pp = value[0][6]
-            hours = value[0][7]
-            currentStatus = value[0][8]
-    else:
-        nameInput = request.form['Name']
-        addressInput = request.form['Address']
-        contactNameInput = request.form['ContanctName']
-        contactPhoneInput = request.form['ContanctPhone']
-        photoInput = request.form['Photo']
-        workingHoursInput = request.form['WorkingHours']
-        currentStatusInput = request.form['CurrentStatus']
-        with dbapi2.connect(current_app.config['dsn']) as connection:
-            cursor = connection.cursor()
-            query = """UPDATE RESTAURANTS SET NAME = %s, ADDRESS = %s, CONTACT_NAME = %s, CONTACT_PHONE = %s, PROFILE_PICTURE = %s, HOURS = %s, CURRENT_STATUS = %s WHERE ID = %s"""
-            cursor.execute(query, [nameInput, addressInput, contactNameInput, contactPhoneInput, photoInput, workingHoursInput, currentStatusInput, restaurant_id])
-            connection.commit()
-        return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
-
-    form = request.form
-    return render_template('restaurant/edit.html', form = form , address = address, name = name, contactName = contactName, contactPhone = contactPhone, pp = pp, hours = hours, currentStatus = currentStatus)
+@site.route('/comment/<int:comment_id>/<int:restaurant_id>/delete_comment')
+def comment_delete_func(comment_id, restaurant_id):
+    print("ali")
+    restaurant = Restaurant()
+    print("ali")
+    restaurant.delete_comment_by_id(comment_id)
+    print("ali")
+    return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
 
 
 @site.route('/foods')
@@ -450,6 +419,10 @@ def food_edit_page(food_id):
 
     form = request.form
     return render_template('food/edit.html', form = form, name = name, icon = icon, food_type = food_type, price = price, calorie = calorie)
+
+
+
+
 
 @site.route('/register', methods=['GET','POST'])
 def register_home_page():
