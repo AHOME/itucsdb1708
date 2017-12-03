@@ -4,6 +4,7 @@ from datetime import datetime
 from flask_login import LoginManager,login_user,login_required,current_user
 from flask_login import logout_user
 from passlib.apps import custom_app_context as pwd_context
+<<<<<<< HEAD
 from classes.messages_controller import *
 
 
@@ -12,6 +13,11 @@ import psycopg2 as dbapi2
 
 site = Blueprint('site', __name__)
 from classes.restaurants import *
+=======
+import psycopg2 as dbapi2
+
+from classes.messages import *
+>>>>>>> 1b9f703af5046cd338ffe304dc74a8f64a5551e8
 from classes.drinks import *
 from classes.events import *
 from classes.event_control_functions import *
@@ -30,7 +36,7 @@ def logout_page():
     session['logged_in'] = False
     session['name'] = ''
     session['id'] = 0
-    return redirect(url_for('site.home_page'))
+    return redirect(url_for('site.home_page',firstEvent=None,eventDic=None))
 
 @site.route('/', methods=['GET', 'POST'])
 def home_page():
@@ -43,7 +49,7 @@ def home_page():
             eventList.append(Events(select = eventSelect))
     #return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
     if request.method == 'GET':
-        return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
+        return render_template('home/index.html',firstEvent = None,eventDic = None)
     else:
         input_mail = request.form['InputEmail']
         input_password = request.form['InputPassword']
@@ -54,8 +60,13 @@ def home_page():
             session['name'] = user.get_name() + ' ' + user.get_lastname()
             session['id'] = user.get_Id()
             flash( current_user.get_mail())
+<<<<<<< HEAD
             return redirect(url_for('site.home_page'))
 
+=======
+            return redirect(url_for('site.home_page',firstEvent = None,eventDic = None))
+            
+>>>>>>> 1b9f703af5046cd338ffe304dc74a8f64a5551e8
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             statement = """SELECT MAIL FROM USERS WHERE MAIL = %s"""
@@ -71,11 +82,11 @@ def home_page():
                     session['name'] = user.get_name() + ' ' + user.get_lastname()
                     session['id'] = user.get_Id()
                     flash( current_user.get_mail())
-                    return redirect(url_for('site.home_page'))
+                    return redirect(url_for('site.home_page',firstEvent = None,eventDic = None))
                 else:
-                    return redirect(url_for('site.home_page')) #Couldn't login
+                    return redirect(url_for('site.home_page',firstEvent = None,eventDic = None)) #Couldn't login
             else:
-                return redirect(url_for('site.home_page'))
+                return redirect(url_for('site.home_page',firstEvent = None,eventDic = None))
 
 
 
