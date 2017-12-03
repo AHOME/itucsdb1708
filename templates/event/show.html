@@ -7,7 +7,7 @@
 <div class="container">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="eventTitle">
-            <h2>Event Name</h2>
+            <h2>{{ event.name }}</h2>
         </div>
     </div>
     <div class="row">
@@ -18,17 +18,21 @@
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         	<p id="expPara">
-        	    Explanation of Event will be here.
+        	    {{ event.content }}
         	</p>
         </div>
     </div>
     <div class="row">
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-            <p id="Place"><b>Place of Event:</b></p>
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+            <p id="Place"><b>Place of Event: {{ event.address }}</b></p>
         </div>
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-            <p id="Date"><b>Date of Event:</b></p>
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+            <p id="Date"><b>Date of Event: {{ event.startDate }} - {{event.endDate }}</b></p>
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+          <a href="{{ url_for('site.event_edit_page',eventId = event.Id ) }}" class="btn btn-warning" >Edit This Event</a>
         </div>
     </div>
+
 </div>
 {% endblock %}

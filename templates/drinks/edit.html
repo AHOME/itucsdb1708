@@ -1,0 +1,88 @@
+{% extends "layouts/layout.html" %}
+
+{% block title %} Registration Page{% endblock %}
+{% block csslinks %}  <link rel="stylesheet" type="text/css" href="/static/register/index.css" > {% endblock %}
+{% block content %}
+
+
+ <div class="container" align="left">
+           <form class="form-horizontal" method="POST" role="form" name="user_edit">
+               <h2>Drink Edit Form</h2>
+               <div class="form-group">
+                   <label for="firstName" class="col-sm-3 control-label">Name of the Drink</label>
+                   <div class="col-sm-9">
+                       <input type="text" id="Name" name="Name" placeholder="Name" value = "{{ drink.name }}" class="form-control" autofocus>
+                       {% if 'Name' in form.error %}
+                      <div class="alert alert-danger">
+                           {{ form.error['Name'] }}
+                       </div>
+                      {% endif %}
+                   </div>
+               </div>
+               <div class="form-group">
+                   <label for="calorie" class="col-sm-3 control-label">Calorie</label>
+                   <div class="col-sm-9">
+                       <input type="number" id="calorie" name="calorie" value="{{ drink.calorie }}"class="form-control">
+                       {% if 'calorie' in form.error %}
+                      <div class="alert alert-danger">
+                           {{ form.error['calorie'] }}
+                       </div>
+                      {% endif %}
+                   </div>
+               </div>
+               <div class="form-group">
+                   <label class="control-label col-sm-3">Drink Cold?</label>
+                   <div class="col-sm-6">
+                       <div class="row">
+                           <div class="col-sm-4">
+                               <label class="radio-inline">
+                                   <input type="radio" name ="drink_cold" id="yes_radio" value="Yes" checked>Yes
+                               </label>
+                           </div>
+                           <div class="col-sm-4">
+                               <label class="radio-inline">
+                                   <input type="radio" name ="drink_cold" id="yes_radio" value="No">No
+                               </label>
+                           </div>
+                       </div>
+                   </div>
+               </div> <!-- /.form-group -->
+               <div class="form-group">
+                   <label class="control-label col-sm-3">Alcohol?</label>
+                   <div class="col-sm-9">
+                       <div class="radio">
+                           <label>
+                               <input type="radio" name ="alcohol" id="alcohol_yes" value="Yes" checked>Yes
+                           </label>
+                       </div>
+                       <div class="radio">
+                           <label>
+                               <input type="radio" name ="alcohol"  id="alcohol_no" value="No">No
+                           </label>
+                       </div>
+                   </div>
+               </div> <!-- /.form-group -->
+               <div class="form-group">
+                   <label class="control-label col-sm-3">Soda?</label>
+                   <div class="col-sm-9">
+                       <div class="radio">
+                           <label>
+                               <input type="radio" name ="Soda" id="soda_yes" value="Yes"checked>Yes
+                           </label>
+                       </div>
+                       <div class="radio">
+                           <label>
+                               <input type="radio" name ="Soda"  id="soda_no" value="No">No
+                           </label>
+                       </div>
+                   </div>
+               </div> <!-- /.form-group -->
+
+               <div class="form-group">
+                   <div class="col-sm-9 col-sm-offset-3">
+                       <button type="submit" class="btn btn-danger btn-block">Edit Drink</button>
+                   </div>
+               </div>
+           </form> <!-- /form -->
+       </div> <!-- ./container -->
+{% endblock %}
