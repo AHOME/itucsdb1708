@@ -233,11 +233,11 @@ def initialize_database():
         MAIL VARCHAR(80) NOT NULL,
         PASSWORD VARCHAR(500) NOT NULL,
         BIRTHDATE DATE NOT NULL,
-        BIO VARCHAR(500) NOT NULL,
         CITY VARCHAR(80) NOT NULL,
         GENDER VARCHAR(20),
         USERTYPE INTEGER NOT NULL,
-        AVATAR VARCHAR(255)
+        AVATAR VARCHAR(255),
+        BIO VARCHAR(500) NOT NULL
         );"""
         cursor.execute(query)
 
@@ -296,11 +296,11 @@ def initialize_database():
         connection.commit()
 
         query = """
-               INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR)
+               INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR,BIO)
                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
         hashed_password = pwd_context.encrypt("12345")
-        cursor.execute(query, ("admin", "admin", "admin@restoranlandin.com", hashed_password, "10.10.2012", "","",0,"avatar"))
+        cursor.execute(query, ("admin", "admin", "admin@restoranlandin.com", hashed_password, "10.10.2012", "","",0,"avatar",""))
         connection.commit()
 
         return redirect(url_for('site.home_page'))
@@ -487,10 +487,10 @@ def register_home_page():
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()
                 query = """
-                    INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, BIO, CITY, GENDER, USERTYPE, AVATAR)
+                    INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY, GENDER, USERTYPE, AVATAR, BIO)
                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
-                cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate, bio, city, gender, userType, "avatar"))
+                cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate,city, gender, userType, "avatar",bio))
                 connection.commit()
             return redirect(url_for('site.home_page'))
 
@@ -537,12 +537,12 @@ def messages_new_page(user_id):
             return  render_template('messages/new.html',form=form)
 
 
-@site.route('/user/15') #Change me with model [ID]
+@site.route('/user/<int:user_id>/show') #Change me with model [ID]
 @login_required
-def user_show_page():
+def user_show_page(user_id):
     return render_template('user/show.html')
 
-@site.route('/user/15/edit') #Change me with model [ID]
+@site.route('/user/<int:user_id>/edit') #Change me with model [ID]
 @login_required
 def user_edit_page():
     if request.method == 'GET':
