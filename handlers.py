@@ -12,6 +12,8 @@ from classes.events import *
 from classes.restaurants import *
 from classes.event_control_functions import *
 from classes.drink_control_functions import *
+import classes.achievements as achievementMod
+from classes.deals import Deals
 site = Blueprint('site', __name__)
 
 
@@ -31,6 +33,7 @@ def logout_page():
 def home_page():
     events = select_all_events()
     eventList = []
+    firstEvent = None
     for eventNum,eventSelect in enumerate(events):
         if eventNum == 0:#Create event objects
             firstEvent = Events(select = eventSelect)
@@ -49,8 +52,8 @@ def home_page():
             session['name'] = user.get_name() + ' ' + user.get_lastname()
             session['id'] = user.get_Id()
             flash( current_user.get_mail())
-            return redirect(url_for('site.home_page',firstEvent = None,eventDic = None))
-
+            return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
+          
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             statement = """SELECT MAIL FROM USERS WHERE MAIL = %s"""
@@ -66,11 +69,13 @@ def home_page():
                     session['name'] = user.get_name() + ' ' + user.get_lastname()
                     session['id'] = user.get_Id()
                     flash( current_user.get_mail())
-                    return redirect(url_for('site.home_page',firstEvent = None,eventDic = None))
+
+                    return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
                 else:
-                    return redirect(url_for('site.home_page',firstEvent = None,eventDic = None)) #Couldn't login
+                    return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList) #Couldn't login
             else:
-                return redirect(url_for('site.home_page',firstEvent = None,eventDic = None))
+                return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
+
 
 
 
@@ -183,7 +188,9 @@ def initialize_database():
            ID SERIAL PRIMARY KEY,
            NAME VARCHAR(80) NOT NULL,
            ICON VARCHAR(255) NOT NULL,
-           CONTENT VARCHAR(80) NOT NULL
+           CONTENT VARCHAR(80) NOT NULL,
+           GOAL INTEGER NOT NULL,
+           ENDDATE DATE NOT NULL
         );"""
         cursor.execute(query)
 
@@ -226,6 +233,7 @@ def initialize_database():
         MAIL VARCHAR(80) NOT NULL,
         PASSWORD VARCHAR(500) NOT NULL,
         BIRTHDATE DATE NOT NULL,
+        BIO VARCHAR(500) NOT NULL,
         CITY VARCHAR(80) NOT NULL,
         GENDER VARCHAR(20),
         USERTYPE INTEGER NOT NULL,
@@ -298,8 +306,6 @@ def initialize_database():
         return redirect(url_for('site.home_page'))
 
 
-
-
 @site.route('/restaurants')
 def restaurant_home_page():
     restaurants = Restaurant()
@@ -324,7 +330,6 @@ def restaurant_create_page():
         restaurant = Restaurant()
         restaurant.create_restaurant(request.form)
         return redirect(url_for('site.restaurant_home_page'))
-
 
 @site.route('/restaurant/<int:restaurant_id>/')
 def restaurant_show_page(restaurant_id, methods=['GET','POST']):
@@ -485,6 +490,7 @@ def register_home_page():
             password = request.form['password']
             hashed_password = pwd_context.encrypt(password)
             birthDate = request.form['birthDate']
+            bio = request.form['bio']
             city = request.form['city']
             gender = request.form['gender']
             userType = request.form['userType']
@@ -492,10 +498,10 @@ def register_home_page():
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()
                 query = """
-                    INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR)
-                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+                    INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, BIO, CITY, GENDER, USERTYPE, AVATAR)
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
-                cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate, city,gender,userType,"avatar"))
+                cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate, bio, city, gender, userType, "avatar"))
                 connection.commit()
             return redirect(url_for('site.home_page'))
 
@@ -550,7 +556,49 @@ def user_show_page():
 @site.route('/user/15/edit') #Change me with model [ID]
 @login_required
 def user_edit_page():
-    return render_template('user/edit.html')
+    if request.method == 'GET':
+        return render_template('user/edit.html',form=None)
+    else:
+        valid = validate_user_data(request.form)
+        if valid:
+            name = request.form['firstName']
+            nameList= name.split(" ")
+            if(len(nameList) >= 2):
+                firstName = nameList[0]
+                lastName = nameList[1]
+            elif(len(nameList) <2):
+                firstName = nameList[0]
+                lastName=""
+            email = request.form['email']
+            password = request.form['password']
+            hashed_password = pwd_context.encrypt(password)
+            birthDate = request.form['birthDate']
+            bio = request.form['bio']
+            city = request.form['city']
+            gender = request.form['gender']
+            userType = request.form['userType']
+
+            with dbapi2.connect(current_app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """
+                    UPDATE USERS
+                        SET FIRSTNAME = %s,
+                            LASTNAME = %s,
+                            MAIL = %s,
+                            PASSWORD = %s,
+                            BIRTHDATE = %s,
+                            BIO = %s,
+                            CITY = %s,
+                            GENDER = %s,
+                            USERTYPE = %s,
+                            AVATAR = %s WHERE (ID = %s)"""
+
+                cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate, bio, city, gender, userType, "avatar", Id))
+                connection.commit()
+            return redirect(url_for('site.user_show_page'))
+
+        form = request.form
+        return render_template('user/edit.html',form=form)
 
 @site.route('/admin',methods = ['GET','POST'])
 @login_required
@@ -567,16 +615,60 @@ def admin_page():
         #delete events which have ids in eventIds list
         for Id in eventIds:
             delete_event_by_id(Id)
-            #Fetch all events to list.
+
+        achievement_ids = request.form.getlist('achievement_ids')
+
+        for ach_id in achievement_ids:
+            achievementMod.achievement_delete_by_Id(ach_id)
+
+
+    achievements = achievementMod.achievement_select_all()
+    achievementList = []
+
+    for achievement in achievements:
+        achievementList.append(achievementMod.Achievements(select = achievement))
+
+    #Fetch all events to list.
     events = select_all_events()
     eventDic = {}
     for event in events:
         eventDic[event[0]] = event[5]
-    return render_template('admin/index.html',eventDic = eventDic)
+
+    return render_template('admin/index.html', achievements = achievementList, eventDic = eventDic)
+
+
+@site.route('/achievement/<int:achievement_id>', methods=['GET','POST'])
+def achievement_show_page(achievement_id):
+    if request.method == 'GET':
+        select = achievementMod.achievement_select_by_Id(achievement_id)
+        achievement = achievementMod.Achievements(select=select)
+        return render_template('achievement/show.html',achievement = achievement, form=None)
+    else:
+        achievementMod.achievement_update(request.form, achievement_id)
+        return redirect(url_for('site.admin_page'))
+        #select = cursor.fetchone()
+        #achievement = Achievements(select=select)
+
+
+@site.route('/achievement/new',methods = ['GET','POST'])
+@login_required
+def achievement_create_page():
+    if request.method == 'GET':
+        return render_template('achievement/new.html', form = None)
+    else:
+        isValid = validate_achievement_data(request.form)
+    if isValid:
+        #create an object from form and add it to database.
+        achievement = achievementMod.Achievements(form = request.form)
+        return redirect(url_for('site.admin_page'))
+    form = request.form
+    return render_template('achievement/new.html',form=form)
+
 
 @site.route('/event/new',methods = ['GET','POST'])
 @login_required
 def event_create_page():
+    print('ss')
     if request.method == 'GET':
         return render_template('event/new.html',form = None)
     else:
@@ -584,6 +676,7 @@ def event_create_page():
         if isValid:
             #create an object from form and add it to database.
             event = Events(form = request.form)
+            print('ss')
             return redirect(url_for('site.home_page'))
         form = request.form
         return render_template('event/new.html',form=form)
@@ -605,11 +698,6 @@ def event_edit_page(eventId):
             return render_template('event/show.html',event = event)
         else:
             return render_template('event/edit.html',event = event,form = form)
-
-@site.route('/achievement/new')
-@login_required
-def achievement_create_page():
-    return render_template('achievement/new.html')
 
 @site.route('/event/<int:eventId>')
 @login_required
@@ -654,6 +742,20 @@ def drink_delete_function(drinkId):
     delete_drink_by_id(drinkId)
     return redirect(url_for('site.food_home_page'))
 
+@site.route('/deals/new', methods = ['GET','POST'])
+def deals_add_function():
+    if request.method == 'GET':
+        return render_template('deals/new.html', form=None)
+    else:
+        form = request.form
+        isValid = validate_deal_data(form)
+
+        if isValid:
+            deal = Deals(form = form, foodId = 1, restaurantId = 1)
+            return render_template('deals/new.html', form=None)
+
+
+
 def validate_user_data(form):
     if form == None:
         return true
@@ -687,6 +789,7 @@ def validate_user_data(form):
         form.data['terms'] = form['terms']
 
     return len(form.errors) == 0
+
 
 def validate_event_data(form):
     if form == None:
@@ -736,5 +839,53 @@ def validate_drink_data(form):
         form.error['calorie'] = 'Calorie value must be specified'
     else:
         form.data['calorie'] = form['calorie']
+
+    return len(form.error) == 0
+
+
+def validate_achievement_data(form):
+    if form == None:
+        return True
+    form.data = {}
+    form.error = {}
+
+    if len(form['Name'].strip()) == 0:
+        form.error['Name'] = 'Name of the achievement can not be blank'
+    else:
+        form.data['Name'] = form['Name']
+
+    if len(form['Explanation'].strip()) == 0:
+        form.error['Explanation'] = 'Explanation of the achievement can not be blank'
+    else:
+        form.data['Explanation'] = form['Explanation']
+
+    if len(form['Goal'].strip()) == 0:
+        form.error['Goal'] = 'Goal of the achievement can not be blank'
+    else:
+        form.data['Explanation'] = form['Explanation']
+
+    if len(form['endDate'].strip()) == 0:
+        form.error['endDate'] = 'endDate of the achievement can not be blank'
+    else:
+        form.data['endDate'] = form['endDate']
+
+
+    return len(form.error) == 0
+
+def validate_deal_data(form):
+    if form == None:
+        return True
+    form.data = {}
+    form.error = {}
+
+    if len(form['rate'].strip()) == 0:
+        form.error['rate'] = 'Discount rate of the deal can not be blank'
+    else:
+        form.data['rate'] = form['rate']
+
+    if len(form['ValidDate'].strip()) == 0:
+        form.error['ValidDate'] = 'Valid date of the deal can not be blank'
+    else:
+        form.data['ValidDate'] = form['ValidDate']
 
     return len(form.error) == 0

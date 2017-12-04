@@ -1,0 +1,24 @@
+{% extends "layouts/layout.html" %}
+
+{% block title %} Home {% endblock %}
+{%block csslinks %}   <link rel="stylesheet" href="/static/admin/index.css" /> {% endblock %}
+{%block content %}
+
+<div class="col-xs-8 col-sm-8 col-md-3 col-lg-3" id = "achievements">
+  <h2>Achievements</h2>
+<form method="post">
+  <div class="achievementscroll" id="achievementscroll">
+    {% if achievements %}
+        {% for achievement in achievements %}
+            <div class="checkbox">
+              <label><input type="checkbox" name="achievement_ids" value="{{achievement.Id}}"><a href="{{ url_for('site.achievement_show_page',achievement_id = achievement.Id) }}">{{ achievement.name }}</label>
+            </div>
+        {% endfor %}
+    {% endif %}
+  </div>
+    <button type="submit" name="delete"
+    class="btn btn-primary" id="delete_button">Delete Achievements</button>
+</form>
+</div>
+
+{% endblock %}
