@@ -8,6 +8,7 @@ import psycopg2 as dbapi2
 
 from classes.messages import *
 from classes.drinks import *
+from classes.foods import *
 from classes.events import *
 from classes.restaurants import *
 from classes.event_control_functions import *
@@ -384,38 +385,27 @@ def give_star_func(user_id, restaurant_id, score):
 
 
 
-@site.route('/foods')
+@site.route('/menuitems')
 def food_home_page():
-    with dbapi2.connect(current_app.config['dsn']) as connection:
-        cursor = connection.cursor()
-        query = """SELECT * FROM FOODS"""
-        cursor.execute(query)
-        allValues = cursor.fetchall()
-        #Fetch all drinks from database
-        drinks = select_all_drinks()
-        drinkList = []
-        for drink in drinks:
-            drinkList.append(Drinks(select = drink))
+    food = Foods()
+    print("ali")
+    foods = food.select_all_foods()
+    print("ali")
+    drinks = select_all_drinks()
+    print("ali")
+    drinkList = []
+    for drink in drinks:
+        drinkList.append(Drinks(select = drink))
 
-    return render_template('food/index.html', allValues = allValues,drinks = drinkList)
+    return render_template('food/index.html', foods = foods, drinks = drinkList)
 
 @site.route('/food/create', methods=['GET','POST'])
 def food_create_page():
     if request.method == 'GET':
         return render_template('food/new.html')
     else:
-        nameInput = request.form['name']
-        iconInput = request.form['icon']
-        typeNameInput = request.form['type']
-        priceInput = request.form['price']
-        calorieInput = request.form['calorie']
-        with dbapi2.connect(current_app.config['dsn']) as connection:
-            cursor = connection.cursor()
-            query = """
-                INSERT INTO FOODS (NAME, ICON, FOOD_TYPE, PRICE, CALORIE)
-                VALUES (%s,%s,%s,%s,%s)"""
-            cursor.execute(query, [nameInput, iconInput, typeNameInput, priceInput, calorieInput])
-            connection.commit()
+        food = Foods()
+        food.create_food(request.form)
         return redirect(url_for('site.food_home_page'))
 
 @site.route('/food/<int:food_id>/delete')

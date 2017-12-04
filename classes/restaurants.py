@@ -6,7 +6,7 @@ import datetime
 #from passlib.ext.django.models import password_context
 
 class Restaurant():
-    def __init__(self,):
+    def __init__(self):
         self.primaryId = ""
         self.name =  ""
         self.address = ""
