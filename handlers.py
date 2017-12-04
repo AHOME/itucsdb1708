@@ -356,7 +356,7 @@ def restaurant_edit_page(restaurant_id):
 
 @site.route('/submit_comment', methods=['POST'])
 def submit_comment():
-    if(current_user.is_admin):
+    if(current_user.is_authenticated):
         restaurant_id = request.form['restaurant_id']
         restaurant = Restaurant()
         restaurant.create_comment(request.form)
@@ -366,7 +366,7 @@ def submit_comment():
 
 @site.route('/comment/<int:comment_id>/<int:restaurant_id>/delete_comment')
 def comment_delete_func(comment_id, restaurant_id):
-    if(current_user.is_authenticated):
+    if(current_user.is_admin):
         restaurant = Restaurant()
         restaurant.delete_comment_by_id(comment_id)
         return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
