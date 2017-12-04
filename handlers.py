@@ -53,7 +53,7 @@ def home_page():
             session['id'] = user.get_Id()
             flash( current_user.get_mail())
             return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
-          
+
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             statement = """SELECT MAIL FROM USERS WHERE MAIL = %s"""
@@ -330,17 +330,6 @@ def restaurant_create_page():
         restaurant = Restaurant()
         restaurant.create_restaurant(request.form)
         return redirect(url_for('site.restaurant_home_page'))
-
-@site.route('/restaurant/<int:restaurant_id>/')
-def restaurant_show_page(restaurant_id, methods=['GET','POST']):
-    restaurant = Restaurant()
-    restaurant.select_restaurant_by_id(restaurant_id)
-    check = True
-    if( current_user.is_authenticated ):
-        check = restaurant.check_user_gave_a_star_or_not(current_user.Id,restaurant_id)
-    comments = restaurant.select_all_comments(restaurant_id)
-    return render_template('restaurant/show.html', restaurant = restaurant, comments = comments, check = check)
-
 
 @site.route('/restaurant/<int:restaurant_id>/delete')
 @login_required
