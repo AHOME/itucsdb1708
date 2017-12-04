@@ -327,17 +327,14 @@ def restaurant_create_page():
 
 
 @site.route('/restaurant/<int:restaurant_id>/')
-@login_required
-def restaurant_show_page(restaurant_id):
-
-    with dbapi2.connect(current_app.config['dsn']) as connection:
-        cursor = connection.cursor()
-        query = """SELECT * FROM RESTAURANTS WHERE id = %s"""
-        cursor.execute(query, [restaurant_id])
-        value = cursor.fetchall()
-        sendedValue = value[0]
-    return render_template('restaurant/show.html', sendedValue = sendedValue)
-
+def restaurant_show_page(restaurant_id, methods=['GET','POST']):
+    restaurant = Restaurant()
+    restaurant.select_restaurant_by_id(restaurant_id)
+    check = True
+    if( current_user.is_authenticated ):
+        check = restaurant.check_user_gave_a_star_or_not(current_user.Id,restaurant_id)
+    comments = restaurant.select_all_comments(restaurant_id)
+    return render_template('restaurant/show.html', restaurant = restaurant, comments = comments, check = check)
 
 
 @site.route('/restaurant/<int:restaurant_id>/delete')
@@ -375,7 +372,7 @@ def submit_comment():
 
 @site.route('/comment/<int:comment_id>/<int:restaurant_id>/delete_comment')
 def comment_delete_func(comment_id, restaurant_id):
-    if(current_user.is_admin):
+    if(current_user.is_authenticated):
         restaurant = Restaurant()
         restaurant.delete_comment_by_id(comment_id)
         return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
