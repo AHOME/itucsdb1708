@@ -772,6 +772,8 @@ def validate_user_data(form):
     else:
         form.data['userType'] = form['userType']
 
+    form.data['bio'] = form['bio']
+
     if form['terms'] == 0:
         form.errors['terms'] = 'You should accept the terms'
     else:
