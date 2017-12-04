@@ -40,7 +40,7 @@
                     <center>
                     <button type="button" class="btn btn-warning" data-dismiss="modal">OK</button>
                     <!-- <button type="button" class="btn btn-warning" data-dismiss="modal">Edit</button> -->
-                    <a href="{{ url_for('site.user_edit_page') }}" class="btn btn-warning" >Edit</a>
+                    <a href="{{ url_for('site.user_edit_page',user_id=session['id']) }}" class="btn btn-warning" >Edit</a>
                     </center>
                 </div>
             </div>
@@ -51,7 +51,7 @@
     <div class="row col-md-12 custyle">
     <table class="table table-striped custab">
     <thead>
-    <a href="{{ url_for('site.restaurant_new_page') }}" class="btn btn-primary btn-xs pull-right"><b>+</b> Add new restaurant</a>
+    <a href="{{ url_for('site.restaurant_create_page') }}" class="btn btn-primary btn-xs pull-right"><b>+</b> Add new restaurant</a>
         <tr>
             <th>ID</th>
             <th>Restaurant Name</th>
@@ -65,7 +65,7 @@
     </thead>
             <tr>
                 <td>1</td>
-                <td><a href="{{ url_for('site.restaurant_show_page') }}">Köfteci Ahmet</a></td>
+                <td><a href="{{ url_for('site.restaurant_home_page') }}">Köfteci Ahmet</a></td>
                 <td>Adana</td>
                 <td>9</td>
                 <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a> <a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
@@ -131,7 +131,7 @@
         </tr>
     </thead>
             <tr>
-                <td><a href="{{ url_for('site.restaurant_show_page') }}">Köfteci Ahmet</a></td>
+                <td><a href="{{ url_for('site.restaurant_home_page') }}">Köfteci Ahmet</a></td>
                 <td>Adana</td>
                 <td>9</td>
                 <td class="text-center"> <a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Dislike</a></td>
@@ -152,7 +152,7 @@
         </tr>
     </thead>
             <tr>
-                <td><a href="{{ url_for('site.restaurant_show_page') }}">Köfteci Ahmet</a></td>
+                <td><a href="{{ url_for('site.restaurant_home_page') }}">Köfteci Ahmet</a></td>
                 <td>1 Izmir Köfte Porsiyon, 1 Ayran</td>
                 <td>13.5 TL</td>
             </tr>

@@ -540,7 +540,7 @@ def messages_new_page(user_id):
 @site.route('/user/<int:user_id>/show') #Change me with model [ID]
 @login_required
 def user_show_page(user_id):
-    return render_template('user/show.html')
+    return render_template('user/show.html',user_id = session['id'])
 
 @site.route('/user/<int:user_id>/edit') #Change me with model [ID]
 @login_required
