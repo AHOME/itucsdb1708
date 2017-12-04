@@ -15,22 +15,26 @@
             <th>Restaurant Location</th>
             <th>Restaurant Rating</th>
             <th>Restaurant Bestseller Item</th>
+            {% if current_user.is_admin %}
             <th></th>
             <th></th>
+            {% endif %}
           </tr>
         </thead>
         <tbody>
             {% for r in allValues %}
-          <tr>
-            <!-- Change me with model and use for loop for showing all item inside the database. -->
-            <td><a href="{{ url_for('site.restaurant_show_page', restaurant_id = r[0]) }}">{{r[1]}}</a></td>
-            <td>{{r[3]}}</td>
-            <td>{{r[2]}}</td>
-            <td>{{r[5]}}/5</td>
-            <td>Porsiyon 4 kofte</td>
-            <td><a href="{{ url_for('site.restaurant_edit_page', restaurant_id = r[0]) }}">Edit</a></td>
-            <td><a href="{{ url_for('site.restaurant_delete_func', restaurant_id = r[0]) }}">Delete</a></td>
-          </tr>
+              <tr>
+                <!-- Change me with model and use for loop for showing all item inside the database. -->
+                <td><a href="{{ url_for('site.restaurant_show_page', restaurant_id = r[0]) }}">{{r[1]}}</a></td>
+                <td>{{r[3]}}</td>
+                <td>{{r[2]}}</td>
+                <td>{{r[5]}}/5</td>
+                <td>Porsiyon 4 kofte</td>
+                {% if current_user.is_admin %}
+                <td><a href="{{ url_for('site.restaurant_edit_page', restaurant_id = r[0]) }}">Edit</a></td>
+                <td><a href="{{ url_for('site.restaurant_delete_func', restaurant_id = r[0]) }}">Delete</a></td>
+                {% endif %}
+              </tr>
             {% endfor %}
         </tbody>
       </table>

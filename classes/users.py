@@ -21,7 +21,7 @@ class Users(UserMixin):
             self.is_admin = False
 
     def get_mail(self):
-        return self.Mail
+        return self.UserType
 
 
     def get_name(self):

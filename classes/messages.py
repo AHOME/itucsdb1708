@@ -20,6 +20,9 @@ def select_all_messages(user_id):
         statement = """SELECT * FROM MESSAGES WHERE SENDER = %s OR RECEIVER = %s"""
         cursor.execute(statement,(user_id,user_id))
         messages = cursor.fetchall()
+    
+    if len(messages) == 0:
+        return messages
         
     for i in range(len(messages)):
         with dbapi2.connect(current_app.config['dsn']) as connection:
