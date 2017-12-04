@@ -18,9 +18,6 @@ site = Blueprint('site', __name__)
 from classes.users import *
 from server import load_user
 
-def abort(code):
-    if code == 401:
-        return "You don't have authorize to access this page!"
 
 @site.route('/logout')
 def logout_page():
@@ -95,11 +92,15 @@ def counter_page():
 
 
 @site.route('/initdb')
-#@login_required
+@login_required
 def initialize_database():
     user = load_user(current_user.get_id())
     if not user.is_admin :
-        abort(401)
+        return """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<title>401 Unauthorized</title>
+<h1>Unauthorized</h1>
+<p>The server could not verify that you are authorized to access the URL requested.  You either supplied the wrong credentials (e.g. a bad password), or your browser doesn't understand how to supply the credentials required.</p>"""
+
 
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
@@ -324,6 +325,18 @@ def restaurant_create_page():
         restaurant.create_restaurant(request.form)
         return redirect(url_for('site.restaurant_home_page'))
 
+
+@site.route('/restaurant/<int:restaurant_id>/')
+def restaurant_show_page(restaurant_id, methods=['GET','POST']):
+    restaurant = Restaurant()
+    restaurant.select_restaurant_by_id(restaurant_id)
+    check = True
+    if( current_user.is_authenticated ):
+        check = restaurant.check_user_gave_a_star_or_not(current_user.Id,restaurant_id)
+    comments = restaurant.select_all_comments(restaurant_id)
+    return render_template('restaurant/show.html', restaurant = restaurant, comments = comments, check = check)
+
+
 @site.route('/restaurant/<int:restaurant_id>/delete')
 @login_required
 def restaurant_delete_func(restaurant_id):
@@ -359,7 +372,7 @@ def submit_comment():
 
 @site.route('/comment/<int:comment_id>/<int:restaurant_id>/delete_comment')
 def comment_delete_func(comment_id, restaurant_id):
-    if(current_user.is_admin):
+    if(current_user.is_authenticated):
         restaurant = Restaurant()
         restaurant.delete_comment_by_id(comment_id)
         return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
@@ -530,21 +543,25 @@ def messages_new_page(user_id):
 
 
 @site.route('/user/15') #Change me with model [ID]
-#@login_required
+@login_required
 def user_show_page():
     return render_template('user/show.html')
 
 @site.route('/user/15/edit') #Change me with model [ID]
-#@login_required
+@login_required
 def user_edit_page():
     return render_template('user/edit.html')
 
 @site.route('/admin',methods = ['GET','POST'])
-#@login_required
+@login_required
 def admin_page():
-#    user = load_user(current_user.get_id())
-#    if not user.is_admin :
-#        abort(401)
+    user = load_user(current_user.get_id())
+    if not user.is_admin :
+        return """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<title>401 Unauthorized</title>
+<h1>Unauthorized</h1>
+<p>The server could not verify that you are authorized to access the URL requested.  You either supplied the wrong credentials (e.g. a bad password), or your browser doesn't understand how to supply the credentials required.</p>"""
+
     if request.method == 'POST':
         eventIds = request.form.getlist('eventIDs')
         #delete events which have ids in eventIds list
@@ -558,7 +575,7 @@ def admin_page():
     return render_template('admin/index.html',eventDic = eventDic)
 
 @site.route('/event/new',methods = ['GET','POST'])
-#@login_required
+@login_required
 def event_create_page():
     if request.method == 'GET':
         return render_template('event/new.html',form = None)
@@ -590,12 +607,12 @@ def event_edit_page(eventId):
             return render_template('event/edit.html',event = event,form = form)
 
 @site.route('/achievement/new')
-#@login_required
+@login_required
 def achievement_create_page():
     return render_template('achievement/new.html')
 
 @site.route('/event/<int:eventId>')
-#@login_required
+@login_required
 def event_show_page(eventId):
     #select specific event from databse
     select = select_event_by_id(eventId)
