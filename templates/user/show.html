@@ -4,6 +4,7 @@
 
 {% block content %}
  {% if current_user.is_authenticated %}
+ {% if current_user.get_type ==1 %}
 <div class="container">
     <div class="span3 well">
         <center>
@@ -40,7 +41,7 @@
                     <center>
                     <button type="button" class="btn btn-warning" data-dismiss="modal">OK</button>
                     <!-- <button type="button" class="btn btn-warning" data-dismiss="modal">Edit</button> -->
-                    <a href="{{ url_for('site.user_edit_page',user_id=session['id']) }}" class="btn btn-warning" >Edit</a>
+                    <a href="{{ url_for('site.user_edit_page',user_id=current_user.get_Id) }}" class="btn btn-warning" >Edit</a>
                     </center>
                 </div>
             </div>
@@ -74,7 +75,7 @@
     </div>
 
 </div>
-
+{% endif%}
 
 <!-- -------------- NOW NORMAL user ------------------- -->
 

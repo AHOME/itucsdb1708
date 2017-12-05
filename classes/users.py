@@ -21,16 +21,21 @@ class Users(UserMixin):
         else:
             self.is_admin = False
 
+    @property
     def get_mail(self):
         return self.Mail
 
-
+    @property
     def get_name(self):
         return self.FirstName
 
+    @property
     def get_lastname(self):
         return self.LastName
 
+    @property
+    def get_type(self):
+        return self.UserType
     @property
     def is_active(self):
         return True
@@ -47,6 +52,7 @@ class Users(UserMixin):
     def get_id(self):
         return self.Mail
 
+    @property
     def get_Id(self):
         return self.Id
 
@@ -87,13 +93,4 @@ def delete_user_by_id(userID):
             DELETE FROM USERS WHERE ID = %s"""
         cursor.execute(query, [userID] )
         connection.commit()
-def get_type(inputId):
-    with dbapi2.connect(current_app.config['dsn']) as connection:
-        cursor = connection.cursor()
-        statement = """SELECT USERTYPE FROM USERS WHERE ID = %s"""
-        cursor.execute(statement, [inputId])
-        db_user = cursor.fetchone()
-    if db_user != None:
-        return db_user
-    else:
-        return None
+

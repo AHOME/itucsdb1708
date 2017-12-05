@@ -13,7 +13,7 @@ class FoodOrders():
         self.price = ""
         self.date = ""
         self.status = ""
-        
+
     def create_foodOrders(self,restaurant_id, user_id, food, price):
         self.primaryId = 0
         self.userId = user_id

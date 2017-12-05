@@ -29,9 +29,8 @@ from server import load_user
 def logout_page():
     logout_user()
     session['logged_in'] = False
-    session['name'] = ''
-    session['id'] = 0
     return redirect(url_for('site.home_page',firstEvent=None,eventDic=None))
+
 
 @site.route('/', methods=['GET', 'POST'])
 def home_page():
@@ -52,9 +51,8 @@ def home_page():
             user= load_user(input_mail)
             login_user(user)
             session['logged_in'] = True
-            session['name'] = user.get_name() + ' ' + user.get_lastname()
-            session['id'] = user.get_Id()
-            flash( current_user.get_mail())
+            
+            flash( current_user.get_mail)
             return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
 
         with dbapi2.connect(current_app.config['dsn']) as connection:
@@ -69,8 +67,6 @@ def home_page():
                 if pwd_context.verify(input_password,user.Password) is True:
                     login_user(user)
                     session['logged_in'] = True
-                    session['name'] = user.get_name() + ' ' + user.get_lastname()
-                    session['id'] = user.get_Id()
                     flash( current_user.get_mail())
 
                     return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
@@ -79,7 +75,33 @@ def home_page():
             else:
                 return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
 
+@site.route('/results', methods=['GET', 'POST'])
+def home_page_search():
+    toSearch = request.form['searchbar']
+    if toSearch=="" or toSearch==" ":
+        return render_template('search/index.html')
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        searchFormatted = '%' + toSearch.lower() + '%'
+        query = """SELECT MAIL FROM USERS WHERE LOWER(FIRSTNAME) LIKE %s OR LOWER(LASTNAME) LIKE %s"""
+        cursor.execute(query, [searchFormatted,searchFormatted])
+        userMailList = cursor.fetchall()
 
+        userList = []
+        for mail in userMailList:
+            userList.append(get_user(mail))
+
+        query = """SELECT * FROM RESTAURANTS WHERE LOWER(NAME) LIKE %s"""
+        cursor.execute(query, [searchFormatted])
+        restaurantList = cursor.fetchall()
+        restaurants = []
+
+        for rest in restaurantList:
+            newRestaurant = Restaurant()
+            newRestaurant.create_restaurant_with_attributes(rest[0], rest[1],rest[2],rest[3],rest[4],rest[5],rest[6],rest[7],rest[8])
+            restaurants.append(newRestaurant)
+
+    return render_template('search/index.html', users=userList, restaurants=restaurants, searched=toSearch)
 
 @site.route('/count') #This page meant for test the database, will be deleted after stability updates
 def counter_page():
@@ -168,15 +190,23 @@ def initialize_database():
 
         query = """CREATE TABLE EVENT_RESTAURANTS (
            ID SERIAL PRIMARY KEY,
+<<<<<<< HEAD
+           EVENT_ID INTEGER REFERENCES EVENTS(ID) NOT NULL,
+           USER_ID INTEGER REFERENCES USERS(ID) NOT NULL
+||||||| merged common ancestors
+           EVENT_ID INTEGER  NOT NULL,
+           RESTAURANT_ID INTEGER  NOT NULL
+=======
            EVENT_ID INTEGER  NOT NULL,
            USER_ID INTEGER  NOT NULL
+>>>>>>> 68fabcf8f91b6b3ada7855d04bc530a101a91015
         );"""
         cursor.execute(query)
 
         query = """CREATE TABLE COMMENTS (
            ID SERIAL PRIMARY KEY,
-           USER_ID INTEGER  NOT NULL,
-           RESTAURANT_ID INTEGER  NOT NULL,
+           USER_ID INTEGER REFERENCES USERS(ID) NOT NULL,
+           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
            CONTENT VARCHAR(255) NOT NULL,
            SENDDATE TIMESTAMP NOT NULL
         );"""
@@ -184,8 +214,8 @@ def initialize_database():
 
         query = """CREATE TABLE RESTAURANT_FOODS (
            ID SERIAL PRIMARY KEY,
-           RESTAURANT_ID INTEGER  NOT NULL,
-           FOOD_ID INTEGER  NOT NULL,
+           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
+           FOOD_ID INTEGER REFERENCES FOODS(ID) NOT NULL,
            SELL_COUNT INTEGER NOT NULL
         );"""
         cursor.execute(query)
@@ -233,8 +263,8 @@ def initialize_database():
 
         query = """CREATE TABLE STAR_RESTAURANTS(
             ID SERIAL PRIMARY KEY,
-            USER_ID INTEGER NOT NULL,
-            RESTAURANT_ID INTEGER NOT NULL,
+            USER_ID INTEGER REFERENCES USERS(ID) NOT NULL,
+            RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
             STAR INTEGER NOT NULL
         )
         """
@@ -291,8 +321,8 @@ def initialize_database():
 
         query = """CREATE TABLE DEALS (
         ID SERIAL PRIMARY KEY,
-        FOOD_ID INTEGER NOT NULL,
-        REST_ID INTEGER NOT NULL,
+        FOOD_ID INTEGER REFERENCES FOODS(ID) NOT NULL,
+        REST_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
         DATE DATE NOT NULL,
         DISCOUNT_RATE INTEGER NOT NULL CHECK(DISCOUNT_RATE >= 0 AND DISCOUNT_RATE <= 100)
         );"""
@@ -300,6 +330,7 @@ def initialize_database():
 
         query = """CREATE TABLE FOOD_ORDERS (
         ID SERIAL PRIMARY KEY,
+<<<<<<< HEAD
         USER_ID INTEGER NOT NULL,
         REST_ID INTEGER NOT NULL,
         FOOD_ID INTEGER NOT NULL,
@@ -316,6 +347,12 @@ def initialize_database():
         DRINK_ID INTEGER NOT NULL,
         PRICE VARCHAR(80) NOT NULL,
         BUYDATE DATE NOT NULL,
+=======
+        USER_ID INTEGER REFERENCES USERS(ID) NOT NULL,
+        REST_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
+        PRICE VARCHAR(80) NOT NULL,
+        DATE DATE NOT NULL,
+>>>>>>> c8be5744117cd52481ada9637dc0c7e4d28da103
         STATUS VARCHAR(80) NOT NULL
         );"""
         cursor.execute(query)
@@ -363,7 +400,7 @@ def restaurant_show_page(restaurant_id, methods=['GET','POST']):
 @site.route('/restaurant/create', methods=['GET','POST'])
 def restaurant_create_page():
     if current_user.is_authenticated:
-        user_type = get_type(session['id'])[0]
+        user_type = current_user.get_type
         if user_type == 1 or current_user.is_admin:
             if request.method == 'GET':
                 return render_template('restaurant/new.html')
@@ -384,7 +421,7 @@ def restaurant_delete_func(restaurant_id):
 @site.route('/restaurant/<int:restaurant_id>/edit', methods=['GET','POST'])
 def restaurant_edit_page(restaurant_id):
     if current_user.is_authenticated:
-        user_type = get_type(session['id'])[0]
+        user_type = current_user.get_type
         if user_type == 1 or current_user.is_admin:
             restaurant = Restaurant()
             form = request.form
@@ -570,7 +607,7 @@ def messages_new_page(user_id):
         return render_template('messages/new.html',form=None)
     else:
         receiver = request.form['message_target']
-        sender = session['id']
+        sender = current_user.get_Id
         topic = request.form['message_topic']
         body = request.form['message_body']
         time = dt.now()
@@ -599,7 +636,8 @@ def messages_new_page(user_id):
 @site.route('/user/<int:user_id>/show') #Change me with model [ID]
 @login_required
 def user_show_page(user_id):
-    return render_template('user/show.html',user_id = session['id'])
+    userType = current_user.get_type
+    return render_template('user/show.html',user_id = current_user.get_Id,)
 
 @site.route('/user/<int:user_id>/edit') #Change me with model [ID]
 @login_required
@@ -781,7 +819,7 @@ def event_show_page(eventId):
     event = Events(select = select)
     # fetch people attend this event
     comers = EventRestaurantFile.select_comers_all(eventId)
-    currentUserId = session['id']
+    currentUserId = current_user.get_Id
     #Is person coming
     is_coming = EventRestaurantFile.does_user_come(currentUserId,eventId)
     print(is_coming)
@@ -789,13 +827,13 @@ def event_show_page(eventId):
 
 @site.route('/event/<int:eventId>/not_going')
 def event_user_not_going(eventId):
-    currentUserId = session['id']
+    currentUserId = current_user.get_Id
     EventRestaurantFile.delete_comers_by_Id(eventId,currentUserId)
     return redirect(url_for('site.event_show_page',eventId = eventId))
 
 @site.route('/event/<int:eventId>/going')
 def event_user_going(eventId):
-    currentUserId = session['id']
+    currentUserId = current_user.get_Id
     EventRestaurantFile.EventRestaurants(eventId,currentUserId)
     return redirect(url_for('site.event_show_page',eventId = eventId))
 
