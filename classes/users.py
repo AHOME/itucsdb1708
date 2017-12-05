@@ -3,13 +3,14 @@ from flask import current_app
 from flask_login import UserMixin
 
 class Users(UserMixin):
-    def __init__(self,Id,FirstName,LastName,Mail,Password,Birthdate,City,Gender,UserType,Avatar):
+    def __init__(self,Id,FirstName,LastName,Mail,Password,Birthdate,City,Gender,UserType,Avatar,Bio):
         self.Id = Id
         self.FirstName = FirstName
         self.LastName = LastName
         self.Mail = Mail
         self.Password = Password
         self.Birthdate = Birthdate
+        self.Bio = Bio
         self.City = City
         self.Gender = Gender
         self.UserType = UserType
@@ -21,7 +22,7 @@ class Users(UserMixin):
             self.is_admin = False
 
     def get_mail(self):
-        return self.UserType
+        return self.Mail
 
 
     def get_name(self):
@@ -54,7 +55,7 @@ def get_user(db_mail):
         return None
 
     if db_mail in current_app.config['ADMIN_USERS']:
-        user = Users(1,'admin','admin','admin@restoranlandin.com',current_app.config['PASSWORD'], '10.10.2012', '', '',0, 'avatar')
+        user = Users(1,'admin','admin','admin@restoranlandin.com',current_app.config['PASSWORD'], '10.10.2012', '', '',0, 'avatar','')
         return user
 
     with dbapi2.connect(current_app.config['dsn']) as connection:
@@ -63,9 +64,9 @@ def get_user(db_mail):
         cursor.execute(statement, [db_mail])
         db_user = cursor.fetchone()
         if db_user is None:
-            adminuser=Users(1,'admin','admin','admin@restoranlandin.com',current_app.config['PASSWORD'], '10.10.2012', '', '',0, 'avatar')
+            adminuser=Users(1,'admin','admin','admin@restoranlandin.com',current_app.config['PASSWORD'], '10.10.2012', '', '',0, 'avatar','')
             return adminuser
-        user = Users(db_user[0],db_user[1], db_user[2], db_user[3],db_user[4], db_user[5], db_user[6], db_user[7], db_user[8], db_user[9])
+        user = Users(db_user[0],db_user[1], db_user[2], db_user[3],db_user[4], db_user[5], db_user[6], db_user[7], db_user[8], db_user[9], db_user[10])
 
 
     if user is not None:

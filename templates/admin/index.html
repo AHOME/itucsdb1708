@@ -109,9 +109,10 @@
     <div class="row" id="post_news">
 <div class="col-xs-3 col-sm-6 col-md-9 col-lg-12" id ="message">
     <h2>Message to User</h2>
+    <a href="{{url_for('site.users_list_page')}}"> Click here to see user list </a>
     <form>
       <div class="form-group">
-        <label for="usr">Name of the User:</label>
+        <label for="usr">Mail of the User:</label>
         <input type="text" class="form-control" id="usr">
         <label for="comment">Message:</label>
         <textarea class="form-control" rows="5" id="comment"></textarea>
