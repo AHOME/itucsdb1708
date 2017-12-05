@@ -12,7 +12,6 @@ from classes.events import *
 from classes.restaurants import *
 from classes.event_control_functions import *
 from classes.drink_control_functions import *
-from classes.users import *
 import classes.event_restaurants as EventRestaurantFile
 import classes.achievements as achievementMod
 from classes.deals import Deals
