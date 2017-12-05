@@ -12,6 +12,7 @@ from classes.events import *
 from classes.restaurants import *
 from classes.event_control_functions import *
 from classes.drink_control_functions import *
+import classes.event_restaurants as EventRestaurantFile
 import classes.achievements as achievementMod
 from classes.deals import Deals
 site = Blueprint('site', __name__)
@@ -31,6 +32,8 @@ def logout_page():
 
 @site.route('/', methods=['GET', 'POST'])
 def home_page():
+#    EventRestaurantFile.EventRestaurants(1,2)
+#    EventRestaurantFile.EventRestaurants(2,3)
     events = select_all_events()
     eventList = []
     firstEvent = None
@@ -39,9 +42,8 @@ def home_page():
             firstEvent = Events(select = eventSelect)
         else:
             eventList.append(Events(select = eventSelect))
-    #return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
     if request.method == 'GET':
-        return render_template('home/index.html',firstEvent = None,eventDic = None)
+        return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
     else:
         input_mail = request.form['InputEmail']
         input_password = request.form['InputPassword']
@@ -163,7 +165,7 @@ def initialize_database():
         query = """CREATE TABLE EVENT_RESTAURANTS (
            ID SERIAL PRIMARY KEY,
            EVENT_ID INTEGER  NOT NULL,
-           RESTAURANT_ID INTEGER  NOT NULL
+           USER_ID INTEGER  NOT NULL
         );"""
         cursor.execute(query)
 
@@ -689,7 +691,6 @@ def event_edit_page(eventId):
             return render_template('event/edit.html',event = event,form = form)
 
 @site.route('/event/<int:eventId>')
-@login_required
 def event_show_page(eventId):
     #select specific event from databse
     select = select_event_by_id(eventId)
