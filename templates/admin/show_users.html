@@ -7,9 +7,6 @@
 
 
 <!-- change Information with database file -->
-
-
-
   <div class="well">
     <div class="tab-content">
       <div class="tab-pane fade in active" id="tab1">
@@ -21,6 +18,7 @@
                     <th>User Email</th>
                     <th>User Type</th>
                     <th>User Bio</th>
+                    <th>Select</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -30,8 +28,18 @@
                     <td>admin@restoranlandin.com</td>
                     <td>User Type</td>
                     <td>Biodeneme</td>
+                    <td><input type="radio" name ="userToSend" id="userToSend" value="admin"></td>
                   </tr>
-                  
+
+                  <tr>
+                    <td>Name</a></td>
+                    <td>Surname</td>
+                    <td>admin@restoranlandin.com</td>
+                    <td>User Type</td>
+                    <td>Biodeneme</td>
+                    <td><input type="radio" name ="userToSend" id="userToSend" value="admin"></td>
+                  </tr>
+
                 </tbody>
               </table>
       </div>
@@ -46,26 +54,7 @@
               <th>Restaurant Bestseller Item</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <!-- Change me with model and use for loop for showing all item inside the database. -->
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>
-                {% if (current_user.is_authenticated and check)%}
-                <br>
-                <b>Rate: </b>
-                <a href="{{ url_for('site.give_star_func', user_id = current_user.Id, restaurant_id = restaurant.primaryId, score = 1) }}">1</a>
-                <a href="{{ url_for('site.give_star_func', user_id = current_user.Id, restaurant_id = restaurant.primaryId, score = 2) }}">2</a>
-                <a href="{{ url_for('site.give_star_func', user_id = current_user.Id, restaurant_id = restaurant.primaryId, score = 3) }}">3</a>
-                <a href="{{ url_for('site.give_star_func', user_id = current_user.Id, restaurant_id = restaurant.primaryId, score = 4) }}">4</a>
-                <a href="{{ url_for('site.give_star_func', user_id = current_user.Id, restaurant_id = restaurant.primaryId, score = 5) }}">5</a>
-                {% endif %}
-              </td>
-              <td>Porsiyon 4 kofte</td>
-            </tr>
-          </tbody>
+          
         </table>
       </div>
       <div class="tab-pane fade in" id="tab3">
@@ -79,23 +68,11 @@
   </div>
   </div>
   <div class="mx-auto" style="padding-left: 3cm;padding-right: 1cm;">
-  {% for c in comments %}
-  <div class="comment">
-    <div class="h3">
-      {% if current_user.is_admin %}
-      <div class="">
-        <a href="{{ url_for('site.comment_delete_func', comment_id = c[0], restaurant_id = c[2]) }}">{{c[6]}}</a>
-      </div>
-      {% else %}
-        <p>{{c[6]}}</p>
-      {% endif %}
-    </div>
-    <div class="jumbotron text-center">
-      <p class="lead">{{c[3]}}</p>
-    </div>
-    <br>
-  </div>
-  {%endfor%}
   
+  <div class="form-group">
+                    <div class="col-sm-6 col-sm-offset-2">
+                        <button type="submit" class="btn btn-danger btn-block">Choose User To Send Message</button>
+                    </div>
+                </div>
 </div>
 {% endblock %}
