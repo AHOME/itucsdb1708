@@ -299,7 +299,7 @@ def initialize_database():
         ID SERIAL PRIMARY KEY,
         USER_ID INTEGER NOT NULL,
         REST_ID INTEGER NOT NULL,
-        PRICE VARCHAR(80) NOT NULL, 
+        PRICE VARCHAR(80) NOT NULL,
         DATE DATE NOT NULL,
         STATUS VARCHAR(80) NOT NULL
         );"""
@@ -435,6 +435,12 @@ def food_home_page(restaurant_id):
         return render_template('food/index.html', foods = foods, drinks = drinkList, restaurant = restaurant)
     return redirect(url_for('site.home_page'))
 
+@site.route('order/create/<restaurant_id>/<user_id>')
+def create_order(restaurant_id, user_id):
+    if(current_user.is_authenticated):
+        order = Orders()
+        order.create_order(restaurant_id, user_id)
+    return
 @site.route('/food/create', methods=['GET','POST'])
 def food_create_page():
     if current_user.is_admin:
@@ -444,7 +450,7 @@ def food_create_page():
             food = Foods()
             food.create_food(request.form)
             return redirect(url_for('site.restaurant_home_page'))
-    return redirect(url_for('site.home_page'))
+    return redirect(url_for('site.restaurant_show_page', restaurant_id))
 
 @site.route('/food/<int:food_id>/delete')
 def food_delete_func(food_id):
@@ -628,8 +634,8 @@ def admin_page():
 <title>401 Unauthorized</title>
 <h1>Unauthorized</h1>
 <p>The server could not verify that you are authorized to access the URL requested.  You either supplied the wrong credentials (e.g. a bad password), or your browser doesn't understand how to supply the credentials required.</p>"""
-    
-    
+
+
 
     achievements = achievementMod.achievement_select_all()
     achievementList = []
@@ -645,7 +651,7 @@ def admin_page():
 
     if request.method == 'POST':
         eventIds = request.form.getlist('eventIDs',None)
-        
+
         targetUserMail = request.form.get('userToSend',None)
 
         #delete events which have ids in eventIds list
