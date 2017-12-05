@@ -342,19 +342,21 @@ def restaurant_show_page(restaurant_id, methods=['GET','POST']):
         if (int(i[3]) > int(best_seller_food[0])):
             best_seller_food[0] = int(i[3])
             best_seller_food[1] = i[5]
-
-    print(foods)
-    print(drinks)
     return render_template('restaurant/show.html', restaurant = restaurant, comments = comments, check = check, best_seller_food = best_seller_food[1], foods = all_foods, drinks = all_drinks)
+
 
 @site.route('/restaurant/create', methods=['GET','POST'])
 def restaurant_create_page():
-    if request.method == 'GET':
-        return render_template('restaurant/new.html')
-    else:
-        restaurant = Restaurant()
-        restaurant.create_restaurant(request.form)
-        return redirect(url_for('site.restaurant_home_page'))
+    if current_user.is_authenticated:
+        user_type = get_type(session['id'])[0]
+        if user_type == 1 or current_user.is_admin:
+            if request.method == 'GET':
+                return render_template('restaurant/new.html')
+            else:
+                restaurant = Restaurant()
+                restaurant.create_restaurant(request.form)
+                return redirect(url_for('site.restaurant_home_page'))
+    return redirect(url_for('site.home_page'))
 
 @site.route('/restaurant/<int:restaurant_id>/delete')
 @login_required
@@ -366,17 +368,18 @@ def restaurant_delete_func(restaurant_id):
 
 @site.route('/restaurant/<int:restaurant_id>/edit', methods=['GET','POST'])
 def restaurant_edit_page(restaurant_id):
-    if(current_user.is_admin):
-        restaurant = Restaurant()
-        form = request.form
-        if request.method == 'GET':
-            restaurant.select_restaurant_by_id(restaurant_id)
-        else:
-            restaurant.update_restaurant_by_id(form, restaurant_id)
-            return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
-        return render_template('restaurant/edit.html', form = form , address = restaurant.address, name = restaurant.name, contactName = restaurant.contactName, contactPhone = restaurant.contactPhone, pp = restaurant.profilePicture, hours = restaurant.hours, currentStatus = restaurant.currentStatus)
-    else:
-        return redirect(url_for('site.restaurant_home_page'))
+    if current_user.is_authenticated:
+        user_type = get_type(session['id'])[0]
+        if user_type == 1 or current_user.is_admin:
+            restaurant = Restaurant()
+            form = request.form
+            if request.method == 'GET':
+                restaurant.select_restaurant_by_id(restaurant_id)
+            else:
+                restaurant.update_restaurant_by_id(form, restaurant_id)
+                return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
+            return render_template('restaurant/edit.html', form = form , address = restaurant.address, name = restaurant.name, contactName = restaurant.contactName, contactPhone = restaurant.contactPhone, pp = restaurant.profilePicture, hours = restaurant.hours, currentStatus = restaurant.currentStatus)
+    return redirect(url_for('site.restaurant_home_page'))
 
 
 @site.route('/submit_comment', methods=['POST'])
@@ -418,65 +421,71 @@ def add_food_to_restaurant_page():
 
 @site.route('/menuitems/<restaurant_id>')
 def food_home_page(restaurant_id):
-    food = Foods()
-    foods = food.select_all_foods()
-    restaurant = Restaurant()
-    drinks = select_all_drinks()
-    drinkList = []
-    for drink in drinks:
-        drinkList.append(Drinks(select = drink))
+    if current_user.is_admin:
+        food = Foods()
+        foods = food.select_all_foods()
+        restaurant = Restaurant()
+        drinks = select_all_drinks()
+        drinkList = []
+        for drink in drinks:
+            drinkList.append(Drinks(select = drink))
 
-    restaurant = Restaurant()
-    restaurant.select_restaurant_by_id(restaurant_id)
-    return render_template('food/index.html', foods = foods, drinks = drinkList, restaurant = restaurant)
+        restaurant = Restaurant()
+        restaurant.select_restaurant_by_id(restaurant_id)
+        return render_template('food/index.html', foods = foods, drinks = drinkList, restaurant = restaurant)
+    return redirect(url_for('site.home_page'))
 
 @site.route('/food/create', methods=['GET','POST'])
 def food_create_page():
-    if request.method == 'GET':
-        return render_template('food/new.html')
-    else:
-        food = Foods()
-        food.create_food(request.form)
-        return redirect(url_for('site.restaurant_home_page'))
+    if current_user.is_admin:
+        if request.method == 'GET':
+            return render_template('food/new.html')
+        else:
+            food = Foods()
+            food.create_food(request.form)
+            return redirect(url_for('site.restaurant_home_page'))
+    return redirect(url_for('site.home_page'))
 
 @site.route('/food/<int:food_id>/delete')
 def food_delete_func(food_id):
-    with dbapi2.connect(current_app.config['dsn']) as connection:
-        cursor = connection.cursor()
-        query = """DELETE FROM FOODS WHERE ID = %s"""
-        cursor.execute(query, [food_id])
-        connection.commit()
+    if current_user.is_admin:
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """DELETE FROM FOODS WHERE ID = %s"""
+            cursor.execute(query, [food_id])
+            connection.commit()
     return redirect(url_for('site.food_home_page'))
 
 @site.route('/food/<int:food_id>/edit', methods=['GET','POST'])
 def food_edit_page(food_id):
-    if request.method == 'GET':
-        with dbapi2.connect(current_app.config['dsn']) as connection:
-            cursor = connection.cursor()
-            query = """SELECT * FROM FOODS WHERE id = %s"""
-            cursor.execute(query, [food_id])
-            value = cursor.fetchall()
-            name = value[0][1]
-            icon = value[0][2]
-            food_type = value[0][3]
-            price = value[0][4]
-            calorie = value[0][5]
-    else:
-        nameInput = request.form['name']
-        iconInput = request.form['icon']
-        typeNameInput = request.form['type']
-        priceInput = request.form['price']
-        calorieInput = request.form['calorie']
-        with dbapi2.connect(current_app.config['dsn']) as connection:
-            cursor = connection.cursor()
-            query = """UPDATE FOODS SET NAME = %s, ICON = %s, FOOD_TYPE = %s, PRICE = %s, CALORIE = %s WHERE ID = %s"""
-            cursor.execute(query, [nameInput, iconInput, typeNameInput, priceInput, calorieInput, food_id])
-            connection.commit()
-        return redirect(url_for('site.food_home_page'))
+    if current_user.is_admin:
+        if request.method == 'GET':
+            with dbapi2.connect(current_app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """SELECT * FROM FOODS WHERE id = %s"""
+                cursor.execute(query, [food_id])
+                value = cursor.fetchall()
+                name = value[0][1]
+                icon = value[0][2]
+                food_type = value[0][3]
+                price = value[0][4]
+                calorie = value[0][5]
+        else:
+            nameInput = request.form['name']
+            iconInput = request.form['icon']
+            typeNameInput = request.form['type']
+            priceInput = request.form['price']
+            calorieInput = request.form['calorie']
+            with dbapi2.connect(current_app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """UPDATE FOODS SET NAME = %s, ICON = %s, FOOD_TYPE = %s, PRICE = %s, CALORIE = %s WHERE ID = %s"""
+                cursor.execute(query, [nameInput, iconInput, typeNameInput, priceInput, calorieInput, food_id])
+                connection.commit()
+            return redirect(url_for('site.food_home_page'))
 
-    form = request.form
-    return render_template('food/edit.html', form = form, name = name, icon = icon, food_type = food_type, price = price, calorie = calorie)
-
+        form = request.form
+        return render_template('food/edit.html', form = form, name = name, icon = icon, food_type = food_type, price = price, calorie = calorie)
+    return redirect(url_for('site.food_home_page'))
 
 
 

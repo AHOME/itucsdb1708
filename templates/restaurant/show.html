@@ -64,7 +64,7 @@
                   {%for i in foods%}
                   <tr>
                     <td>{{i[5]}}</a></td>
-                    <td>{{i[8]}}</td>
+                    <td>{{i[8]}} £</td>
                     <td>{{i[9]}} Calorie</td>
                     <td>{{i[7]}}</td>
                   </tr>
@@ -87,8 +87,8 @@
                   {%for i in drinks%}
                   <tr>
                     <td>{{i[5]}}</a></td>
-                    <td>{{i[7]}}</td>
-                    <td>{{i[8]}} Calorie</td>
+                    <td>{{i[7]}} Calorie</td>
+                    <td>{{i[8]}}</td>
                     <td>{{i[9]}}</td>
                   </tr>
                   {%endfor%}
@@ -123,7 +123,7 @@
                 <a href="{{ url_for('site.give_star_func', user_id = current_user.Id, restaurant_id = restaurant.primaryId, score = 5) }}">5</a>
                 {% endif %}
               </td>
-              <td>Porsiyon 4 kofte</td>
+              <td>{{best_seller_food}}</td>
             </tr>
           </tbody>
         </table>
