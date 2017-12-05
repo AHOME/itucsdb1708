@@ -32,8 +32,6 @@ def logout_page():
 
 @site.route('/', methods=['GET', 'POST'])
 def home_page():
-#    EventRestaurantFile.EventRestaurants(1,2)
-#    EventRestaurantFile.EventRestaurants(2,3)
     events = select_all_events()
     eventList = []
     firstEvent = None
@@ -77,9 +75,6 @@ def home_page():
                     return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList) #Couldn't login
             else:
                 return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
-
-
-
 
 
 
@@ -700,7 +695,26 @@ def event_show_page(eventId):
     #select specific event from databse
     select = select_event_by_id(eventId)
     event = Events(select = select)
-    return render_template('event/show.html',event = event)
+    # fetch people attend this event
+    comers = EventRestaurantFile.select_comers_all(eventId)
+    currentUserId = session['id']
+    #Is person coming
+    is_coming = EventRestaurantFile.does_user_come(currentUserId,eventId)
+    print(is_coming)
+    return render_template('event/show.html',event = event,is_coming = is_coming,comers = comers)
+
+@site.route('/event/<int:eventId>/not_going')
+def event_user_not_going(eventId):
+    currentUserId = session['id']
+    EventRestaurantFile.delete_comers_by_Id(eventId,currentUserId)
+    return redirect(url_for('site.event_show_page',eventId = eventId))
+
+@site.route('/event/<int:eventId>/going')
+def event_user_going(eventId):
+    currentUserId = session['id']
+    EventRestaurantFile.EventRestaurants(eventId,currentUserId)
+    return redirect(url_for('site.event_show_page',eventId = eventId))
+
 
 @site.route('/drink/create',methods = ['GET','POST'])
 def drink_create_page():

@@ -34,11 +34,27 @@
           <a href="{{ url_for('site.event_edit_page',eventId = event.Id ) }}" class="btn btn-warning" >Edit This Event</a>
         </div>
         {% endif %}
-
+        {% if current_user.is_authenticated and not current_user.is_admin and not is_coming %}
         <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-          <a href="{{ url_for('site.event_edit_page',eventId = event.Id ) }}" class="btn btn-warning" > Going </a>
+          <a href="{{ url_for('site.event_user_going',eventId = event.Id ) }}" class="btn btn-warning" > Going </a>
         </div>
-    </div>
+        {% endif %}
+        {% if current_user.is_authenticated and not current_user.is_admin and is_coming %}
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+          <a href="{{ url_for('site.event_user_not_going',eventId = event.Id ) }}" class="btn btn-warning" > Not Going </a>
+        </div>
+        {% endif %}
+      </div>
+
+        {% if comers %}
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <h2> People Attending This Event</h2>
+          {% for comer in comers %}
+            <p> {{ comer[0] }} {{ comer[1] }}</p>
+          {% endfor %}
+        </div>
+        {% endif %}
 
 </div>
 {% endblock %}

@@ -10,33 +10,47 @@ class EventRestaurants():
         self.Id = ""
         self.eventId = eventId
         self.userId = userId
+        print(self.userId)
+        print(self.eventId)
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             query = """
                 INSERT INTO EVENT_RESTAURANTS (EVENT_ID, USER_ID)
-                VALUES (%s,%s,%s,%s,%s)"""
-            cursor.execute(query, [self.eventId, self.restaurantId])
+                VALUES (%s,%s)"""
+            cursor.execute(query, [self.eventId, self.userId])
             connection.commit
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             statement = """SELECT * FROM EVENT_RESTAURANTS WHERE (EVENT_ID = %s)
-            AND (USER_ID = %s)s"""
+            AND (USER_ID = %s)"""
         cursor.execute(statement,[self.eventId, self.userId])
         IdofCurrent = cursor.fetchone()[0]
         self.Id = IdofCurrent
-    def select_comers_all():
-        #Select name from user table
-        with dbapi2.connect(current_app.config['dsn']) as connection:
-            cursor = connection.cursor()
-            statement = """SELECT USERS.FIRSTNAME, USERS.LASTNAME FROM EVENT_RESTAURANTS,USERS
-             WHERE USERS.ID = EVENT_RESTAURANTS.USER_ID"""
-            cursor.execute(statement)
-            comers = cursor.fetchall()
-            return comers
-    def delete_comers_by_Id(Id):
-        with dbapi2.connect(current_app.config['dsn']) as connection:
-            cursor = connection.cursor()
-            query = """
-                DELETE FROM EVENT_RESTAURANTS WHERE ID = %s"""
-            cursor.execute(query, [Id] )
-            connection.commit()
+
+def select_comers_all(eventId):
+    #Select name from user table who comes to that event.
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        statement = """SELECT USERS.FIRSTNAME, USERS.LASTNAME FROM EVENT_RESTAURANTS,USERS
+            WHERE USERS.ID = EVENT_RESTAURANTS.USER_ID
+            AND EVENT_RESTAURANTS.EVENT_ID = %s"""
+        cursor.execute(statement,[eventId])
+        comers = cursor.fetchall()
+        return comers
+def delete_comers_by_Id(eventId,userId):
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        query = """
+            DELETE FROM EVENT_RESTAURANTS WHERE EVENT_ID = %s AND
+            USER_ID = %s"""
+        cursor.execute(query, [eventId,userId])
+        connection.commit()
+def does_user_come(userId,eventId):
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        statement = """SELECT * FROM EVENT_RESTAURANTS
+            WHERE USER_ID = %s
+            AND EVENT_ID = %s """
+        cursor.execute(statement,[userId,eventId])
+        comers = cursor.fetchall()
+    return comers
