@@ -1,0 +1,78 @@
+
+{% extends "layouts/layout.html" %}
+
+{% block title %} -Restaurant Name- Page{% endblock %}
+{% block csslinks %}  <link rel="stylesheet" href="/static/restaurant/show.css" /> {% endblock %}
+{% block content %}
+
+
+<!-- change Information with database file -->
+  <div class="well">
+    <div class="tab-content">
+      <div class="tab-pane fade in active" id="tab1">
+              <table class="table table-condensed table-hover">
+                <thead>
+                  <tr>
+                    <th>User Name</th>
+                    <th>User Surname</th>
+                    <th>User Email</th>
+                    <th>User Type</th>
+                    <th>User Bio</th>
+                    <th>Select</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Name</a></td>
+                    <td>Surname</td>
+                    <td>admin@restoranlandin.com</td>
+                    <td>User Type</td>
+                    <td>Biodeneme</td>
+                    <td><input type="radio" name ="userToSend" id="userToSend" value="admin"></td>
+                  </tr>
+
+                  <tr>
+                    <td>Name</a></td>
+                    <td>Surname</td>
+                    <td>admin@restoranlandin.com</td>
+                    <td>User Type</td>
+                    <td>Biodeneme</td>
+                    <td><input type="radio" name ="userToSend" id="userToSend" value="admin"></td>
+                  </tr>
+
+                </tbody>
+              </table>
+      </div>
+      <div class="tab-pane fade in" id="tab2">
+        <table class="table table-condensed table-hover">
+          <thead>
+            <tr>
+              <th>Restaurant Name</th>
+              <th>Owner Name</th>
+              <th>Restaurant Location</th>
+              <th>Restaurant Rating</th>
+              <th>Restaurant Bestseller Item</th>
+            </tr>
+          </thead>
+          
+        </table>
+      </div>
+      <div class="tab-pane fade in" id="tab3">
+        <!-- Change me with model -->
+        <h3 class="text-center ">Restaurant is now </h3>
+      </div>
+    </div>
+    </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  <div class="mx-auto" style="padding-left: 3cm;padding-right: 1cm;">
+  
+  <div class="form-group">
+                    <div class="col-sm-6 col-sm-offset-2">
+                        <button type="submit" class="btn btn-danger btn-block">Choose User To Send Message</button>
+                    </div>
+                </div>
+</div>
+{% endblock %}
