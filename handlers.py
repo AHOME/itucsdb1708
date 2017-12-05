@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template , redirect , current_app,url_for
 from flask import request,flash,session
-from datetime import datetime
+from datetime import datetime as dt
 from flask_login import LoginManager,login_user,login_required,current_user
 from flask_login import logout_user
 from passlib.apps import custom_app_context as pwd_context
@@ -233,11 +233,11 @@ def initialize_database():
         MAIL VARCHAR(80) NOT NULL,
         PASSWORD VARCHAR(500) NOT NULL,
         BIRTHDATE DATE NOT NULL,
-        BIO VARCHAR(500) NOT NULL,
         CITY VARCHAR(80) NOT NULL,
         GENDER VARCHAR(20),
         USERTYPE INTEGER NOT NULL,
-        AVATAR VARCHAR(255)
+        AVATAR VARCHAR(255),
+        BIO VARCHAR(500) NOT NULL
         );"""
         cursor.execute(query)
 
@@ -296,11 +296,11 @@ def initialize_database():
         connection.commit()
 
         query = """
-               INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR)
-                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+               INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR,BIO)
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
         hashed_password = pwd_context.encrypt("12345")
-        cursor.execute(query, ("admin", "admin", "admin@restoranlandin.com", hashed_password, "10.10.2012", "","",0,"avatar"))
+        cursor.execute(query, ("admin", "admin", "admin@restoranlandin.com", hashed_password, "10.10.2012", "","",0,"avatar",""))
         connection.commit()
 
         return redirect(url_for('site.home_page'))
@@ -487,10 +487,10 @@ def register_home_page():
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()
                 query = """
-                    INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, BIO, CITY, GENDER, USERTYPE, AVATAR)
+                    INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY, GENDER, USERTYPE, AVATAR, BIO)
                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
-                cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate, bio, city, gender, userType, "avatar"))
+                cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate,city, gender, userType, "avatar",bio))
                 connection.commit()
             return redirect(url_for('site.home_page'))
 
@@ -514,7 +514,7 @@ def messages_new_page(user_id):
         sender = session['id']
         topic = request.form['message_topic']
         body = request.form['message_body']
-        time = datetime.now()
+        time = dt.now()
         form = request.form
         valid = validate_message_data(form)
         if valid:
@@ -537,12 +537,12 @@ def messages_new_page(user_id):
             return  render_template('messages/new.html',form=form)
 
 
-@site.route('/user/15') #Change me with model [ID]
+@site.route('/user/<int:user_id>/show') #Change me with model [ID]
 @login_required
-def user_show_page():
-    return render_template('user/show.html')
+def user_show_page(user_id):
+    return render_template('user/show.html',user_id = session['id'])
 
-@site.route('/user/15/edit') #Change me with model [ID]
+@site.route('/user/<int:user_id>/edit') #Change me with model [ID]
 @login_required
 def user_edit_page():
     if request.method == 'GET':
@@ -601,6 +601,7 @@ def admin_page():
 
     if request.method == 'POST':
         eventIds = request.form.getlist('eventIDs')
+
         #delete events which have ids in eventIds list
         for Id in eventIds:
             delete_event_by_id(Id)
@@ -625,6 +626,10 @@ def admin_page():
 
     return render_template('admin/index.html', achievements = achievementList, eventDic = eventDic)
 
+@site.route('/admin/list_users',methods=['GET','POST'])
+def users_list_page():
+    if request.method == 'GET':
+        return render_template('admin/show_users.html')
 
 @site.route('/achievement/<int:achievement_id>', methods=['GET','POST'])
 def achievement_show_page(achievement_id):
@@ -771,6 +776,8 @@ def validate_user_data(form):
         form.errors['userType'] = 'User type can not be blank'
     else:
         form.data['userType'] = form['userType']
+
+    form.data['bio'] = form['bio']
 
     if form['terms'] == 0:
         form.errors['terms'] = 'You should accept the terms'
