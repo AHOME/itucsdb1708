@@ -29,6 +29,7 @@ def logout_page():
     session['id'] = 0
     return redirect(url_for('site.home_page',firstEvent=None,eventDic=None))
 
+
 @site.route('/', methods=['GET', 'POST'])
 def home_page():
     events = select_all_events()
@@ -76,7 +77,33 @@ def home_page():
             else:
                 return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
 
+@site.route('/results', methods=['GET', 'POST'])
+def home_page_search():
+    toSearch = request.form['searchbar']
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        searchFormatted = '%' + toSearch.lower() + '%'
+        query = """SELECT MAIL FROM USERS WHERE LOWER(FIRSTNAME) LIKE %s OR LOWER(LASTNAME) LIKE %s"""
+        cursor.execute(query, [searchFormatted,searchFormatted])
+        userMailList = cursor.fetchall()
 
+        userList = []
+        for mail in userMailList:
+            userList.append(get_user(mail))
+
+        query = """SELECT * FROM RESTAURANTS WHERE LOWER(NAME) LIKE %s"""
+        cursor.execute(query, [searchFormatted])
+        restaurantList = cursor.fetchall()
+        print(restaurantList)
+        restaurants = []
+
+        for rest in restaurantList:
+            newRestaurant = Restaurant()
+            newRestaurant.create_restaurant_with_attributes(rest[0], rest[1],rest[2],rest[3],rest[4],rest[5],rest[6],rest[7],rest[8])
+            print(newRestaurant.name)
+            restaurants.append(newRestaurant)
+
+    return render_template('search/index.html', users=userList, restaurants=restaurants)
 
 
 

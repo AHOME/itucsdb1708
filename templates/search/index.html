@@ -1,0 +1,33 @@
+{% extends "layouts/layout.html" %}
+{% block title %}Achievement{% endblock %}
+{%block csslinks %}   <link rel="stylesheet" type="text/css" href="/static/event/index.css" > {% endblock %}
+{% block content %}
+
+{% if users %}
+    <div class="col-xs-8 col-sm-8 col-md-3 col-lg-3" id = "events">
+      <h2>Users</h2>
+      <div class="eventscroll" id="eventscroll">
+      <form role="form" action = "" method="post" name="events">
+          {% for user in users %}
+            <div class="checkbox">
+              <label>{{ user.FirstName }} {{ user.LastName }}</label>
+          </div>
+          {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
+{% if restaurants %}
+    <div class="col-xs-8 col-sm-8 col-md-3 col-lg-3" id = "events">
+      <h2>Restaurants</h2>
+      <div class="eventscroll" id="eventscroll">
+      <form role="form" action = "" method="post" name="events">
+          {% for restaurant in restaurants %}
+            <div class="checkbox">
+              <a href = "{{ url_for('site.restaurant_show_page',restaurant_id = restaurant.primaryId) }}">{{ restaurant.name }}</a>
+          </div>
+          {% endfor %}
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
