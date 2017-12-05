@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template , redirect , current_app,url_for
 from flask import request,flash,session
-from datetime import datetime
+from datetime import datetime as dt
 from flask_login import LoginManager,login_user,login_required,current_user
 from flask_login import logout_user
 from passlib.apps import custom_app_context as pwd_context
@@ -297,7 +297,7 @@ def initialize_database():
 
         query = """
                INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR,BIO)
-                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
         hashed_password = pwd_context.encrypt("12345")
         cursor.execute(query, ("admin", "admin", "admin@restoranlandin.com", hashed_password, "10.10.2012", "","",0,"avatar",""))
@@ -514,7 +514,7 @@ def messages_new_page(user_id):
         sender = session['id']
         topic = request.form['message_topic']
         body = request.form['message_body']
-        time = datetime.now()
+        time = dt.now()
         form = request.form
         valid = validate_message_data(form)
         if valid:
@@ -601,6 +601,7 @@ def admin_page():
 
     if request.method == 'POST':
         eventIds = request.form.getlist('eventIDs')
+
         #delete events which have ids in eventIds list
         for Id in eventIds:
             delete_event_by_id(Id)
@@ -625,6 +626,10 @@ def admin_page():
 
     return render_template('admin/index.html', achievements = achievementList, eventDic = eventDic)
 
+@site.route('/admin/list_users',methods=['GET','POST'])
+def users_list_page():
+    if request.method == 'GET':
+        return render_template('admin/show_users.html')
 
 @site.route('/achievement/<int:achievement_id>', methods=['GET','POST'])
 def achievement_show_page(achievement_id):

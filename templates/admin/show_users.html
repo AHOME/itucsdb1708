@@ -1,0 +1,101 @@
+
+{% extends "layouts/layout.html" %}
+
+{% block title %} -Restaurant Name- Page{% endblock %}
+{% block csslinks %}  <link rel="stylesheet" href="/static/restaurant/show.css" /> {% endblock %}
+{% block content %}
+
+
+<!-- change Information with database file -->
+
+
+
+  <div class="well">
+    <div class="tab-content">
+      <div class="tab-pane fade in active" id="tab1">
+              <table class="table table-condensed table-hover">
+                <thead>
+                  <tr>
+                    <th>User Name</th>
+                    <th>User Surname</th>
+                    <th>User Email</th>
+                    <th>User Type</th>
+                    <th>User Bio</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Name</a></td>
+                    <td>Surname</td>
+                    <td>admin@restoranlandin.com</td>
+                    <td>User Type</td>
+                    <td>Biodeneme</td>
+                  </tr>
+                  
+                </tbody>
+              </table>
+      </div>
+      <div class="tab-pane fade in" id="tab2">
+        <table class="table table-condensed table-hover">
+          <thead>
+            <tr>
+              <th>Restaurant Name</th>
+              <th>Owner Name</th>
+              <th>Restaurant Location</th>
+              <th>Restaurant Rating</th>
+              <th>Restaurant Bestseller Item</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <!-- Change me with model and use for loop for showing all item inside the database. -->
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>
+                {% if (current_user.is_authenticated and check)%}
+                <br>
+                <b>Rate: </b>
+                <a href="{{ url_for('site.give_star_func', user_id = current_user.Id, restaurant_id = restaurant.primaryId, score = 1) }}">1</a>
+                <a href="{{ url_for('site.give_star_func', user_id = current_user.Id, restaurant_id = restaurant.primaryId, score = 2) }}">2</a>
+                <a href="{{ url_for('site.give_star_func', user_id = current_user.Id, restaurant_id = restaurant.primaryId, score = 3) }}">3</a>
+                <a href="{{ url_for('site.give_star_func', user_id = current_user.Id, restaurant_id = restaurant.primaryId, score = 4) }}">4</a>
+                <a href="{{ url_for('site.give_star_func', user_id = current_user.Id, restaurant_id = restaurant.primaryId, score = 5) }}">5</a>
+                {% endif %}
+              </td>
+              <td>Porsiyon 4 kofte</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tab-pane fade in" id="tab3">
+        <!-- Change me with model -->
+        <h3 class="text-center ">Restaurant is now </h3>
+      </div>
+    </div>
+    </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  <div class="mx-auto" style="padding-left: 3cm;padding-right: 1cm;">
+  {% for c in comments %}
+  <div class="comment">
+    <div class="h3">
+      {% if current_user.is_admin %}
+      <div class="">
+        <a href="{{ url_for('site.comment_delete_func', comment_id = c[0], restaurant_id = c[2]) }}">{{c[6]}}</a>
+      </div>
+      {% else %}
+        <p>{{c[6]}}</p>
+      {% endif %}
+    </div>
+    <div class="jumbotron text-center">
+      <p class="lead">{{c[3]}}</p>
+    </div>
+    <br>
+  </div>
+  {%endfor%}
+  
+</div>
+{% endblock %}

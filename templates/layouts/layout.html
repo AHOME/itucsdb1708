@@ -40,10 +40,11 @@
         </form>
     </div>
     <ul class="nav navbar-nav navbar-right">
-      <li class="active"><a href="{{ url_for('site.user_show_page',user_id=session['id']) }}" style="color: #ffffff;">Profile</a></li>
       {% if current_user.is_authenticated == True %}
+      <li class="active"><a href="{{ url_for('site.user_show_page',user_id=session['id']) }}" style="color: #ffffff;">Profile</a></li>
       <li class="active"><a href="{{ url_for('site.messages_home_page',user_id=session['id'] ) }}" style="color: #ffffff;">Messages</a></li>
       {% else %}
+      <li class="active"><a href="{{ url_for('site.user_show_page',user_id=0) }}" style="color: #ffffff;">Profile</a></li>
       <li class="active"><a href="{{ url_for('site.messages_home_page',user_id=0 ) }}" style="color: #ffffff;">Messages</a></li>
       {% endif %}
   {% with messages = get_flashed_messages() %}
