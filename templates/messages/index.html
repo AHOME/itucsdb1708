@@ -15,7 +15,7 @@
                 <div class="panel-body" style="background: #D32F2F;">
                     <ul class="chat" >
                         {% for message in messages%}
-                            {% if message[6] != session['id'] %}
+                            {% if message[6] != current_user.get_Id %}
                         
                                 <li class="left clearfix" style="margin: 0;color: #ffffff;"><span class="chat-img pull-left">
                                     <img src="http://placehold.it/50/55C1E7/fff&text={{message[1][0]}}" alt="User Avatar" class="img-circle" />
@@ -69,7 +69,7 @@
         
             
             <div class="btn-panel" style="font-size: 18px; max-width:500px; margin: auto; margin-top: 10%">  
-                <a href="{{ url_for('site.messages_new_page',user_id = session['id']) }}">
+                <a href="{{ url_for('site.messages_new_page',user_id = current_user.get_Id) }}">
                 <button type="submit" formaction="" class="btn btn-danger btn-block">Send New Message</button></a>
                 
             </div>
@@ -80,7 +80,7 @@
     <p style="max-width: 200px; margin: auto; margin-top: 2%; font-size: medium; font-weight: bold"> You have no messages! </p>
         
         <div class="btn-panel" style="font-size: 18px; max-width:500px; margin: auto; margin-top: 10%">  
-                <a href="{{ url_for('site.messages_new_page',user_id = session['id']) }}">
+                <a href="{{ url_for('site.messages_new_page',user_id = current_user.get_Id) }}">
                 <button type="submit" formaction="" class="btn btn-danger btn-block">Send New Message</button></a>
                 
             </div>
