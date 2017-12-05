@@ -51,7 +51,7 @@ def home_page():
             user= load_user(input_mail)
             login_user(user)
             session['logged_in'] = True
-            
+
             flash( current_user.get_mail)
             return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
 
@@ -330,7 +330,6 @@ def initialize_database():
 
         query = """CREATE TABLE FOOD_ORDERS (
         ID SERIAL PRIMARY KEY,
-<<<<<<< HEAD
         USER_ID INTEGER NOT NULL,
         REST_ID INTEGER NOT NULL,
         FOOD_ID INTEGER NOT NULL,
@@ -347,12 +346,6 @@ def initialize_database():
         DRINK_ID INTEGER NOT NULL,
         PRICE VARCHAR(80) NOT NULL,
         BUYDATE DATE NOT NULL,
-=======
-        USER_ID INTEGER REFERENCES USERS(ID) NOT NULL,
-        REST_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
-        PRICE VARCHAR(80) NOT NULL,
-        DATE DATE NOT NULL,
->>>>>>> c8be5744117cd52481ada9637dc0c7e4d28da103
         STATUS VARCHAR(80) NOT NULL
         );"""
         cursor.execute(query)
