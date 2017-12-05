@@ -190,16 +190,8 @@ def initialize_database():
 
         query = """CREATE TABLE EVENT_RESTAURANTS (
            ID SERIAL PRIMARY KEY,
-<<<<<<< HEAD
            EVENT_ID INTEGER REFERENCES EVENTS(ID) NOT NULL,
            USER_ID INTEGER REFERENCES USERS(ID) NOT NULL
-||||||| merged common ancestors
-           EVENT_ID INTEGER  NOT NULL,
-           RESTAURANT_ID INTEGER  NOT NULL
-=======
-           EVENT_ID INTEGER  NOT NULL,
-           USER_ID INTEGER  NOT NULL
->>>>>>> 68fabcf8f91b6b3ada7855d04bc530a101a91015
         );"""
         cursor.execute(query)
 
