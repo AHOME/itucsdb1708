@@ -73,3 +73,18 @@ def get_user(db_mail):
         user.is_admin = user.Mail in current_app.config['ADMIN_USERS']
 
     return user
+
+def get_user_list():
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        statement = """SELECT * FROM USERS"""
+        cursor.execute(statement)
+        db_users = cursor.fetchall()
+    return db_users
+def delete_user_by_id(userID):
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        query = """
+            DELETE FROM USERS WHERE ID = %s"""
+        cursor.execute(query, [userID] )
+        connection.commit()

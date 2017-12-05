@@ -12,6 +12,7 @@ from classes.events import *
 from classes.restaurants import *
 from classes.event_control_functions import *
 from classes.drink_control_functions import *
+from classes.users import *
 import classes.event_restaurants as EventRestaurantFile
 import classes.achievements as achievementMod
 from classes.deals import Deals
@@ -377,10 +378,6 @@ def give_star_func(user_id, restaurant_id, score):
         return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
     return redirect(url_for('site.restaurant_home_page'))
 
-
-
-
-
 @site.route('/foods')
 def food_home_page():
     with dbapi2.connect(current_app.config['dsn']) as connection:
@@ -597,12 +594,17 @@ def admin_page():
 <p>The server could not verify that you are authorized to access the URL requested.  You either supplied the wrong credentials (e.g. a bad password), or your browser doesn't understand how to supply the credentials required.</p>"""
 
     if request.method == 'POST':
-        eventIds = request.form.getlist('eventIDs')
-
+        eventIds = request.form.getlist('eventIDs',None)
+        userIds =  request.form.getlist('userIDs',None)
+        restaurantIds = request.form.getlist('restaurantIDs',None)
         #delete events which have ids in eventIds list
+        rest = Restaurant()
         for Id in eventIds:
             delete_event_by_id(Id)
-
+        for Id in userIds:
+            delete_user_by_id(Id)
+        for Id in restaurantIds:
+            rest.delete_restaurant_by_id(Id)
         achievement_ids = request.form.getlist('achievement_ids')
 
         for ach_id in achievement_ids:
@@ -620,8 +622,12 @@ def admin_page():
     eventDic = {}
     for event in events:
         eventDic[event[0]] = event[5]
-
-    return render_template('admin/index.html', achievements = achievementList, eventDic = eventDic)
+    users = get_user_list()
+    restaurant = Restaurant()
+    restaurants = restaurant.select_all_restaurants()
+    #Pop admin. Do not show him
+    users.pop(0)
+    return render_template('admin/index.html', achievements = achievementList, eventDic = eventDic,usersList = users,restaurantsList = restaurants)
 
 @site.route('/admin/list_users',methods=['GET','POST'])
 def users_list_page():
@@ -714,7 +720,6 @@ def event_user_going(eventId):
     currentUserId = session['id']
     EventRestaurantFile.EventRestaurants(eventId,currentUserId)
     return redirect(url_for('site.event_show_page',eventId = eventId))
-
 
 @site.route('/drink/create',methods = ['GET','POST'])
 def drink_create_page():
