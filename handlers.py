@@ -160,14 +160,6 @@ def initialize_database():
         cursor.execute(query)
 
         #---------------------------------------------------------------------------
-
-        query = """CREATE TABLE EVENT_RESTAURANTS (
-           ID SERIAL PRIMARY KEY,
-           EVENT_ID INTEGER  NOT NULL,
-           USER_ID INTEGER  NOT NULL
-        );"""
-        cursor.execute(query)
-
         query = """CREATE TABLE COMMENTS (
            ID SERIAL PRIMARY KEY,
            USER_ID INTEGER  NOT NULL,
@@ -278,7 +270,7 @@ def initialize_database():
         STARTINGDATE DATE NOT NULL,
         ENDINGDATE DATE NOT NULL,
         NAME VARCHAR(140) NOT NULL,
-        ICON VARCHAR(255)
+        ICON VARCHAR(800)
         );"""
 
         cursor.execute(query)
@@ -292,11 +284,19 @@ def initialize_database():
         );"""
         cursor.execute(query)
 
+        query = """CREATE TABLE EVENT_RESTAURANTS (
+            ID SERIAL PRIMARY KEY,
+            EVENT_ID INTEGER REFERENCES EVENTS(ID) ON DELETE SET NULL,
+            USER_ID INTEGER REFERENCES USERS(ID) ON DELETE SET NULL
+            );"""
+        cursor.execute(query)
+
+
         query = """CREATE TABLE ORDERS (
         ID SERIAL PRIMARY KEY,
         USER_ID INTEGER NOT NULL,
         REST_ID INTEGER NOT NULL,
-        PRICE VARCHAR(80) NOT NULL, 
+        PRICE VARCHAR(80) NOT NULL,
         DATE DATE NOT NULL,
         STATUS VARCHAR(80) NOT NULL
         );"""
@@ -651,14 +651,35 @@ def admin_page():
             delete_event_by_id(Id)
         for Id in userIds:
             delete_user_by_id(Id)
+        #Fetch events again if any of them deleted
+        if eventIds:
+            events = select_all_events()
+            eventDic = {}
+            for event in events:
+                eventDic[event[0]] = event[5]
+        #After deleting users delete them from atendence list.
+        if userIds:
+            EventRestaurantFile.delete_unnecessary_rows()
+            users = get_user_list()
+        #If any restaurant deleted fetch them again.
+        if restaurantIds:
+            restaurant = Restaurant()
+            restaurants = restaurant.select_all_restaurants()
+
         for Id in restaurantIds:
             rest.delete_restaurant_by_id(Id)
         achievement_ids = request.form.getlist('achievement_ids')
 
         for ach_id in achievement_ids:
             achievementMod.achievement_delete_by_Id(ach_id)
-        
+
         targetUserMail = request.form.get('userToSend',None)
+        #If any achievement deleted fetch all again.
+        if achievement_ids:
+            achievements = achievementMod.achievement_select_all()
+            achievementList = []
+            for achievement in achievements:
+                achievementList.append(achievementMod.Achievements(select = achievement))
 
         #delete events which have ids in eventIds list
         if eventIds is not None:
@@ -670,7 +691,7 @@ def admin_page():
         if achievement_ids is not None:
             for ach_id in achievement_ids:
                 achievementMod.achievement_delete_by_Id(ach_id)
-        return render_template('admin/index.html', achievements = achievementList, eventDic = eventDic,targetMail = targetUserMail,usersList = users,restaurantsList = restaurants)      
+        return render_template('admin/index.html', achievements = achievementList, eventDic = eventDic,targetMail = targetUserMail,usersList = users,restaurantsList = restaurants)
     else:
         return render_template('admin/index.html', achievements = achievementList, eventDic = eventDic,usersList = users,restaurantsList = restaurants)
 
@@ -884,8 +905,12 @@ def validate_event_data(form):
     else:
         form.data['endDate'] = form['endDate']
 
-    return len(form.error) == 0
+    if len(form['link'].strip()) == 0:
+        form.error['link'] = 'A photograph must given'
+    else:
+        form.data['link'] = form['link']
 
+    return len(form.error) == 0
 def validate_drink_data(form):
     if form == None:
         return True
