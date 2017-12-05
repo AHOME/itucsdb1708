@@ -80,6 +80,8 @@ def home_page():
 @site.route('/results', methods=['GET', 'POST'])
 def home_page_search():
     toSearch = request.form['searchbar']
+    if toSearch=="" or toSearch==" ":
+        return render_template('search/index.html')
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
         searchFormatted = '%' + toSearch.lower() + '%'
@@ -94,16 +96,14 @@ def home_page_search():
         query = """SELECT * FROM RESTAURANTS WHERE LOWER(NAME) LIKE %s"""
         cursor.execute(query, [searchFormatted])
         restaurantList = cursor.fetchall()
-        print(restaurantList)
         restaurants = []
 
         for rest in restaurantList:
             newRestaurant = Restaurant()
             newRestaurant.create_restaurant_with_attributes(rest[0], rest[1],rest[2],rest[3],rest[4],rest[5],rest[6],rest[7],rest[8])
-            print(newRestaurant.name)
             restaurants.append(newRestaurant)
 
-    return render_template('search/index.html', users=userList, restaurants=restaurants)
+    return render_template('search/index.html', users=userList, restaurants=restaurants, searched=toSearch)
 
 
 
