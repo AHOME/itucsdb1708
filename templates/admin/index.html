@@ -89,7 +89,7 @@
     <h2>Message to User</h2>
     <a href="{{url_for('site.users_list_page')}}"> Click here to see user list </a>
     
-    <form method="POST" action={{url_for('site.messages_new_page', user_id= session['id'])}} >
+    <form method="POST" action={{url_for('site.messages_new_page', user_id= current_user.getId)}} >
         <label for="usr">Mail of the User:</label>
         <input type="text" value="{{targetMail}}" name="message_target" class="form-control">
         <label for="usr">Topic:</label>
