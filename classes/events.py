@@ -28,7 +28,7 @@ class Events():
                 query = """
                     INSERT INTO EVENTS (NAME, ENDINGDATE, CONTENT, ADDRESS, STARTINGDATE)
                     VALUES (%s,%s,%s,%s,%s)"""
-                cursor.execute(query, (self.name, self.endDate, self.content, self.address, self.startDate))
+                cursor.execute(query, [self.name, self.endDate, self.content, self.address, self.startDate])
                 connection.commit()
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()
