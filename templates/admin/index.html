@@ -14,111 +14,92 @@
 </div>
 <div class="row">
   <div class="col-xs-8 col-sm-8 col-md-3 col-lg-3" id = "restaurants">
+    {% if restaurantsList %}
     <h2>Restaurants</h2>
     <div class="restaurantscroll" id="restaurantscroll">
-    <form>
+    <form method="post" name="restaurants">
+      {% for restaurant in restaurantsList%}
       <div class="checkbox">
-        <label><input type="checkbox" value="">Has Kebap </label>
+        <label><input type="checkbox" name = "restaurantIDs" value="{{restaurant[0] }}"> {{ restaurant[1] }} </label>
       </div>
-      <div class="checkbox">
-        <label><input type="checkbox" value="">Vegan Ev yemekleri </label>
-      </div>
-      <div class="checkbox ">
-        <label><input type="checkbox" value="" >Hasoğullar Kebap</label>
-      </div>
-      <div class="checkbox">
-        <label><input type="checkbox" value="" >Off Acıktım Döner</label>
-      </div>
-      <div class="checkbox">
-        <label><input type="checkbox" value="">Ölüm Dürüm</label>
-      </div>
-  </div>
+      {% endfor %}
+    </div>
       <button type="submit" name="delete"
       class="btn btn-primary" id="delete_button">Delete Restaurants</button>
     </form>
+    {% endif %}
 </div>
 <!--List Events-->
 <div class="col-xs-8 col-sm-8 col-md-3 col-lg-3" id = "events">
+  {% if eventDic %}
   <h2>Events</h2>
   <div class="eventscroll" id="eventscroll">
   <form role="form" action = "" method="post" name="events">
-    {% if eventDic %}
       {% for id,eventName in eventDic.items() %}
         <div class="checkbox">
           <label><input type="checkbox" name = "eventIDs" value="{{ id }}">{{ eventName }}</label>
       </div>
       {% endfor %}
-    {% endif %}
 </div>
     <button type="submit" name="delete"
     class="btn btn-primary" id="delete_button">Delete Events</button>
   </form>
+  {% endif %}
 </div>
 
 <!--List Achievements-->
 <div class="col-xs-8 col-sm-8 col-md-3 col-lg-3" id = "achievements">
+  {% if achievements %}
   <h2>Achievements</h2>
 <form method="post">
   <div class="achievementscroll" id="achievementscroll">
-    {% if achievements %}
         {% for achievement in achievements %}
             <div class="checkbox">
               <label><input type="checkbox" name="achievement_ids" value="{{achievement.Id}}"><a href="{{ url_for('site.achievement_show_page',achievement_id = achievement.Id) }}">{{ achievement.name }}</label>
             </div>
         {% endfor %}
-    {% endif %}
   </div>
     <button type="submit" name="delete"
     class="btn btn-primary" id="delete_button">Delete Achievements</button>
 </form>
+{% endif %}
 </div>
 
 <!--List users-->
+<form method="post">
 <div class="col-xs-8 col-sm-8 col-md-3 col-lg-3" id = "users">
+  {% if usersList %}
     <h2>Users</h2>
     <div class="userscroll" id="userscroll">
-        <form>
-          <div class="checkbox">
-            <label><input type="checkbox" value="">Domdom Ali</label>
-          </div>
-          <div class="checkbox">
-            <label><input type="checkbox" value="">Tulum Hayri</label>
-          </div>
-          <div class="checkbox ">
-            <label><input type="checkbox" value="" >H2S04</label>
-          </div>
-          <div class="checkbox">
-            <label><input type="checkbox" value="" >Ozbaysa</label>
-          </div>
-          <div class="checkbox">
-            <label><input type="checkbox" value="">Bay Ölüm</label>
-          </div>
-          <div class="checkbox">
-            <label><input type="checkbox" value="">Neil Young</label>
-          </div>
-          <div class="checkbox">
-            <label><input type="checkbox" value="">White Buffalo</label>
-          </div>
-        </form>
+            {% for user in usersList %}
+              <div class="checkbox">
+                <label><input type="checkbox" name = "userIDs"value="{{ user[0] }}">{{ user[3] }}</label>
+              </div>
+            {% endfor %}
     </div>
     <button type="submit" name="delete"
     class="btn btn-primary" id="delete_button">Delete Users</button>
+    {% endif %}
  </div>
+</form>
 </div>
 <!--Message users-->
     <div class="row" id="post_news">
 <div class="col-xs-3 col-sm-6 col-md-9 col-lg-12" id ="message">
     <h2>Message to User</h2>
-    <form>
-      <div class="form-group">
-        <label for="usr">Name of the User:</label>
-        <input type="text" class="form-control" id="usr">
+    <a href="{{url_for('site.users_list_page')}}"> Click here to see user list </a>
+    
+    <form method="POST" action={{url_for('site.messages_new_page', user_id= session['id'])}} >
+        <label for="usr">Mail of the User:</label>
+        <input type="text" value="{{targetMail}}" name="message_target" class="form-control">
+        <label for="usr">Topic:</label>
+        <input type="text"  name="message_topic" class="form-control" >
         <label for="comment">Message:</label>
-        <textarea class="form-control" rows="5" id="comment"></textarea>
+        <textarea class="form-control" name="message_body" rows="5" id="comment"></textarea>
         <button type="submit" name="Send"
         class="btn btn-primary" id="send_message_button">Send Message</button>
-      </div>
     </form>
+  
   </div>
   </div>
 <!--Post a New-->

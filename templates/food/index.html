@@ -13,19 +13,29 @@
             <th>Food Name</th>
             <th>Food Type</th>
             <th>Food Price</th>
+            {% if current_user.is_admin %}
             <th></th>
             <th></th>
+            <th></th>
+            <th><a href="{{ url_for('site.food_create_page') }}">Create Food</a></th>
+            {% endif %}
           </tr>
         </thead>
         <tbody>
-            {% for r in allValues %}
+            {% for r in foods %}
           <tr>
             <!-- Change me with model and use for loop for showing all item inside the database. -->
             <td>{{r[1]}}</td>
             <td>{{r[3]}}</td>
             <td>{{r[4]}}</td>
+            {% if current_user.is_admin %}
             <td><a href="{{ url_for('site.food_edit_page', food_id = r[0]) }}">Edit</a></td>
             <td><a href="{{ url_for('site.food_delete_func', food_id = r[0]) }}">Delete</a></td>
+            <form class="" action="/save_foods_to_restaurant" method="post">
+            <td><input type="checkbox" name="food" value={{r[0]}}></td>
+            <td></td>
+            {% endif %}
+
           </tr>
             {% endfor %}
         </tbody>
@@ -36,25 +46,39 @@
             <th>Drink Name</th>
             <th>Drink Type</th>
             <th>Alcohol</th>
+            {% if current_user.is_admin %}
             <th></th>
             <th></th>
+            <th></th>
+            <th><a href="{{ url_for('site.drink_create_page') }}">Create Drink</a></th>
+            {% endif %}
           </tr>
         </thead>
         <tbody>
           {% if drinks %}
             {% for drink in drinks %}
           <tr>
-            <!-- Change me with model and use for loop for showing all item inside the database. -->
-            <td>{{drink.name}}</td>
-            <td>{{drink.drinkType}}</td>
-            <td>{{drink.alcohol }}</td>
-            <td><a href="{{ url_for('site.drink_edit_page', drinkId = drink.Id) }}">Edit</a></td>
-            <td><a href="{{ url_for('site.drink_delete_function', drinkId = drink.Id) }}">Delete</a></td>
-          </tr>
-            {% endfor %}
-            {% endif %}
-        </tbody>
-      </table>
+              <td>{{drink.name}}</td>
+              <td>{{drink.drinkType}}</td>
+              <td>{{drink.alcohol }}</td>
+              {% if current_user.is_admin %}
+              <td><a href="{{ url_for('site.drink_edit_page', drinkId = drink.Id) }}">Edit</a></td>
+              <td><a href="{{ url_for('site.drink_delete_function', drinkId = drink.Id) }}">Delete</a></td>
+              <input type="hidden" name="restaurant_id" value={{restaurant.primaryId}}>
+              <input type="hidden" name="user_id" value={{current_user.Id}}>
+              <td><input type="checkbox" name="drink" value={{drink.Id}}></td>
+              {% endif %}
+            </tr>
+              {% endfor %}
+              {% endif %}
+          </tbody>
+        </table>
+        <div class="form-group">
+          <div class="col-md-8 text-center">
+            <button type="submit" class="btn btn-success" >Save</button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 </div>

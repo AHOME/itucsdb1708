@@ -1,0 +1,55 @@
+
+{% extends "layouts/layout.html" %}
+
+{% block title %} -Restaurant Name- Page{% endblock %}
+{% block csslinks %}  <link rel="stylesheet" href="/static/restaurant/show.css" /> {% endblock %}
+{% block content %}
+    <form method="POST" action={{url_for('site.admin_page')}}>
+  <div class="well">
+    <div class="tab-content">
+      <div class="tab-pane fade in active" id="tab1">
+              <table class="table table-condensed table-hover">
+                <thead>
+                  <tr>
+                    <th>User Name</th>
+                    <th>User Surname</th>
+                    <th>User Email</th>
+                    <th>User Type</th>
+                    <th>Select</th>
+                  </tr>
+                </thead>
+                <tbody>
+                 {% for user in users%}
+                  <tr>
+                    <td>{{user[1]}}</td>
+                    <td>{{user[2]}}</td>
+                    <td>{{user[3]}}</td>
+                    {% if user[8] == 1%}
+                    <td>Restaurant Owner</td>
+                    {% elif user[8] == 2%}
+                    <td>Customer</td>
+                    {% else %}
+                    <td>Admin</td>
+                    {% endif %}
+                    <td><input type="radio" name ="userToSend" id="userToSend" value="{{user[3]}}"></td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+      </div>
+    </div>
+    </div>
+  
+  <div class="mx-auto" style="padding-left: 3cm;padding-right: 1cm;">
+  
+  <div class="form-group">
+                    <div class="col-sm-6 col-sm-offset-2">
+                        
+                            
+                        <button  type="submit" class="btn btn-danger btn-block">Choose User To Send Message</button>
+                        
+                    </div>
+     </div>
+    </div>
+</form>
+{% endblock %}
