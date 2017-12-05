@@ -31,6 +31,7 @@ def logout_page():
     session['id'] = 0
     return redirect(url_for('site.home_page',firstEvent=None,eventDic=None))
 
+
 @site.route('/', methods=['GET', 'POST'])
 def home_page():
     events = select_all_events()
@@ -77,7 +78,33 @@ def home_page():
             else:
                 return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
 
+@site.route('/results', methods=['GET', 'POST'])
+def home_page_search():
+    toSearch = request.form['searchbar']
+    if toSearch=="" or toSearch==" ":
+        return render_template('search/index.html')
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        searchFormatted = '%' + toSearch.lower() + '%'
+        query = """SELECT MAIL FROM USERS WHERE LOWER(FIRSTNAME) LIKE %s OR LOWER(LASTNAME) LIKE %s"""
+        cursor.execute(query, [searchFormatted,searchFormatted])
+        userMailList = cursor.fetchall()
 
+        userList = []
+        for mail in userMailList:
+            userList.append(get_user(mail))
+
+        query = """SELECT * FROM RESTAURANTS WHERE LOWER(NAME) LIKE %s"""
+        cursor.execute(query, [searchFormatted])
+        restaurantList = cursor.fetchall()
+        restaurants = []
+
+        for rest in restaurantList:
+            newRestaurant = Restaurant()
+            newRestaurant.create_restaurant_with_attributes(rest[0], rest[1],rest[2],rest[3],rest[4],rest[5],rest[6],rest[7],rest[8])
+            restaurants.append(newRestaurant)
+
+    return render_template('search/index.html', users=userList, restaurants=restaurants, searched=toSearch)
 
 @site.route('/count') #This page meant for test the database, will be deleted after stability updates
 def counter_page():
@@ -163,15 +190,23 @@ def initialize_database():
 
         query = """CREATE TABLE EVENT_RESTAURANTS (
            ID SERIAL PRIMARY KEY,
+<<<<<<< HEAD
+           EVENT_ID INTEGER REFERENCES EVENTS(ID) NOT NULL,
+           USER_ID INTEGER REFERENCES USERS(ID) NOT NULL
+||||||| merged common ancestors
+           EVENT_ID INTEGER  NOT NULL,
+           RESTAURANT_ID INTEGER  NOT NULL
+=======
            EVENT_ID INTEGER  NOT NULL,
            USER_ID INTEGER  NOT NULL
+>>>>>>> 68fabcf8f91b6b3ada7855d04bc530a101a91015
         );"""
         cursor.execute(query)
 
         query = """CREATE TABLE COMMENTS (
            ID SERIAL PRIMARY KEY,
-           USER_ID INTEGER  NOT NULL,
-           RESTAURANT_ID INTEGER  NOT NULL,
+           USER_ID INTEGER REFERENCES USERS(ID) NOT NULL,
+           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
            CONTENT VARCHAR(255) NOT NULL,
            SENDDATE TIMESTAMP NOT NULL
         );"""
@@ -179,8 +214,8 @@ def initialize_database():
 
         query = """CREATE TABLE RESTAURANT_FOODS (
            ID SERIAL PRIMARY KEY,
-           RESTAURANT_ID INTEGER  NOT NULL,
-           FOOD_ID INTEGER  NOT NULL,
+           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
+           FOOD_ID INTEGER REFERENCES FOODS(ID) NOT NULL,
            SELL_COUNT INTEGER NOT NULL
         );"""
         cursor.execute(query)
@@ -228,8 +263,8 @@ def initialize_database():
 
         query = """CREATE TABLE STAR_RESTAURANTS(
             ID SERIAL PRIMARY KEY,
-            USER_ID INTEGER NOT NULL,
-            RESTAURANT_ID INTEGER NOT NULL,
+            USER_ID INTEGER REFERENCES USERS(ID) NOT NULL,
+            RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
             STAR INTEGER NOT NULL
         )
         """
@@ -285,8 +320,8 @@ def initialize_database():
 
         query = """CREATE TABLE DEALS (
         ID SERIAL PRIMARY KEY,
-        FOOD_ID INTEGER NOT NULL,
-        REST_ID INTEGER NOT NULL,
+        FOOD_ID INTEGER REFERENCES FOODS(ID) NOT NULL,
+        REST_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
         DATE DATE NOT NULL,
         DISCOUNT_RATE INTEGER NOT NULL CHECK(DISCOUNT_RATE >= 0 AND DISCOUNT_RATE <= 100)
         );"""
@@ -294,9 +329,9 @@ def initialize_database():
 
         query = """CREATE TABLE ORDERS (
         ID SERIAL PRIMARY KEY,
-        USER_ID INTEGER NOT NULL,
-        REST_ID INTEGER NOT NULL,
-        PRICE VARCHAR(80) NOT NULL, 
+        USER_ID INTEGER REFERENCES USERS(ID) NOT NULL,
+        REST_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
+        PRICE VARCHAR(80) NOT NULL,
         DATE DATE NOT NULL,
         STATUS VARCHAR(80) NOT NULL
         );"""
@@ -657,7 +692,7 @@ def admin_page():
 
         for ach_id in achievement_ids:
             achievementMod.achievement_delete_by_Id(ach_id)
-        
+
         targetUserMail = request.form.get('userToSend',None)
 
         #delete events which have ids in eventIds list
@@ -670,7 +705,7 @@ def admin_page():
         if achievement_ids is not None:
             for ach_id in achievement_ids:
                 achievementMod.achievement_delete_by_Id(ach_id)
-        return render_template('admin/index.html', achievements = achievementList, eventDic = eventDic,targetMail = targetUserMail,usersList = users,restaurantsList = restaurants)      
+        return render_template('admin/index.html', achievements = achievementList, eventDic = eventDic,targetMail = targetUserMail,usersList = users,restaurantsList = restaurants)
     else:
         return render_template('admin/index.html', achievements = achievementList, eventDic = eventDic,usersList = users,restaurantsList = restaurants)
 
