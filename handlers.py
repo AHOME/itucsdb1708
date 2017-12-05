@@ -120,6 +120,9 @@ def initialize_database():
         query = """DROP TABLE IF EXISTS STAR_RESTAURANTS;"""
         cursor.execute(query)
 
+        query = """DROP TABLE IF EXISTS RESTAURANT_DRINKS;"""
+        cursor.execute(query)
+
         query = """DROP TABLE IF EXISTS RESTAURANTS;"""
         cursor.execute(query)
 
@@ -181,6 +184,14 @@ def initialize_database():
            ID SERIAL PRIMARY KEY,
            RESTAURANT_ID INTEGER  NOT NULL,
            FOOD_ID INTEGER  NOT NULL,
+           SELL_COUNT INTEGER NOT NULL
+        );"""
+        cursor.execute(query)
+
+        query = """CREATE TABLE RESTAURANT_DRINKS (
+           ID SERIAL PRIMARY KEY,
+           RESTAURANT_ID INTEGER  NOT NULL,
+           DRINK_ID INTEGER  NOT NULL,
            SELL_COUNT INTEGER NOT NULL
         );"""
         cursor.execute(query)
@@ -297,11 +308,11 @@ def initialize_database():
         connection.commit()
 
         query = """
-               INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR)
+               INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR,BIO)
                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
         hashed_password = pwd_context.encrypt("12345")
-        cursor.execute(query, ("admin", "admin", "admin@restoranlandin.com", hashed_password, "10.10.2012", "","",0,"avatar"))
+        cursor.execute(query, ("admin", "admin", "admin@restoranlandin.com", hashed_password, "10.10.2012", "","",0,"avatar",""))
         connection.commit()
 
         return redirect(url_for('site.home_page'))
@@ -381,23 +392,32 @@ def give_star_func(user_id, restaurant_id, score):
         return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
     return redirect(url_for('site.restaurant_home_page'))
 
+@site.route('/save_foods_to_restaurant', methods=['POST'])
+def add_food_to_restaurant_page():
+    if current_user.is_admin:
+        foods = request.form.getlist("food")
+        drinks = request.form.getlist("drink")
+        print(drinks)
+        print(foods)
+        restaurant_id = request.form['restaurant_id']
+        restaurant = Restaurant()
+        restaurant.take_food_to_restaurant(foods,drinks,restaurant_id)
+        return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
+    return redirect(url_for('site.restaurant_home_page'))
 
-
-
-
-@site.route('/menuitems')
-def food_home_page():
+@site.route('/menuitems/<restaurant_id>')
+def food_home_page(restaurant_id):
     food = Foods()
-    print("ali")
     foods = food.select_all_foods()
-    print("ali")
+    restaurant = Restaurant()
     drinks = select_all_drinks()
-    print("ali")
     drinkList = []
     for drink in drinks:
         drinkList.append(Drinks(select = drink))
 
-    return render_template('food/index.html', foods = foods, drinks = drinkList)
+    restaurant = Restaurant()
+    restaurant.select_restaurant_by_id(restaurant_id)
+    return render_template('food/index.html', foods = foods, drinks = drinkList, restaurant = restaurant)
 
 @site.route('/food/create', methods=['GET','POST'])
 def food_create_page():
