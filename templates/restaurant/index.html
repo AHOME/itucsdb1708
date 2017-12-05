@@ -18,6 +18,7 @@
             {% if current_user.is_admin %}
             <th></th>
             <th></th>
+            <th></th>
             {% endif %}
           </tr>
         </thead>
@@ -33,6 +34,7 @@
                 {% if current_user.is_admin %}
                 <td><a href="{{ url_for('site.restaurant_edit_page', restaurant_id = r[0]) }}">Edit</a></td>
                 <td><a href="{{ url_for('site.restaurant_delete_func', restaurant_id = r[0]) }}">Delete</a></td>
+                <td><a href="{{ url_for('site.food_home_page', restaurant_id = r[0]) }}">Add Some Food</a></td>
                 {% endif %}
               </tr>
             {% endfor %}

@@ -74,6 +74,7 @@ def get_user(db_mail):
 
     return user
 
+
 def get_user_list():
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
@@ -81,3 +82,14 @@ def get_user_list():
         cursor.execute(statement)
         db_users = cursor.fetchall()
     return db_users
+  
+def get_type(inputId):
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        statement = """SELECT USERTYPE FROM USERS WHERE ID = %s"""
+        cursor.execute(statement, [inputId])
+        db_user = cursor.fetchone()
+    if db_user != None:
+        return db_user
+    else:
+        return None
