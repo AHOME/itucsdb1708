@@ -148,9 +148,59 @@ class Restaurant():
             updatedScore = totalStar/count
 
 
-            print(updatedScore)
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()
                 query = """UPDATE RESTAURANTS SET SCORE = %s WHERE ID = %s"""
                 cursor.execute(query, [updatedScore, restaurant_id])
                 connection.commit()
+
+    def take_food_to_restaurant(self, foods, drinks, restaurant_id):
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """SELECT * FROM RESTAURANT_FOODS"""
+            cursor.execute(query, [restaurant_id])
+            current_foods = cursor.fetchall()
+        foods_new = []
+        for i in foods:
+            for j in current_foods:
+                if(str(j[1]) == str(restaurant_id) and str(j[2]) == str(i)):
+                    foods_new.append(i)
+        foods = list(set(foods) - set(foods_new))
+        for i in foods:
+            with dbapi2.connect(current_app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """INSERT INTO RESTAURANT_FOODS (FOOD_ID, RESTAURANT_ID, SELL_COUNT)
+                    VALUES (%s,%s,%s)"""
+                cursor.execute(query, [int(i), int(restaurant_id), 0])
+                connection.commit()
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """SELECT * FROM RESTAURANT_DRINKS"""
+            cursor.execute(query, [restaurant_id])
+            current_drinks = cursor.fetchall()
+        drinks_new = []
+        for i in drinks:
+            for j in current_drinks:
+                if(str(j[1]) == str(restaurant_id) and str(j[2]) == str(i)):
+                    drinks_new.append(i)
+        drinks = list(set(drinks) - set(drinks_new))
+        for i in drinks:
+            with dbapi2.connect(current_app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """INSERT INTO RESTAURANT_DRINKS (DRINK_ID, RESTAURANT_ID, SELL_COUNT)
+                    VALUES (%s,%s,%s)"""
+                cursor.execute(query, [int(i), int(restaurant_id), 0])
+                connection.commit()
+
+    def get_food_and_drink(self,restaurant_id):
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """SELECT * FROM RESTAURANT_FOODS JOIN FOODS ON RESTAURANT_FOODS.FOOD_ID = FOODS.ID WHERE RESTAURANT_ID = %s"""
+            cursor.execute(query, [restaurant_id])
+            foods = cursor.fetchall()
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """SELECT * FROM RESTAURANT_DRINKS JOIN DRINKS ON RESTAURANT_DRINKS.DRINK_ID = DRINKS.ID WHERE RESTAURANT_ID = %s"""
+            cursor.execute(query, [restaurant_id])
+            drinks = cursor.fetchall()
+        return (foods,drinks)

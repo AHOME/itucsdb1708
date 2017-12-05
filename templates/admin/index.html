@@ -88,16 +88,18 @@
 <div class="col-xs-3 col-sm-6 col-md-9 col-lg-12" id ="message">
     <h2>Message to User</h2>
     <a href="{{url_for('site.users_list_page')}}"> Click here to see user list </a>
-    <form>
-      <div class="form-group">
+    
+    <form method="POST" action={{url_for('site.messages_new_page', user_id= session['id'])}} >
         <label for="usr">Mail of the User:</label>
-        <input type="text" class="form-control" id="usr">
+        <input type="text" value="{{targetMail}}" name="message_target" class="form-control">
+        <label for="usr">Topic:</label>
+        <input type="text"  name="message_topic" class="form-control" >
         <label for="comment">Message:</label>
-        <textarea class="form-control" rows="5" id="comment"></textarea>
+        <textarea class="form-control" name="message_body" rows="5" id="comment"></textarea>
         <button type="submit" name="Send"
         class="btn btn-primary" id="send_message_button">Send Message</button>
-      </div>
     </form>
+  
   </div>
   </div>
 <!--Post a New-->
