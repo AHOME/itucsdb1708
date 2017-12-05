@@ -299,7 +299,7 @@ def initialize_database():
         ID SERIAL PRIMARY KEY,
         USER_ID INTEGER NOT NULL,
         REST_ID INTEGER NOT NULL,
-        PRICE VARCHAR(80) NOT NULL,
+        PRICE VARCHAR(80) NOT NULL, 
         DATE DATE NOT NULL,
         STATUS VARCHAR(80) NOT NULL
         );"""
@@ -628,19 +628,8 @@ def admin_page():
 <title>401 Unauthorized</title>
 <h1>Unauthorized</h1>
 <p>The server could not verify that you are authorized to access the URL requested.  You either supplied the wrong credentials (e.g. a bad password), or your browser doesn't understand how to supply the credentials required.</p>"""
-
-    if request.method == 'POST':
-        eventIds = request.form.getlist('eventIDs')
-
-        #delete events which have ids in eventIds list
-        for Id in eventIds:
-            delete_event_by_id(Id)
-
-        achievement_ids = request.form.getlist('achievement_ids')
-
-        for ach_id in achievement_ids:
-            achievementMod.achievement_delete_by_Id(ach_id)
-
+    
+    
 
     achievements = achievementMod.achievement_select_all()
     achievementList = []
@@ -654,12 +643,33 @@ def admin_page():
     for event in events:
         eventDic[event[0]] = event[5]
 
-    return render_template('admin/index.html', achievements = achievementList, eventDic = eventDic)
+    if request.method == 'POST':
+        eventIds = request.form.getlist('eventIDs',None)
+        
+        targetUserMail = request.form.get('userToSend',None)
+
+        #delete events which have ids in eventIds list
+        if eventIds is not None:
+            for Id in eventIds:
+                delete_event_by_id(Id)
+
+        achievement_ids = request.form.getlist('achievement_ids',None)
+
+        if achievement_ids is not None:
+            for ach_id in achievement_ids:
+                achievementMod.achievement_delete_by_Id(ach_id)
+        return render_template('admin/index.html', achievements = achievementList, eventDic = eventDic ,targetMail = targetUserMail)
+    else:
+        return render_template('admin/index.html', achievements = achievementList, eventDic = eventDic)
+
+
+
 
 @site.route('/admin/list_users',methods=['GET','POST'])
 def users_list_page():
     if request.method == 'GET':
-        return render_template('admin/show_users.html')
+        user_list = get_user_list()
+        return render_template('admin/show_users.html',users=user_list)
 
 @site.route('/achievement/<int:achievement_id>', methods=['GET','POST'])
 def achievement_show_page(achievement_id):

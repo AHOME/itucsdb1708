@@ -74,6 +74,15 @@ def get_user(db_mail):
 
     return user
 
+
+def get_user_list():
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        statement = """SELECT * FROM USERS"""
+        cursor.execute(statement)
+        db_users = cursor.fetchall()
+    return db_users
+  
 def get_type(inputId):
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
