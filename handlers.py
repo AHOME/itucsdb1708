@@ -13,6 +13,7 @@ from classes.events import *
 from classes.restaurants import *
 from classes.event_control_functions import *
 from classes.drink_control_functions import *
+import classes.event_restaurants as EventRestaurantFile
 import classes.achievements as achievementMod
 from classes.deals import Deals
 site = Blueprint('site', __name__)
@@ -40,9 +41,8 @@ def home_page():
             firstEvent = Events(select = eventSelect)
         else:
             eventList.append(Events(select = eventSelect))
-    #return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
     if request.method == 'GET':
-        return render_template('home/index.html',firstEvent = None,eventDic = None)
+        return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
     else:
         input_mail = request.form['InputEmail']
         input_password = request.form['InputPassword']
@@ -76,9 +76,6 @@ def home_page():
                     return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList) #Couldn't login
             else:
                 return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
-
-
-
 
 
 
@@ -167,7 +164,7 @@ def initialize_database():
         query = """CREATE TABLE EVENT_RESTAURANTS (
            ID SERIAL PRIMARY KEY,
            EVENT_ID INTEGER  NOT NULL,
-           RESTAURANT_ID INTEGER  NOT NULL
+           USER_ID INTEGER  NOT NULL
         );"""
         cursor.execute(query)
 
@@ -634,9 +631,6 @@ def admin_page():
 <title>401 Unauthorized</title>
 <h1>Unauthorized</h1>
 <p>The server could not verify that you are authorized to access the URL requested.  You either supplied the wrong credentials (e.g. a bad password), or your browser doesn't understand how to supply the credentials required.</p>"""
-
-
-
     achievements = achievementMod.achievement_select_all()
     achievementList = []
 
@@ -648,9 +642,27 @@ def admin_page():
     eventDic = {}
     for event in events:
         eventDic[event[0]] = event[5]
-
+    users = get_user_list()
+    restaurant = Restaurant()
+    restaurants = restaurant.select_all_restaurants()
+    #Pop admin. Do not show him
+    users.pop(0)
     if request.method == 'POST':
         eventIds = request.form.getlist('eventIDs',None)
+        userIds =  request.form.getlist('userIDs',None)
+        restaurantIds = request.form.getlist('restaurantIDs',None)
+        #delete events which have ids in eventIds list
+        rest = Restaurant()
+        for Id in eventIds:
+            delete_event_by_id(Id)
+        for Id in userIds:
+            delete_user_by_id(Id)
+        for Id in restaurantIds:
+            rest.delete_restaurant_by_id(Id)
+        achievement_ids = request.form.getlist('achievement_ids')
+
+        for ach_id in achievement_ids:
+            achievementMod.achievement_delete_by_Id(ach_id)
 
         targetUserMail = request.form.get('userToSend',None)
 
@@ -664,12 +676,9 @@ def admin_page():
         if achievement_ids is not None:
             for ach_id in achievement_ids:
                 achievementMod.achievement_delete_by_Id(ach_id)
-        return render_template('admin/index.html', achievements = achievementList, eventDic = eventDic ,targetMail = targetUserMail)
+        return render_template('admin/index.html', achievements = achievementList, eventDic = eventDic,targetMail = targetUserMail,usersList = users,restaurantsList = restaurants)
     else:
-        return render_template('admin/index.html', achievements = achievementList, eventDic = eventDic)
-
-
-
+        return render_template('admin/index.html', achievements = achievementList, eventDic = eventDic,usersList = users,restaurantsList = restaurants)
 
 @site.route('/admin/list_users',methods=['GET','POST'])
 def users_list_page():
@@ -740,12 +749,29 @@ def event_edit_page(eventId):
             return render_template('event/edit.html',event = event,form = form)
 
 @site.route('/event/<int:eventId>')
-@login_required
 def event_show_page(eventId):
     #select specific event from databse
     select = select_event_by_id(eventId)
     event = Events(select = select)
-    return render_template('event/show.html',event = event)
+    # fetch people attend this event
+    comers = EventRestaurantFile.select_comers_all(eventId)
+    currentUserId = session['id']
+    #Is person coming
+    is_coming = EventRestaurantFile.does_user_come(currentUserId,eventId)
+    print(is_coming)
+    return render_template('event/show.html',event = event,is_coming = is_coming,comers = comers)
+
+@site.route('/event/<int:eventId>/not_going')
+def event_user_not_going(eventId):
+    currentUserId = session['id']
+    EventRestaurantFile.delete_comers_by_Id(eventId,currentUserId)
+    return redirect(url_for('site.event_show_page',eventId = eventId))
+
+@site.route('/event/<int:eventId>/going')
+def event_user_going(eventId):
+    currentUserId = session['id']
+    EventRestaurantFile.EventRestaurants(eventId,currentUserId)
+    return redirect(url_for('site.event_show_page',eventId = eventId))
 
 @site.route('/drink/create',methods = ['GET','POST'])
 def drink_create_page():
