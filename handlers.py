@@ -332,7 +332,20 @@ def restaurant_show_page(restaurant_id, methods=['GET','POST']):
     if( current_user.is_authenticated ):
         check = restaurant.check_user_gave_a_star_or_not(current_user.Id,restaurant_id)
     comments = restaurant.select_all_comments(restaurant_id)
-    return render_template('restaurant/show.html', restaurant = restaurant, comments = comments, check = check)
+    foods,drinks = restaurant.get_food_and_drink(restaurant_id)
+
+    best_seller_food = [0,""]
+    best_seller_drink = [0,""]
+    all_foods,all_drinks = restaurant.get_food_and_drink(restaurant_id)
+
+    for i in all_foods:
+        if (int(i[3]) > int(best_seller_food[0])):
+            best_seller_food[0] = int(i[3])
+            best_seller_food[1] = i[5]
+
+    print(foods)
+    print(drinks)
+    return render_template('restaurant/show.html', restaurant = restaurant, comments = comments, check = check, best_seller_food = best_seller_food[1], foods = all_foods, drinks = all_drinks)
 
 @site.route('/restaurant/create', methods=['GET','POST'])
 def restaurant_create_page():
@@ -397,8 +410,6 @@ def add_food_to_restaurant_page():
     if current_user.is_admin:
         foods = request.form.getlist("food")
         drinks = request.form.getlist("drink")
-        print(drinks)
-        print(foods)
         restaurant_id = request.form['restaurant_id']
         restaurant = Restaurant()
         restaurant.take_food_to_restaurant(foods,drinks,restaurant_id)
@@ -426,7 +437,7 @@ def food_create_page():
     else:
         food = Foods()
         food.create_food(request.form)
-        return redirect(url_for('site.food_home_page'))
+        return redirect(url_for('site.restaurant_home_page'))
 
 @site.route('/food/<int:food_id>/delete')
 def food_delete_func(food_id):

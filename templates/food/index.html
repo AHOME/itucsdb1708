@@ -17,6 +17,7 @@
             <th></th>
             <th></th>
             <th></th>
+            <th><a href="{{ url_for('site.food_create_page') }}">Create Food</a></th>
             {% endif %}
           </tr>
         </thead>
@@ -32,6 +33,7 @@
             <td><a href="{{ url_for('site.food_delete_func', food_id = r[0]) }}">Delete</a></td>
             <form class="" action="/save_foods_to_restaurant" method="post">
             <td><input type="checkbox" name="food" value={{r[0]}}></td>
+            <td></td>
             {% endif %}
 
           </tr>
@@ -48,6 +50,7 @@
             <th></th>
             <th></th>
             <th></th>
+            <th><a href="{{ url_for('site.drink_create_page') }}">Create Drink</a></th>
             {% endif %}
           </tr>
         </thead>
