@@ -11,6 +11,8 @@ from classes.drinks import *
 from classes.foods import *
 from classes.events import *
 from classes.restaurants import *
+from classes.food_orders import *
+from classes.drink_orders import *
 from classes.event_control_functions import *
 from classes.drink_control_functions import *
 import classes.event_restaurants as EventRestaurantFile
@@ -144,7 +146,10 @@ def initialize_database():
         query = """DROP TABLE IF EXISTS DEALS;"""
         cursor.execute(query)
 
-        query = """DROP TABLE IF EXISTS ORDERS;"""
+        query = """DROP TABLE IF EXISTS FOOD_ORDERS;"""
+        cursor.execute(query)
+
+        query = """DROP TABLE IF EXISTS DRINK_ORDERS;"""
         cursor.execute(query)
 
         query = """DROP TABLE IF EXISTS USERS;"""
@@ -264,6 +269,7 @@ def initialize_database():
         ID SERIAL PRIMARY KEY,
         NAME VARCHAR(20) NOT NULL,
         TYPE BOOLEAN,
+        PRICE INTEGER,
         CALORIE INTEGER,
         DRINKCOLD BOOLEAN,
         ALCOHOL BOOLEAN
@@ -292,12 +298,24 @@ def initialize_database():
         );"""
         cursor.execute(query)
 
-        query = """CREATE TABLE ORDERS (
+        query = """CREATE TABLE FOOD_ORDERS (
         ID SERIAL PRIMARY KEY,
         USER_ID INTEGER NOT NULL,
         REST_ID INTEGER NOT NULL,
+        FOOD_ID INTEGER NOT NULL,
         PRICE VARCHAR(80) NOT NULL,
-        DATE DATE NOT NULL,
+        BUYDATE DATE NOT NULL,
+        STATUS VARCHAR(80) NOT NULL
+        );"""
+        cursor.execute(query)
+
+        query = """CREATE TABLE DRINK_ORDERS (
+        ID SERIAL PRIMARY KEY,
+        USER_ID INTEGER NOT NULL,
+        REST_ID INTEGER NOT NULL,
+        DRINK_ID INTEGER NOT NULL,
+        PRICE VARCHAR(80) NOT NULL,
+        BUYDATE DATE NOT NULL,
         STATUS VARCHAR(80) NOT NULL
         );"""
         cursor.execute(query)
@@ -432,12 +450,20 @@ def food_home_page(restaurant_id):
         return render_template('food/index.html', foods = foods, drinks = drinkList, restaurant = restaurant)
     return redirect(url_for('site.home_page'))
 
-@site.route('order/create/<restaurant_id>/<user_id>')
-def create_order(restaurant_id, user_id):
+@site.route('/order/create/<restaurant_id>/<user_id>/<food>/<price>')
+def food_order_create_page(restaurant_id, user_id, food, price):
     if(current_user.is_authenticated):
-        order = Orders()
-        order.create_order(restaurant_id, user_id)
-    return
+        order = FoodOrders()
+        order.create_order(restaurant_id, user_id, food, price)
+    return redirect(url_for('site.home_page'))
+
+@site.route('/order/create/<restaurant_id>/<user_id>/<drink>')
+def drink_order_create_page(restaurant_id, user_id, drink, price):
+    if(current_user.is_authenticated):
+        order = DrinkOrders()
+        order.create_order(restaurant_id, user_id, drink, price)
+    return redirect(url_for('site.home_page'))
+
 @site.route('/food/create', methods=['GET','POST'])
 def food_create_page():
     if current_user.is_admin:
