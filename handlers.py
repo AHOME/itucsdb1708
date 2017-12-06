@@ -319,7 +319,7 @@ def initialize_database():
             );"""
         cursor.execute(query)
 
-query = """CREATE TABLE FOOD_ORDERS (
+        query = """CREATE TABLE FOOD_ORDERS (
         ID SERIAL PRIMARY KEY,
         USER_ID INTEGER NOT NULL,
         REST_ID INTEGER NOT NULL,
