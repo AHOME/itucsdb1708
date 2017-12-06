@@ -187,14 +187,6 @@ def initialize_database():
         cursor.execute(query)
 
         #---------------------------------------------------------------------------
-        query = """CREATE TABLE COMMENTS (
-           ID SERIAL PRIMARY KEY,
-           USER_ID INTEGER REFERENCES USERS(ID) NOT NULL,
-           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
-           CONTENT VARCHAR(255) NOT NULL,
-           SENDDATE TIMESTAMP NOT NULL
-        );"""
-        cursor.execute(query)
 
         query = """CREATE TABLE RESTAURANT_FOODS (
            ID SERIAL PRIMARY KEY,
@@ -229,6 +221,15 @@ def initialize_database():
            FOOD_TYPE VARCHAR(80) NOT NULL,
            PRICE VARCHAR(80) NOT NULL,
            CALORIE VARCHAR(80) NOT NULL
+        );"""
+        cursor.execute(query)
+
+        query = """CREATE TABLE COMMENTS (
+           ID SERIAL PRIMARY KEY,
+           USER_ID INTEGER REFERENCES USERS(ID) NOT NULL,
+           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
+           CONTENT VARCHAR(255) NOT NULL,
+           SENDDATE TIMESTAMP NOT NULL
         );"""
         cursor.execute(query)
 

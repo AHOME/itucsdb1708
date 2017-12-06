@@ -64,7 +64,7 @@
                   {%for i in foods%}
                   <tr>
                     <td>{{i[5]}}</td>
-                    <td><a href="{{ url_for('site.food_order_create_page', user_id = current_user.Id, restaurant_id = restaurant.primaryId, food = i[0], price = i[8]) }}">{{i[8]}} £</a></td>
+                    <td><a href="{{ url_for('site.food_order_create_page', user_id = current_user.Id, restaurant_id = restaurant.primaryId, food = i[2], price = i[8]) }}">{{i[8]}} £</a></td>
                     <td>{{i[9]}} Calorie</td>
                     <td>{{i[7]}}</td>
                   </tr>
@@ -88,7 +88,7 @@
                   {%for i in drinks%}
                   <tr>
                     <td>{{i[5]}}</td>
-                    <td><a href="{{ url_for('site.drink_order_create_page', user_id = current_user.Id, restaurant_id = restaurant.primaryId, drink = i[0], price = i[7]) }}">{{i[7]}}  </a></td>
+                    <td><a href="{{ url_for('site.drink_order_create_page', user_id = current_user.Id, restaurant_id = restaurant.primaryId, drink = i[2], price = i[7]) }}">{{i[7]}}  </a></td>
                     <td>{{i[8]}} Calorie</td>
                     <td>{{i[9]}}</td>
                   </tr>

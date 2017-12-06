@@ -28,3 +28,8 @@ class FoodOrders():
                 VALUES (%s,%s,%s,%s,%s,%s)"""
             cursor.execute(query, [self.userId, self.restaurantId, self.foodId, self.price,self.date,self.status])
             connection.commit()
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """UPDATE RESTAURANT_FOODS SET SELL_COUNT = SELL_COUNT + 1 WHERE RESTAURANT_ID = %s AND FOOD_ID = %s"""
+            cursor.execute(query, [self.restaurantId, self.foodId])
+            connection.commit()
