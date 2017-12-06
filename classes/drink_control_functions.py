@@ -33,7 +33,8 @@ def update_drink_by_id(form,drinkId):
         TYPE = %s,
         CALORIE = %s,
         DRINKCOLD = %s,
-        ALCOHOL = %s
+        ALCOHOL = %s,
+        PRICE = %s
         WHERE (ID = %s)"""
-        cursor.execute(statement,[form['Name'],form['Soda'],form['calorie'], form['drink_cold'],form['alcohol'], drinkId])
+        cursor.execute(statement,[form['Name'],form['Soda'],form['calorie'], form['drink_cold'],form['alcohol'],form['price'], drinkId])
         connection.commit()

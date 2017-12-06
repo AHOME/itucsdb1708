@@ -31,6 +31,17 @@
                    </div>
                </div>
                <div class="form-group">
+                   <label for="calorie" class="col-sm-3 control-label">Price</label>
+                   <div class="col-sm-9">
+                       <input type="number" id="calorie" name="price" class="form-control">
+                       {% if 'calorie' in form.error %}
+                      <div class="alert alert-danger">
+                           {{ form.error['calorie'] }}
+                       </div>
+                      {% endif %}
+                   </div>
+               </div>
+               <div class="form-group">
                    <label class="control-label col-sm-3">Drink Cold?</label>
                    <div class="col-sm-6">
                        <div class="row">
