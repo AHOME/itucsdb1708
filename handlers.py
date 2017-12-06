@@ -67,7 +67,7 @@ def home_page():
                 if pwd_context.verify(input_password,user.Password) is True:
                     login_user(user)
                     session['logged_in'] = True
-                    flash( current_user.get_mail())
+                    flash( current_user.get_mail)
 
                     return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
                 else:
@@ -102,21 +102,6 @@ def home_page_search():
             restaurants.append(newRestaurant)
 
     return render_template('search/index.html', users=userList, restaurants=restaurants, searched=toSearch)
-
-@site.route('/count') #This page meant for test the database, will be deleted after stability updates
-def counter_page():
-    with dbapi2.connect(current_app.config['dsn']) as connection:
-        cursor = connection.cursor()
-
-        query = "UPDATE COUNTER SET N = N + 1"
-        cursor.execute(query)
-        connection.commit()
-
-        query = "SELECT N FROM COUNTER"
-        cursor.execute(query)
-        count = cursor.fetchone()[0]
-    return "This page was accessed %d times." % count
-
 
 @site.route('/initdb')
 @login_required
@@ -177,16 +162,7 @@ def initialize_database():
         query = """DROP TABLE IF EXISTS USERS;"""
         cursor.execute(query)
 
-        # Next three queries will be removed after we update our queries
-        query = """DROP TABLE IF EXISTS COUNTER;"""
-        cursor.execute(query)
 
-        query = """CREATE TABLE COUNTER (N INTEGER);"""
-        cursor.execute(query)
-        query = """INSERT INTO COUNTER (N) VALUES(0);"""
-        cursor.execute(query)
-
-        #---------------------------------------------------------------------------
 
         query = """CREATE TABLE USERS (
         ID SERIAL PRIMARY KEY,
@@ -349,7 +325,7 @@ def initialize_database():
                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
         hashed_password = pwd_context.encrypt("12345")
-        cursor.execute(query, ("admin", "admin", "admin@restoranlandin.com", hashed_password, "10.10.2012", "","",0,"avatar",""))
+        cursor.execute(query, ("admin", "admin", "admin@restoranlandin.com", hashed_password, "2012-10-10", "","",0,"avatar",""))
         connection.commit()
 
         return redirect(url_for('site.home_page'))
@@ -564,6 +540,7 @@ def register_home_page():
             city = request.form['city']
             gender = request.form['gender']
             userType = request.form['userType']
+            avatar = request.form['avatar']
 
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()
@@ -571,7 +548,7 @@ def register_home_page():
                     INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY, GENDER, USERTYPE, AVATAR, BIO)
                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
 
-                cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate,city, gender, userType, "avatar",bio))
+                cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate,city, gender, userType, avatar,bio))
                 connection.commit()
             return redirect(url_for('site.home_page'))
 
@@ -618,19 +595,28 @@ def messages_new_page(user_id):
             return  render_template('messages/new.html',form=form)
 
 
-@site.route('/user/<int:user_id>/show') #Change me with model [ID]
+@site.route('/user/<int:user_id>/show') 
 @login_required
 def user_show_page(user_id):
     userType = current_user.get_type
-    return render_template('user/show.html',user_id = current_user.get_Id,)
-
-@site.route('/user/<int:user_id>/edit') #Change me with model [ID]
-@login_required
-def user_edit_page():
-    if request.method == 'GET':
-        return render_template('user/edit.html',form=None)
+    if userType==0:
+        return redirect(url_for('site.admin_page'))
+    elif userType == 1:
+        db_user = get_user(current_user.get_mail)
+        return render_template('user/show.html',user_id = current_user.get_Id, user=db_user )
     else:
-        valid = validate_user_data(request.form)
+        db_user = get_user(current_user.get_mail)
+        return render_template('user/show.html',user_id = current_user.get_Id, user=db_user )        
+
+
+@site.route('/user/<int:user_id>/edit',methods=['GET','POST']) #Change me with model [ID]
+@login_required
+def user_edit_page(user_id):
+    if request.method == 'GET':
+        db_user = get_user(current_user.get_mail)
+        return render_template('user/edit.html',user = db_user,form=None)
+    else:
+        valid = validate_edit_data(request.form)
         if valid:
             name = request.form['firstName']
             nameList= name.split(" ")
@@ -640,14 +626,14 @@ def user_edit_page():
             elif(len(nameList) <2):
                 firstName = nameList[0]
                 lastName=""
+
             email = request.form['email']
-            password = request.form['password']
-            hashed_password = pwd_context.encrypt(password)
             birthDate = request.form['birthDate']
             bio = request.form['bio']
             city = request.form['city']
             gender = request.form['gender']
-            userType = request.form['userType']
+            avatar = request.form['avatar']
+            
 
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()
@@ -656,17 +642,18 @@ def user_edit_page():
                         SET FIRSTNAME = %s,
                             LASTNAME = %s,
                             MAIL = %s,
-                            PASSWORD = %s,
                             BIRTHDATE = %s,
-                            BIO = %s,
                             CITY = %s,
                             GENDER = %s,
-                            USERTYPE = %s,
-                            AVATAR = %s WHERE (ID = %s)"""
+                            AVATAR = %s, 
+                            BIO = %s
+                        WHERE (ID = %s)"""
 
-                cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate, bio, city, gender, userType, "avatar", Id))
+                cursor.execute(query, (firstName, lastName, email, birthDate, city, gender, avatar, bio, current_user.get_Id))
                 connection.commit()
-            return redirect(url_for('site.user_show_page'))
+
+            db_user = get_user(current_user.get_mail)    
+            return redirect(url_for('site.user_show_page',user_id=current_user.get_Id,user=db_user))
 
         form = request.form
         return render_template('user/edit.html',form=form)
@@ -890,6 +877,37 @@ def deals_add_function():
             deal = Deals(form = form, foodId = 1, restaurantId = 1)
             return render_template('deals/new.html', form=None)
 
+def validate_edit_data(form):
+    if form == None:
+        return true
+
+    form.data = {}
+    form.errors = {}
+
+    if len(form['firstName'].strip()) == 0:
+        form.errors['firstName'] = 'Name can not be blank'
+    else:
+        form.data['firstName'] = form['firstName']
+
+    if len(form['email'].strip()) == 0:
+        form.errors['email'] = 'Email can not be blank'
+    else:
+        form.data['email'] = form['email']
+
+    if len(form['birthDate'].strip()) == 0:
+        form.errors['birthDate'] = 'Birthdate can not be blank'
+    else:
+        form.data['birthDate'] = form['birthDate']
+
+    form.data['bio'] = form['bio']
+
+
+    if len(form['avatar'].strip()) == 0:
+        form.errors['avatar'] = 'Avatar link is not acceptable'
+    else:
+        form.data['avatar'] = form['avatar']  
+
+    return len(form.errors) == 0
 
 
 def validate_user_data(form):
@@ -925,6 +943,11 @@ def validate_user_data(form):
         form.errors['terms'] = 'You should accept the terms'
     else:
         form.data['terms'] = form['terms']
+
+    if len(form['avatar'].strip()) == 0:
+        form.errors['avatar'] = 'Avatar link is not acceptable'
+    else:
+        form.data['avatar'] = form['avatar']  
 
     return len(form.errors) == 0
 
