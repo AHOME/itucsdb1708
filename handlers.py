@@ -150,6 +150,7 @@ def initialize_database():
         query = """DROP TABLE IF EXISTS DRINK_ORDERS;"""
         cursor.execute(query)
 
+<<<<<<< HEAD
         query = """DROP TABLE IF EXISTS DRINKS;"""
         cursor.execute(query)
 
@@ -159,6 +160,19 @@ def initialize_database():
         query = """DROP TABLE IF EXISTS FOODS;"""
         cursor.execute(query)
 
+||||||| merged common ancestors
+=======
+        query = """DROP TABLE IF EXISTS DRINKS;"""
+        cursor.execute(query)
+
+
+        query = """DROP TABLE IF EXISTS RESTAURANTS;"""
+        cursor.execute(query)
+
+        query = """DROP TABLE IF EXISTS FOODS;"""
+        cursor.execute(query)
+
+>>>>>>> ee7eb497e897853dbfed0a82e31110964248a9b0
         query = """DROP TABLE IF EXISTS USERS;"""
         cursor.execute(query)
 
@@ -193,8 +207,8 @@ def initialize_database():
            ID SERIAL PRIMARY KEY,
            NAME VARCHAR(80) NOT NULL,
            ADDRESS VARCHAR(255) NOT NULL,
-           CONTACT_NAME INTEGER REFERENCES USERS(ID),
-           CONTACT_PHONE VARCHAR(80) NOT NULL,
+           CREATOR_ID INTEGER REFERENCES USERS(ID),
+           CONTACT_NAME VARCHAR(80) NOT NULL,
            SCORE INTEGER NOT NULL DEFAULT 0 CHECK( SCORE >= 0 AND SCORE <= 5),
            PROFILE_PICTURE VARCHAR(500) NOT NULL,
            HOURS VARCHAR(80) NOT NULL,
@@ -367,7 +381,7 @@ def restaurant_create_page():
                 return render_template('restaurant/new.html')
             else:
                 restaurant = Restaurant()
-                restaurant.create_restaurant(request.form)
+                restaurant.create_restaurant(request.form, current_user.get_Id)
                 return redirect(url_for('site.restaurant_home_page'))
     return redirect(url_for('site.home_page'))
 
