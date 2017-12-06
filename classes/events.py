@@ -22,13 +22,13 @@ class Events():
             self.startDate = form['startDate']
             self.endDate = form['endDate']
             self.name = form['Name']
-            self.iconPath = ""
+            self.iconPath = form['link']
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()
                 query = """
-                    INSERT INTO EVENTS (NAME, ENDINGDATE, CONTENT, ADDRESS, STARTINGDATE)
-                    VALUES (%s,%s,%s,%s,%s)"""
-                cursor.execute(query, [self.name, self.endDate, self.content, self.address, self.startDate])
+                    INSERT INTO EVENTS (NAME, ENDINGDATE, CONTENT, ADDRESS, STARTINGDATE,ICON)
+                    VALUES (%s,%s,%s,%s,%s,%s)"""
+                cursor.execute(query, [self.name, self.endDate, self.content, self.address, self.startDate,self.iconPath])
                 connection.commit()
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()
@@ -36,7 +36,8 @@ class Events():
                 AND (ENDINGDATE = %s)
                 AND (CONTENT = %s)
                 AND (ADDRESS = %s)
-                AND (STARTINGDATE = %s)"""
-                cursor.execute(statement,[self.name,self.endDate, self.content, self.address, self.startDate])
+                AND (STARTINGDATE = %s)
+                AND (ICON = %s)"""
+                cursor.execute(statement,[self.name,self.endDate, self.content, self.address, self.startDate,self.iconPath ])
                 IdofCurrent = cursor.fetchone()[0]
                 self.Id = IdofCurrent

@@ -13,7 +13,7 @@
             <th>Food Name</th>
             <th>Food Type</th>
             <th>Food Price</th>
-            {% if current_user.is_admin %}
+            {% if current_user.is_admin or current_user.get_type == 1 %}
             <th></th>
             <th></th>
             <th></th>
@@ -24,11 +24,11 @@
         <tbody>
             {% for r in foods %}
           <tr>
-            <!-- Change me with model and use for loop for showing all item inside the database. -->
+            <!-- Change me with model or use for loop for showing all item inside the database. -->
             <td>{{r[1]}}</td>
             <td>{{r[3]}}</td>
             <td>{{r[4]}}</td>
-            {% if current_user.is_admin %}
+            {% if current_user.is_admin or current_user.get_type == 1 %}
             <td><a href="{{ url_for('site.food_edit_page', food_id = r[0]) }}">Edit</a></td>
             <td><a href="{{ url_for('site.food_delete_func', food_id = r[0]) }}">Delete</a></td>
             <form class="" action="/save_foods_to_restaurant" method="post">
@@ -46,7 +46,7 @@
             <th>Drink Name</th>
             <th>Soda?</th>
             <th>Alcohol</th>
-            {% if current_user.is_admin %}
+            {% if current_user.is_admin or current_user.get_type == 1 %}
             <th></th>
             <th></th>
             <th></th>
@@ -61,7 +61,7 @@
               <td>{{drink.name}}</td>
               <td>{{drink.drinkType}}</td>
               <td>{{drink.alcohol }}</td>
-              {% if current_user.is_admin %}
+              {% if current_user.is_admin or current_user.get_type == 1 %}
               <td><a href="{{ url_for('site.drink_edit_page', drinkId = drink.Id) }}">Edit</a></td>
               <td><a href="{{ url_for('site.drink_delete_function', drinkId = drink.Id) }}">Delete</a></td>
               <input type="hidden" name="restaurant_id" value={{restaurant.primaryId}}>

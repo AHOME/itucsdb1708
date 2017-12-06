@@ -177,6 +177,14 @@ def initialize_database():
         query = """DROP TABLE IF EXISTS USERS;"""
         cursor.execute(query)
 
+        # Next three queries will be removed after we update our queries
+        query = """DROP TABLE IF EXISTS COUNTER;"""
+        cursor.execute(query)
+
+        query = """CREATE TABLE COUNTER (N INTEGER);"""
+        cursor.execute(query)
+        query = """INSERT INTO COUNTER (N) VALUES(0);"""
+        cursor.execute(query)
 
         #---------------------------------------------------------------------------
 
@@ -195,16 +203,35 @@ def initialize_database():
         );"""
         cursor.execute(query)
 
+        query = """CREATE TABLE FOODS (
+           ID SERIAL PRIMARY KEY,
+           NAME VARCHAR(80) NOT NULL,
+           ICON VARCHAR(255) NOT NULL,
+           FOOD_TYPE VARCHAR(80) NOT NULL,
+           PRICE VARCHAR(80) NOT NULL,
+           CALORIE VARCHAR(80) NOT NULL
+        );"""
+        cursor.execute(query)
+
         query = """CREATE TABLE RESTAURANTS (
            ID SERIAL PRIMARY KEY,
            NAME VARCHAR(80) NOT NULL,
            ADDRESS VARCHAR(255) NOT NULL,
-           CREATOR_ID INTEGER REFERENCES USERS(ID),
-           CONTACT_NAME VARCHAR(80) NOT NULL,
+           CONTACT_NAME INTEGER REFERENCES USERS(ID),
+           CONTACT_PHONE VARCHAR(80) NOT NULL,
            SCORE INTEGER NOT NULL DEFAULT 0 CHECK( SCORE >= 0 AND SCORE <= 5),
            PROFILE_PICTURE VARCHAR(500) NOT NULL,
            HOURS VARCHAR(80) NOT NULL,
            CURRENT_STATUS VARCHAR(80) NOT NULL
+        );"""
+        cursor.execute(query)
+
+
+        query = """CREATE TABLE RESTAURANT_FOODS (
+           ID SERIAL PRIMARY KEY,
+           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
+           FOOD_ID INTEGER REFERENCES FOODS(ID) NOT NULL,
+           SELL_COUNT INTEGER NOT NULL
         );"""
         cursor.execute(query)
 
@@ -226,13 +253,12 @@ def initialize_database():
         );"""
         cursor.execute(query)
 
-        query = """CREATE TABLE FOODS (
+        query = """CREATE TABLE COMMENTS (
            ID SERIAL PRIMARY KEY,
-           NAME VARCHAR(80) NOT NULL,
-           ICON VARCHAR(255) NOT NULL,
-           FOOD_TYPE VARCHAR(80) NOT NULL,
-           PRICE VARCHAR(80) NOT NULL,
-           CALORIE VARCHAR(80) NOT NULL
+           USER_ID INTEGER REFERENCES USERS(ID) NOT NULL,
+           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
+           CONTENT VARCHAR(255) NOT NULL,
+           SENDDATE TIMESTAMP NOT NULL
         );"""
         cursor.execute(query)
 
@@ -274,7 +300,7 @@ def initialize_database():
         STARTINGDATE DATE NOT NULL,
         ENDINGDATE DATE NOT NULL,
         NAME VARCHAR(140) NOT NULL,
-        ICON VARCHAR(255)
+        ICON VARCHAR(800)
         );"""
 
         cursor.execute(query)
@@ -286,6 +312,13 @@ def initialize_database():
         DATE DATE NOT NULL,
         DISCOUNT_RATE INTEGER NOT NULL CHECK(DISCOUNT_RATE >= 0 AND DISCOUNT_RATE <= 100)
         );"""
+        cursor.execute(query)
+
+        query = """CREATE TABLE EVENT_RESTAURANTS (
+            ID SERIAL PRIMARY KEY,
+            EVENT_ID INTEGER REFERENCES EVENTS(ID) ON DELETE SET NULL,
+            USER_ID INTEGER REFERENCES USERS(ID) ON DELETE SET NULL
+            );"""
         cursor.execute(query)
 
         query = """CREATE TABLE FOOD_ORDERS (
@@ -310,30 +343,7 @@ def initialize_database():
         );"""
         cursor.execute(query)
 
-        query = """CREATE TABLE EVENT_RESTAURANTS (
-           ID SERIAL PRIMARY KEY,
-           EVENT_ID INTEGER REFERENCES EVENTS(ID) NOT NULL,
-           USER_ID INTEGER REFERENCES USERS(ID) NOT NULL
-        );"""
-        cursor.execute(query)
-
-        query = """CREATE TABLE COMMENTS (
-           ID SERIAL PRIMARY KEY,
-           USER_ID INTEGER REFERENCES USERS(ID) NOT NULL,
-           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
-           CONTENT VARCHAR(255) NOT NULL,
-           SENDDATE TIMESTAMP NOT NULL
-        );"""
-        cursor.execute(query)
-
-        query = """CREATE TABLE RESTAURANT_FOODS (
-           ID SERIAL PRIMARY KEY,
-           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
-           FOOD_ID INTEGER REFERENCES FOODS(ID) NOT NULL,
-           SELL_COUNT INTEGER NOT NULL
-        );"""
-        cursor.execute(query)
-
+        connection.commit()
 
         query = """
                INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR,BIO)
@@ -363,9 +373,9 @@ def restaurant_show_page(restaurant_id, methods=['GET','POST']):
     foods,drinks = restaurant.get_food_and_drink(restaurant_id)
 
     best_seller_food = [0,""]
+    best_seller_drink = [0,""]
     all_foods,all_drinks = restaurant.get_food_and_drink(restaurant_id)
 
-    print(all_foods)
     for i in all_foods:
         if (int(i[3]) > int(best_seller_food[0])):
             best_seller_food[0] = int(i[3])
@@ -382,7 +392,7 @@ def restaurant_create_page():
                 return render_template('restaurant/new.html')
             else:
                 restaurant = Restaurant()
-                restaurant.create_restaurant(request.form, current_user.get_Id)
+                restaurant.create_restaurant(request.form)
                 return redirect(url_for('site.restaurant_home_page'))
     return redirect(url_for('site.home_page'))
 
@@ -404,9 +414,9 @@ def restaurant_edit_page(restaurant_id):
             if request.method == 'GET':
                 restaurant.select_restaurant_by_id(restaurant_id)
             else:
-                restaurant.update_restaurant_by_id(form, restaurant_id, current_user.get_Id)
+                restaurant.update_restaurant_by_id(form, restaurant_id)
                 return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
-            return render_template('restaurant/edit.html', form = form , address = restaurant.address, name = restaurant.name, contactName = restaurant.contactName, pp = restaurant.profilePicture, hours = restaurant.hours, currentStatus = restaurant.currentStatus)
+            return render_template('restaurant/edit.html', form = form , address = restaurant.address, name = restaurant.name, contactName = restaurant.contactName, contactPhone = restaurant.contactPhone, pp = restaurant.profilePicture, hours = restaurant.hours, currentStatus = restaurant.currentStatus)
     return redirect(url_for('site.restaurant_home_page'))
 
 
@@ -468,7 +478,6 @@ def food_order_create_page(restaurant_id, user_id, food, price):
     if(current_user.is_authenticated):
         order = FoodOrders()
         order.create_foodOrders(restaurant_id, user_id, food, price)
-
     return redirect(url_for('site.home_page'))
 
 @site.route('/drink/order/create/<restaurant_id>/<user_id>/<drink>/<price>')
@@ -698,6 +707,21 @@ def admin_page():
             delete_event_by_id(Id)
         for Id in userIds:
             delete_user_by_id(Id)
+        #Fetch events again if any of them deleted
+        if eventIds:
+            events = select_all_events()
+            eventDic = {}
+            for event in events:
+                eventDic[event[0]] = event[5]
+        #After deleting users delete them from atendence list.
+        if userIds:
+            EventRestaurantFile.delete_unnecessary_rows()
+            users = get_user_list()
+        #If any restaurant deleted fetch them again.
+        if restaurantIds:
+            restaurant = Restaurant()
+            restaurants = restaurant.select_all_restaurants()
+
         for Id in restaurantIds:
             rest.delete_restaurant_by_id(Id)
         achievement_ids = request.form.getlist('achievement_ids')
@@ -706,6 +730,12 @@ def admin_page():
             achievementMod.achievement_delete_by_Id(ach_id)
 
         targetUserMail = request.form.get('userToSend',None)
+        #If any achievement deleted fetch all again.
+        if achievement_ids:
+            achievements = achievementMod.achievement_select_all()
+            achievementList = []
+            for achievement in achievements:
+                achievementList.append(achievementMod.Achievements(select = achievement))
 
         #delete events which have ids in eventIds list
         if eventIds is not None:
@@ -928,8 +958,15 @@ def validate_event_data(form):
 
     if len(form['endDate'].strip()) == 0:
         form.error['endDate'] = 'Ending date of the event can not be blank'
+    elif form['endDate'] < form['startDate']:
+        form.error['endDate'] = 'Ending date must be earlier date from starting date'
     else:
         form.data['endDate'] = form['endDate']
+
+    if len(form['link'].strip()) == 0:
+        form.error['link'] = 'A photograph must given'
+    else:
+        form.data['link'] = form['link']
 
     return len(form.error) == 0
 

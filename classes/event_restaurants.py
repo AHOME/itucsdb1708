@@ -54,3 +54,12 @@ def does_user_come(userId,eventId):
         cursor.execute(statement,[userId,eventId])
         comers = cursor.fetchall()
     return comers
+
+def delete_unnecessary_rows():
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        query = """
+            DELETE FROM EVENT_RESTAURANTS WHERE EVENT_ID IS NULL OR
+            USER_ID IS NULL"""
+        cursor.execute(query)
+        connection.commit()
