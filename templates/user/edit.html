@@ -1,233 +1,190 @@
-{% extends "layouts/layout.html" %}
+ {% extends "layouts/layout.html" %}
 
-{% block title %} Edit Profile{% endblock %}
+{% block title %} Edit Profile Page{% endblock %}
 {% block csslinks %}  <link rel="stylesheet" type="text/css" href="/static/register/index.css" > {% endblock %}
 {% block content %}
 
 
- <div class="container" align="left">
-           <form class="form-horizontal" method="POST" role="form" name="user_edit">
-               <h2>Edit Profile</h2>
+  <div class="container" align="left">
+            <form class="form-horizontal"  method="POST" role="form" name="user_edit">
+                <h2>Registration Form</h2>
 
+                <div class="form-group">
+                    <label for="firstName" class="col-sm-3 control-label">Full Name</label>
+                    <div class="col-sm-9">
+                        <input type="text" id="firstName" name="firstName" value="{{user.get_name}} {{user.get_lastname}}" placeholder="Full Name" class="form-control" autofocus>
 
+                         {% if 'firstName' in form.errors %}
+                        <div class="alert alert-danger">
+                             {{ form.errors['firstName'] }}
+                         </div>
+                        {% endif %}
 
-               <div class="form-group">
-                   <label for="firstName" class="col-sm-3 control-label">Full Name</label>
-                   <div class="col-sm-9">
-                       <input type="text" id="firstName" name="firstName" placeholder="Full Name" class="form-control" autofocus>
+                        <span class="help-block">First Name, Last Name, eg.: John, Smith</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="email" class="col-sm-3 control-label">Email</label>
+                    <div class="col-sm-9">
+                        <input type="email" value="{{user.get_mail}}"  id="email" name="email" placeholder="Email" class="form-control">
 
-                        {% if 'firstName' in form.errors %}
-                       <div class="alert alert-danger">
-                            {{ form.errors['firstName'] }}
+                        {% if 'email' in form.errors %}
+                        <div class="alert alert-danger">
+                             {{ form.errors['email'] }}
+                         </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="birthDate" class="col-sm-3 control-label">Date of Birth</label>
+                    <div class="col-sm-9">
+                        <input type="date" id="birthDate" value ="{{user.get_birthdate}}" name="birthDate" class="form-control">
+
+                        {% if 'birthDate' in form.errors %}
+                        <div class="alert alert-danger">
+                             {{ form.errors['birthDate'] }}
+                         </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password" class="col-sm-3 control-label">Bio</label>
+                    <div class="col-sm-9">
+                        <input type="bio" id="bio" name="bio" value="{{user.get_bio}}" placeholder="Bio" class="form-control">
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="city" class="col-sm-3 control-label">City</label>
+                    <div class="col-sm-9">
+                        <select id="city" name ="city"  class="form-control">
+                    <option>Adana</option>
+                    <option>Adiyaman</option>
+                    <option>Afyon</option>
+                    <option>Agri</option>
+                    <option>Aksaray</option>
+                    <option>Amasya</option>
+                    <option>Ankara</option>
+                    <option>Antalya</option>
+                    <option>Ardahan</option>
+                    <option>Artvin</option>
+                    <option>Aydin</option>
+                    <option>Balikesir</option>
+                    <option>Bartin</option>
+                    <option>Batman</option>
+                    <option>Bayburt</option>
+                    <option>Bilecik</option>
+                    <option>Bingol</option>
+                    <option>Bitlis</option>
+                    <option>Bolu</option>
+                    <option>Burdur</option>
+                    <option>Bursa</option>
+                    <option>Canakkale</option>
+                    <option>Cankiri</option>
+                    <option>Corum</option>
+                    <option>Denizli</option>
+                    <option>Diyarbakir</option>
+                    <option>Duzce</option>
+                    <option>Edirne</option>
+                    <option>Elazig</option>
+                    <option>Erzincan</option>
+                    <option>Erzurum</option>
+                    <option>Eskisehir</option>
+                    <option>Gaziantep</option>
+                    <option>Giresun</option>
+                    <option>Gumushane</option>
+                    <option>Hakkari</option>
+                    <option>Hatay</option>
+                    <option>Igdir</option>
+                    <option>Isparta</option>
+                    <option>Icel</option>
+                    <option>Istanbul</option>
+                    <option>Izmir</option>
+                    <option>Kahraman Maras</option>
+                    <option>Karabuk</option>
+                    <option>Karaman</option>
+                    <option>Kars</option>
+                    <option>Kastamonu</option>
+                    <option>Kayseri</option>
+                    <option>Kirikkale</option>
+                    <option>Kirklareli</option>
+                    <option>Kirsehir</option>
+                    <option>Kilis</option>
+                    <option>Kocaeli</option>
+                    <option>Konya</option>
+                    <option>Kutahya</option>
+                    <option>Malatya</option>
+                    <option>Manisa</option>
+                    <option>Mardin</option>
+                    <option>Mugla</option>
+                    <option>Mus</option>
+                    <option>Nevsehir</option>
+                    <option>Nigde</option>
+                    <option>Ordu</option>
+                    <option>Osmaniye</option>
+                    <option>Rize</option>
+                    <option>Sakarya</option>
+                    <option>Samsun</option>
+                    <option>Siirt</option>
+                    <option>Sinop</option>
+                    <option>Sivas</option>
+                    <option>Sanliurfa</option>
+                    <option>Sirnak</option>
+                    <option>Tekirdag</option>
+                    <option>Tokat</option>
+                    <option>Trabzon</option>
+                    <option>Tunceli</option>
+                    <option>Usak</option>
+                    <option>Van</option>
+                    <option>Yalova</option>
+                    <option>Yozgat</option>
+                    <option>Zonguldak</option>
+                        </select>
+                    </div>
+                </div> <!-- /.form-group -->
+                <div class="form-group">
+                    <label class="control-label col-sm-3">Gender</label>
+                    <div class="col-sm-6">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label class="radio-inline">
+                                    <input type="radio" name ="gender" id="femaleRadio" value="Female" {% if user.get_gender == "Female" %} checked="checked" {%endif%} >Female
+                                </label>
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="radio-inline">
+                                    <input type="radio" name ="gender" id="maleRadio" value="Male" {% if user.get_gender == "Male" %} checked="checked" {%endif%}>Male
+                                </label>
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="radio-inline">
+                                    <input type="radio"  name ="gender" id="unknownRadio" value="Other" {% if user.get_gender == "Other" %} checked="checked" {%endif%} >Other
+                                </label>
+                            </div>
                         </div>
-                       {% endif %}
+                    </div>
+                </div> <!-- /.form-group -->
 
-                       <span class="help-block">First Name, Last Name, eg.: John, Smith</span>
-                   </div>
-               </div>
-               <div class="form-group">
-                   <label for="email" class="col-sm-3 control-label">Email</label>
-                   <div class="col-sm-9">
-                       <input type="email" id="email" name="email" placeholder="Email" class="form-control">
-
-                       {% if 'email' in form.errors %}
-                       <div class="alert alert-danger">
-                            {{ form.errors['email'] }}
-                        </div>
-                       {% endif %}
-
-                   </div>
-               </div>
-               <div class="form-group">
-                   <label for="password" class="col-sm-3 control-label">Password</label>
-                   <div class="col-sm-9">
-                       <input type="password" id="password" name="password" placeholder="Password" class="form-control">
-
-                   </div>
-               </div>
-               <div class="form-group">
-                   <label for="birthDate" class="col-sm-3 control-label">Date of Birth</label>
-                   <div class="col-sm-9">
-                       <input type="date" id="birthDate" name="birthDate" class="form-control">
-
-                       {% if 'birthDate' in form.errors %}
-                       <div class="alert alert-danger">
-                            {{ form.errors['birthDate'] }}
-                        </div>
-                       {% endif %}
-
-                   </div>
-               </div>
-               <div class="form-group">
-                   <label for="password" class="col-sm-3 control-label">Bio</label>
-                   <div class="col-sm-9">
-                       <input type="bio" id="bio" name="bio" placeholder="Bio" class="form-control">
-
-                   </div>
-               </div>
-               <div class="form-group">
-                   <label for="city" class="col-sm-3 control-label">City</label>
-                   <div class="col-sm-9">
-                       <select id="city" name ="city" class="form-control">
-                   <option>Adana</option>
-                   <option>Adiyaman</option>
-                   <option>Afyon</option>
-                   <option>Agri</option>
-                   <option>Aksaray</option>
-                   <option>Amasya</option>
-                   <option>Ankara</option>
-                   <option>Antalya</option>
-                   <option>Ardahan</option>
-                   <option>Artvin</option>
-                   <option>Aydin</option>
-                   <option>Balikesir</option>
-                   <option>Bartin</option>
-                   <option>Batman</option>
-                   <option>Bayburt</option>
-                   <option>Bilecik</option>
-                   <option>Bingol</option>
-                   <option>Bitlis</option>
-                   <option>Bolu</option>
-                   <option>Burdur</option>
-                   <option>Bursa</option>
-                   <option>Canakkale</option>
-                   <option>Cankiri</option>
-                   <option>Corum</option>
-                   <option>Denizli</option>
-                   <option>Diyarbakir</option>
-                   <option>Duzce</option>
-                   <option>Edirne</option>
-                   <option>Elazig</option>
-                   <option>Erzincan</option>
-                   <option>Erzurum</option>
-                   <option>Eskisehir</option>
-                   <option>Gaziantep</option>
-                   <option>Giresun</option>
-                   <option>Gumushane</option>
-                   <option>Hakkari</option>
-                   <option>Hatay</option>
-                   <option>Igdir</option>
-                   <option>Isparta</option>
-                   <option>Icel</option>
-                   <option>Istanbul</option>
-                   <option>Izmir</option>
-                   <option>Kahraman Maras</option>
-                   <option>Karabuk</option>
-                   <option>Karaman</option>
-                   <option>Kars</option>
-                   <option>Kastamonu</option>
-                   <option>Kayseri</option>
-                   <option>Kirikkale</option>
-                   <option>Kirklareli</option>
-                   <option>Kirsehir</option>
-                   <option>Kilis</option>
-                   <option>Kocaeli</option>
-                   <option>Konya</option>
-                   <option>Kutahya</option>
-                   <option>Malatya</option>
-                   <option>Manisa</option>
-                   <option>Mardin</option>
-                   <option>Mugla</option>
-                   <option>Mus</option>
-                   <option>Nevsehir</option>
-                   <option>Nigde</option>
-                   <option>Ordu</option>
-                   <option>Osmaniye</option>
-                   <option>Rize</option>
-                   <option>Sakarya</option>
-                   <option>Samsun</option>
-                   <option>Siirt</option>
-                   <option>Sinop</option>
-                   <option>Sivas</option>
-                   <option>Sanliurfa</option>
-                   <option>Sirnak</option>
-                   <option>Tekirdag</option>
-                   <option>Tokat</option>
-                   <option>Trabzon</option>
-                   <option>Tunceli</option>
-                   <option>Usak</option>
-                   <option>Van</option>
-                   <option>Yalova</option>
-                   <option>Yozgat</option>
-                   <option>Zonguldak</option>
-
-                       </select>
-                   </div>
-               </div> <!-- /.form-group -->
-               <div class="form-group">
-                   <label class="control-label col-sm-3">Gender</label>
-                   <div class="col-sm-6">
-                       <div class="row">
-                           <div class="col-sm-4">
-                               <label class="radio-inline">
-                                   <input type="radio" name ="gender" id="femaleRadio" value="Female">Female
-                               </label>
-                           </div>
-                           <div class="col-sm-4">
-                               <label class="radio-inline">
-                                   <input type="radio" name ="gender" id="maleRadio" value="Male">Male
-                               </label>
-                           </div>
-                           <div class="col-sm-4">
-                               <label class="radio-inline">
-                                   <input type="radio"  name ="gender" id="unknownRadio" value="Unknown">Unknown
-                               </label>
-                           </div>
-                       </div>
-                   </div>
-               </div> <!-- /.form-group -->
-               <div class="form-group">
-                   <label class="control-label col-sm-3">User Type</label>
-                   <div class="col-sm-9">
-                       <div class="radio">
-                           <label>
-                               <input type="radio" name ="userType" id="regularUserCheckbox" value="2">Customer
-                           </label>
-                       </div>
-                       <div class="radio">
-                           <label>
-                               <input type="radio" name ="userType"  id="restaurantOwnerCheckbox" value="1">Restaurant Owner
-                           </label>
-                       </div>
-                   </div>
-                       {% if 'userType' in form.errors %}
-                       <div class="alert alert-danger">
-                            {{ form.errors['userType'] }}
-                        </div>
-                       {% endif %}
-
-               </div> <!-- /.form-group -->
-               <div class="form-group">
-                   <div class="col-sm-9 col-sm-offset-3">
-                       <div class="checkbox">
-                           <label>
-                               <input type="checkbox" name='terms' value= 1>I accept <a href="#">terms</a>
-
-                               {% if 'terms' in form.errors %}
-                                <div class="alert alert-danger">
-                                {{ form.errors['terms'] }}
-
-                        </div>
-                       {% endif %}
-                           </label>
-                       </div>
-                   </div>
-               </div> <!-- /.form-group -->
-
-               <div>
+                <div>
 
 
-            <div class="pull-right" id="imageUpload">
-               <input type="file" name="...">
-             </div>
-           </div>
+            <div class="form-group">
+                    <label for="avatar" class="col-sm-3 control-label">Avatar Link</label>
+                    <div class="col-sm-9">
+                        <input type="text" id="avatar" value="{{user.get_avatar}}" name="avatar" placeholder="Image Link" class="form-control">
 
-               <div class="form-group">
-                   <div class="col-sm-9 col-sm-offset-3">
-                       <button type="submit" class="btn btn-danger btn-block">Save Changes</button>
-                   </div>
-               </div>
-           </form> <!-- /form -->
-       </div> <!-- ./container -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-9 col-sm-offset-3">
+                        <button type="submit" class="btn btn-danger btn-block">Save Changes</button>
+                    </div>
+                </div>
+            </form>
+        </div>
 
 {% endblock %}

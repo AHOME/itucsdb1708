@@ -31,7 +31,7 @@
                     {% else %}
                     <td>Admin</td>
                     {% endif %}
-                    <td><input type="radio" name ="userToSend" id="userToSend" value="{{user[3]}}"></td>
+                    <td><input type="radio" name ="userToSend" id="userToSend" value="{{user[3]}}" {% if user[0] == 1 %} checked=true {% endif %}></td>
                   </tr>
                   {% endfor %}
                 </tbody>

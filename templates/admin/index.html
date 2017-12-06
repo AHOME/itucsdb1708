@@ -89,9 +89,13 @@
     <h2>Message to User</h2>
     <a href="{{url_for('site.users_list_page')}}"> Click here to see user list </a>
     
-    <form method="POST" action={{url_for('site.messages_new_page', user_id= current_user.getId)}} >
+    <form method="POST" action={{url_for('site.messages_new_page', user_id= current_user.get_Id)}} >
         <label for="usr">Mail of the User:</label>
+        {% if targetMail==None %}
+        <input type="text" value="" name="message_target" class="form-control">
+        {% else %}
         <input type="text" value="{{targetMail}}" name="message_target" class="form-control">
+        {% endif %}
         <label for="usr">Topic:</label>
         <input type="text"  name="message_topic" class="form-control" >
         <label for="comment">Message:</label>
