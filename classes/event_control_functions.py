@@ -33,7 +33,8 @@ def update_event_by_id(form,eventId):
         ENDINGDATE = %s,
         CONTENT = %s,
         ADDRESS = %s,
-        STARTINGDATE = %s
+        STARTINGDATE = %s,
+        ICON = %s
         WHERE (ID = %s)"""
-        cursor.execute(statement,[form['Name'],form['endDate'],form['Explanations'], form['place'],form['startDate'], eventId])
+        cursor.execute(statement,[form['Name'],form['endDate'],form['Explanations'], form['place'],form['startDate'],form['link'] ,eventId])
         connection.commit()

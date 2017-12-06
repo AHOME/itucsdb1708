@@ -10,36 +10,36 @@ class Restaurant():
         self.primaryId = ""
         self.name =  ""
         self.address = ""
-        self.contactName = ""
-        self.contactPhone =  ""
+        self.contactName = ''
+        self.creatorId =  ""
         self.score = 0
         self.profilePicture = ""
         self.hours = ""
         self.currentStatus = ""
 
-    def create_restaurant(self, form):
+    def create_restaurant(self, form, current_user_id):
         self.primaryId = ""
         self.name =  form['Name']
         self.address = form['Address']
         self.contactName = form['ContactName']
-        self.contactPhone = form['ContactPhone']
+        self.creatorId = current_user_id
         self.score = 0
         self.profilePicture = form['Photo']
         self.hours = form['WorkingHours']
         self.currentStatus = form['CurrentStatus']
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
-            query = """INSERT INTO RESTAURANTS (NAME, ADDRESS, CONTACT_NAME, CONTACT_PHONE, PROFILE_PICTURE, HOURS, CURRENT_STATUS)
+            query = """INSERT INTO RESTAURANTS (NAME, ADDRESS, CONTACT_NAME, CREATOR_ID, PROFILE_PICTURE, HOURS, CURRENT_STATUS)
                 VALUES (%s,%s,%s,%s,%s,%s,%s)"""
-            cursor.execute(query, [self.name, self.address, self.contactName, self.contactPhone, self.profilePicture, self.hours, self.currentStatus])
+            cursor.execute(query, [self.name, self.address, self.contactName,current_user_id , self.profilePicture, self.hours, self.currentStatus])
             connection.commit()
 
-    def create_restaurant_with_attributes(self, id, name, address, contactName, contactPhone, score, profilePic, hours, currentStatus):
+    def create_restaurant_with_attributes(self, id, name, address, contactName, creatorId, score, profilePic, hours, currentStatus):
         self.primaryId = id
         self.name = name
         self.address = address
         self.contactName = contactName
-        self.contactPhone = contactPhone
+        self.creatorId = creatorId
         self.score = score
         self.profilePicture = profilePic
         self.hours = hours
@@ -65,8 +65,8 @@ class Restaurant():
             self.primaryId  =  selectedRestaurant[0]
             self.name =  selectedRestaurant[1]
             self.address =  selectedRestaurant[2]
-            self.contactName =  selectedRestaurant[3]
-            self.contactPhone =  selectedRestaurant[4]
+            self.contactName =  selectedRestaurant[4]
+            self.creatorId =  selectedRestaurant[3]
             self.score =  selectedRestaurant[5]
             self.profilePicture =  selectedRestaurant[6]
             self.hours =  selectedRestaurant[7]
@@ -80,20 +80,20 @@ class Restaurant():
             cursor.execute(query, [r_id])
             connection.commit()
 
-    def update_restaurant_by_id(self, form, restaurantId):
+    def update_restaurant_by_id(self, form, restaurantId, current_user_id):
         self.primaryId = restaurantId
         self.name =  form['Name']
         self.address = form['Address']
         self.contactName = form['contactName']
-        self.contactPhone =  form['contactPhone']
+        self.creatorId =  current_user_id
         self.score = 0
         self.profilePicture = form['Photo']
         self.hours = form['WorkingHours']
         self.currentStatus = form['CurrentStatus']
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
-            query = """UPDATE RESTAURANTS SET NAME = %s, ADDRESS = %s, CONTACT_NAME = %s, CONTACT_PHONE = %s, PROFILE_PICTURE = %s, HOURS = %s, CURRENT_STATUS = %s WHERE ID = %s"""
-            cursor.execute(query, [self.name, self.address, self.contactName, self.contactPhone, self.profilePicture, self.hours, self.currentStatus, self.primaryId])
+            query = """UPDATE RESTAURANTS SET NAME = %s, ADDRESS = %s, CONTACT_NAME = %s, PROFILE_PICTURE = %s, HOURS = %s, CURRENT_STATUS = %s WHERE ID = %s"""
+            cursor.execute(query, [self.name, self.address, self.contactName, self.profilePicture, self.hours, self.currentStatus, self.primaryId])
             connection.commit()
 
     def create_comment(self, form):
