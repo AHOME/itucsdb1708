@@ -120,7 +120,7 @@ def initialize_database():
         query = """DROP TABLE IF EXISTS MESSAGES;"""
         cursor.execute(query)
 
-        query = """DROP TABLE IF EXISTS FOODS;"""
+        query = """DROP TABLE IF EXISTS RESTAURANT_FOODS;"""
         cursor.execute(query)
 
         query = """DROP TABLE IF EXISTS STAR_RESTAURANTS;"""
@@ -129,22 +129,13 @@ def initialize_database():
         query = """DROP TABLE IF EXISTS RESTAURANT_DRINKS;"""
         cursor.execute(query)
 
-        query = """DROP TABLE IF EXISTS RESTAURANTS;"""
-        cursor.execute(query)
-
         query = """DROP TABLE IF EXISTS ACHIEVEMENTS;"""
-        cursor.execute(query)
-
-        query = """DROP TABLE IF EXISTS RESTAURANT_FOODS;"""
         cursor.execute(query)
 
         query = """DROP TABLE IF EXISTS COMMENTS;"""
         cursor.execute(query)
 
         query = """DROP TABLE IF EXISTS EVENT_RESTAURANTS;"""
-        cursor.execute(query)
-
-        query = """DROP TABLE IF EXISTS DRINKS;"""
         cursor.execute(query)
 
         query = """DROP TABLE IF EXISTS EVENTS;"""
@@ -157,6 +148,15 @@ def initialize_database():
         cursor.execute(query)
 
         query = """DROP TABLE IF EXISTS DRINK_ORDERS;"""
+        cursor.execute(query)
+
+        query = """DROP TABLE IF EXISTS DRINKS;"""
+        cursor.execute(query)
+
+        query = """DROP TABLE IF EXISTS RESTAURANTS;"""
+        cursor.execute(query)
+
+        query = """DROP TABLE IF EXISTS FOODS;"""
         cursor.execute(query)
 
         query = """DROP TABLE IF EXISTS USERS;"""
@@ -266,7 +266,6 @@ def initialize_database():
         DRINKCOLD BOOLEAN,
         ALCOHOL BOOLEAN
         );"""
-
         cursor.execute(query)
 
         query = """CREATE TABLE EVENTS(
@@ -596,7 +595,7 @@ def messages_new_page(user_id):
             return  render_template('messages/new.html',form=form)
 
 
-@site.route('/user/<int:user_id>/show') 
+@site.route('/user/<int:user_id>/show')
 @login_required
 def user_show_page(user_id):
     userType = current_user.get_type
@@ -607,7 +606,7 @@ def user_show_page(user_id):
         return render_template('user/show.html',user_id = current_user.get_Id, user=db_user )
     else:
         db_user = get_user(current_user.get_mail)
-        return render_template('user/show.html',user_id = current_user.get_Id, user=db_user )        
+        return render_template('user/show.html',user_id = current_user.get_Id, user=db_user )
 
 
 @site.route('/user/<int:user_id>/edit',methods=['GET','POST']) #Change me with model [ID]
@@ -634,7 +633,7 @@ def user_edit_page(user_id):
             city = request.form['city']
             gender = request.form['gender']
             avatar = request.form['avatar']
-            
+
 
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()
@@ -646,14 +645,14 @@ def user_edit_page(user_id):
                             BIRTHDATE = %s,
                             CITY = %s,
                             GENDER = %s,
-                            AVATAR = %s, 
+                            AVATAR = %s,
                             BIO = %s
                         WHERE (ID = %s)"""
 
                 cursor.execute(query, (firstName, lastName, email, birthDate, city, gender, avatar, bio, current_user.get_Id))
                 connection.commit()
 
-            db_user = get_user(current_user.get_mail)    
+            db_user = get_user(current_user.get_mail)
             return redirect(url_for('site.user_show_page',user_id=current_user.get_Id,user=db_user))
 
         form = request.form
@@ -867,16 +866,16 @@ def drink_delete_function(drinkId):
     return redirect(url_for('site.food_home_page'))
 
 @site.route('/deals/new', methods = ['GET','POST'])
-def deals_add_function():
+def deals_add_function(restaurant_id, food_id):
     if request.method == 'GET':
-        return render_template('deals/new.html', form=None)
+        return render_template('deals/new.html', form=None, restaurant_id=restaurant_id, food_id=food_id)
     else:
         form = request.form
         isValid = validate_deal_data(form)
 
         if isValid:
-            deal = Deals(form = form, foodId = 1, restaurantId = 1)
-            return render_template('deals/new.html', form=None)
+            deal = Deals(form = form, foodId = food_id, restaurantId = restaurant_id)
+            return render_template('deals/new.html', form=form)
 
 def validate_edit_data(form):
     if form == None:
@@ -906,7 +905,7 @@ def validate_edit_data(form):
     if len(form['avatar'].strip()) == 0:
         form.errors['avatar'] = 'Avatar link is not acceptable'
     else:
-        form.data['avatar'] = form['avatar']  
+        form.data['avatar'] = form['avatar']
 
     return len(form.errors) == 0
 
@@ -948,7 +947,7 @@ def validate_user_data(form):
     if len(form['avatar'].strip()) == 0:
         form.errors['avatar'] = 'Avatar link is not acceptable'
     else:
-        form.data['avatar'] = form['avatar']  
+        form.data['avatar'] = form['avatar']
 
     return len(form.errors) == 0
 
