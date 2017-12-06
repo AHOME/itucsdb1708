@@ -372,9 +372,9 @@ def restaurant_show_page(restaurant_id, methods=['GET','POST']):
     foods,drinks = restaurant.get_food_and_drink(restaurant_id)
 
     best_seller_food = [0,""]
-    best_seller_drink = [0,""]
     all_foods,all_drinks = restaurant.get_food_and_drink(restaurant_id)
 
+    print(all_foods)
     for i in all_foods:
         if (int(i[3]) > int(best_seller_food[0])):
             best_seller_food[0] = int(i[3])
@@ -477,6 +477,7 @@ def food_order_create_page(restaurant_id, user_id, food, price):
     if(current_user.is_authenticated):
         order = FoodOrders()
         order.create_foodOrders(restaurant_id, user_id, food, price)
+
     return redirect(url_for('site.home_page'))
 
 @site.route('/drink/order/create/<restaurant_id>/<user_id>/<drink>/<price>')
