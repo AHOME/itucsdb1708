@@ -170,7 +170,7 @@
                             </div>
                             <div class="col-sm-4">
                                 <label class="radio-inline">
-                                    <input type="radio"  name ="gender" id="unknownRadio" value="Unknown">Unknown
+                                    <input type="radio"  name ="gender" id="unknownRadio" value="Other" checked="checked"c>Other
                                 </label>
                             </div>
                         </div>
@@ -181,7 +181,7 @@
                     <div class="col-sm-9">
                         <div class="radio">
                             <label>
-                                <input type="radio" name ="userType" id="regularUserCheckbox" value="2">Customer
+                                <input type="radio" name ="userType" id="regularUserCheckbox" value="2" checked="checked">Customer
                             </label>
                         </div>
                         <div class="radio">
@@ -217,10 +217,13 @@
                 <div>
 
 
-             <div class="pull-right" id="imageUpload">
-                <input type="file" name="...">
-              </div>
-            </div>
+            <div class="form-group">
+                    <label for="avatar" class="col-sm-3 control-label">Avatar Link</label>
+                    <div class="col-sm-9">
+                        <input type="text" id="avatar" name="avatar" placeholder="Image Link" class="form-control">
+
+                    </div>
+                </div>
 
                 <div class="form-group">
                     <div class="col-sm-9 col-sm-offset-3">
