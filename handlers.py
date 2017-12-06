@@ -120,7 +120,7 @@ def initialize_database():
         query = """DROP TABLE IF EXISTS MESSAGES;"""
         cursor.execute(query)
 
-        query = """DROP TABLE IF EXISTS FOODS;"""
+        query = """DROP TABLE IF EXISTS RESTAURANT_FOODS;"""
         cursor.execute(query)
 
         query = """DROP TABLE IF EXISTS STAR_RESTAURANTS;"""
@@ -129,22 +129,13 @@ def initialize_database():
         query = """DROP TABLE IF EXISTS RESTAURANT_DRINKS;"""
         cursor.execute(query)
 
-        query = """DROP TABLE IF EXISTS RESTAURANTS;"""
-        cursor.execute(query)
-
         query = """DROP TABLE IF EXISTS ACHIEVEMENTS;"""
-        cursor.execute(query)
-
-        query = """DROP TABLE IF EXISTS RESTAURANT_FOODS;"""
         cursor.execute(query)
 
         query = """DROP TABLE IF EXISTS COMMENTS;"""
         cursor.execute(query)
 
         query = """DROP TABLE IF EXISTS EVENT_RESTAURANTS;"""
-        cursor.execute(query)
-
-        query = """DROP TABLE IF EXISTS DRINKS;"""
         cursor.execute(query)
 
         query = """DROP TABLE IF EXISTS EVENTS;"""
@@ -157,6 +148,16 @@ def initialize_database():
         cursor.execute(query)
 
         query = """DROP TABLE IF EXISTS DRINK_ORDERS;"""
+        cursor.execute(query)
+
+        query = """DROP TABLE IF EXISTS DRINKS;"""
+        cursor.execute(query)
+
+
+        query = """DROP TABLE IF EXISTS RESTAURANTS;"""
+        cursor.execute(query)
+
+        query = """DROP TABLE IF EXISTS FOODS;"""
         cursor.execute(query)
 
         query = """DROP TABLE IF EXISTS USERS;"""
@@ -193,8 +194,8 @@ def initialize_database():
            ID SERIAL PRIMARY KEY,
            NAME VARCHAR(80) NOT NULL,
            ADDRESS VARCHAR(255) NOT NULL,
-           CONTACT_NAME INTEGER REFERENCES USERS(ID),
-           CONTACT_PHONE VARCHAR(80) NOT NULL,
+           CREATOR_ID INTEGER REFERENCES USERS(ID),
+           CONTACT_NAME VARCHAR(80) NOT NULL,
            SCORE INTEGER NOT NULL DEFAULT 0 CHECK( SCORE >= 0 AND SCORE <= 5),
            PROFILE_PICTURE VARCHAR(500) NOT NULL,
            HOURS VARCHAR(80) NOT NULL,
@@ -367,7 +368,7 @@ def restaurant_create_page():
                 return render_template('restaurant/new.html')
             else:
                 restaurant = Restaurant()
-                restaurant.create_restaurant(request.form)
+                restaurant.create_restaurant(request.form, current_user.get_Id)
                 return redirect(url_for('site.restaurant_home_page'))
     return redirect(url_for('site.home_page'))
 
@@ -595,7 +596,7 @@ def messages_new_page(user_id):
             return  render_template('messages/new.html',form=form)
 
 
-@site.route('/user/<int:user_id>/show') 
+@site.route('/user/<int:user_id>/show')
 @login_required
 def user_show_page(user_id):
     userType = current_user.get_type
@@ -606,7 +607,7 @@ def user_show_page(user_id):
         return render_template('user/show.html',user_id = current_user.get_Id, user=db_user )
     else:
         db_user = get_user(current_user.get_mail)
-        return render_template('user/show.html',user_id = current_user.get_Id, user=db_user )        
+        return render_template('user/show.html',user_id = current_user.get_Id, user=db_user )
 
 
 @site.route('/user/<int:user_id>/edit',methods=['GET','POST']) #Change me with model [ID]
@@ -633,7 +634,7 @@ def user_edit_page(user_id):
             city = request.form['city']
             gender = request.form['gender']
             avatar = request.form['avatar']
-            
+
 
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()
@@ -645,14 +646,14 @@ def user_edit_page(user_id):
                             BIRTHDATE = %s,
                             CITY = %s,
                             GENDER = %s,
-                            AVATAR = %s, 
+                            AVATAR = %s,
                             BIO = %s
                         WHERE (ID = %s)"""
 
                 cursor.execute(query, (firstName, lastName, email, birthDate, city, gender, avatar, bio, current_user.get_Id))
                 connection.commit()
 
-            db_user = get_user(current_user.get_mail)    
+            db_user = get_user(current_user.get_mail)
             return redirect(url_for('site.user_show_page',user_id=current_user.get_Id,user=db_user))
 
         form = request.form
@@ -905,7 +906,7 @@ def validate_edit_data(form):
     if len(form['avatar'].strip()) == 0:
         form.errors['avatar'] = 'Avatar link is not acceptable'
     else:
-        form.data['avatar'] = form['avatar']  
+        form.data['avatar'] = form['avatar']
 
     return len(form.errors) == 0
 
@@ -947,7 +948,7 @@ def validate_user_data(form):
     if len(form['avatar'].strip()) == 0:
         form.errors['avatar'] = 'Avatar link is not acceptable'
     else:
-        form.data['avatar'] = form['avatar']  
+        form.data['avatar'] = form['avatar']
 
     return len(form.errors) == 0
 
