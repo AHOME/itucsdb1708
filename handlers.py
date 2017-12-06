@@ -188,6 +188,45 @@ def initialize_database():
 
         #---------------------------------------------------------------------------
 
+        query = """CREATE TABLE USERS (
+        ID SERIAL PRIMARY KEY,
+        FIRSTNAME VARCHAR(80) NOT NULL,
+        LASTNAME VARCHAR(80) NOT NULL,
+        MAIL VARCHAR(80) NOT NULL,
+        PASSWORD VARCHAR(500) NOT NULL,
+        BIRTHDATE DATE NOT NULL,
+        CITY VARCHAR(80) NOT NULL,
+        GENDER VARCHAR(20),
+        USERTYPE INTEGER NOT NULL,
+        AVATAR VARCHAR(255),
+        BIO VARCHAR(500) NOT NULL
+        );"""
+        cursor.execute(query)
+
+        query = """CREATE TABLE FOODS (
+           ID SERIAL PRIMARY KEY,
+           NAME VARCHAR(80) NOT NULL,
+           ICON VARCHAR(255) NOT NULL,
+           FOOD_TYPE VARCHAR(80) NOT NULL,
+           PRICE VARCHAR(80) NOT NULL,
+           CALORIE VARCHAR(80) NOT NULL
+        );"""
+        cursor.execute(query)
+
+        query = """CREATE TABLE RESTAURANTS (
+           ID SERIAL PRIMARY KEY,
+           NAME VARCHAR(80) NOT NULL,
+           ADDRESS VARCHAR(255) NOT NULL,
+           CONTACT_NAME INTEGER REFERENCES USERS(ID),
+           CONTACT_PHONE VARCHAR(80) NOT NULL,
+           SCORE INTEGER NOT NULL DEFAULT 0 CHECK( SCORE >= 0 AND SCORE <= 5),
+           PROFILE_PICTURE VARCHAR(500) NOT NULL,
+           HOURS VARCHAR(80) NOT NULL,
+           CURRENT_STATUS VARCHAR(80) NOT NULL
+        );"""
+        cursor.execute(query)
+
+
         query = """CREATE TABLE RESTAURANT_FOODS (
            ID SERIAL PRIMARY KEY,
            RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
@@ -214,35 +253,12 @@ def initialize_database():
         );"""
         cursor.execute(query)
 
-        query = """CREATE TABLE FOODS (
-           ID SERIAL PRIMARY KEY,
-           NAME VARCHAR(80) NOT NULL,
-           ICON VARCHAR(255) NOT NULL,
-           FOOD_TYPE VARCHAR(80) NOT NULL,
-           PRICE VARCHAR(80) NOT NULL,
-           CALORIE VARCHAR(80) NOT NULL
-        );"""
-        cursor.execute(query)
-
         query = """CREATE TABLE COMMENTS (
            ID SERIAL PRIMARY KEY,
            USER_ID INTEGER REFERENCES USERS(ID) NOT NULL,
            RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
            CONTENT VARCHAR(255) NOT NULL,
            SENDDATE TIMESTAMP NOT NULL
-        );"""
-        cursor.execute(query)
-
-        query = """CREATE TABLE RESTAURANTS (
-           ID SERIAL PRIMARY KEY,
-           NAME VARCHAR(80) NOT NULL,
-           ADDRESS VARCHAR(255) NOT NULL,
-           CONTACT_NAME INTEGER REFERENCES USER(ID),
-           CONTACT_PHONE VARCHAR(80) NOT NULL,
-           SCORE INTEGER NOT NULL DEFAULT 0 CHECK( SCORE >= 0 AND SCORE <= 5),
-           PROFILE_PICTURE VARCHAR(500) NOT NULL,
-           HOURS VARCHAR(80) NOT NULL,
-           CURRENT_STATUS VARCHAR(80) NOT NULL
         );"""
         cursor.execute(query)
 
@@ -253,21 +269,6 @@ def initialize_database():
             STAR INTEGER NOT NULL
         )
         """
-        cursor.execute(query)
-
-        query = """CREATE TABLE USERS (
-        ID SERIAL PRIMARY KEY,
-        FIRSTNAME VARCHAR(80) NOT NULL,
-        LASTNAME VARCHAR(80) NOT NULL,
-        MAIL VARCHAR(80) NOT NULL,
-        PASSWORD VARCHAR(500) NOT NULL,
-        BIRTHDATE DATE NOT NULL,
-        CITY VARCHAR(80) NOT NULL,
-        GENDER VARCHAR(20),
-        USERTYPE INTEGER NOT NULL,
-        AVATAR VARCHAR(255),
-        BIO VARCHAR(500) NOT NULL
-        );"""
         cursor.execute(query)
 
         query = """CREATE TABLE MESSAGES (
