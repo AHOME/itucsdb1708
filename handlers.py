@@ -177,38 +177,34 @@ def initialize_database():
         query = """DROP TABLE IF EXISTS USERS;"""
         cursor.execute(query)
 
-        # Next three queries will be removed after we update our queries
-        query = """DROP TABLE IF EXISTS COUNTER;"""
-        cursor.execute(query)
-
-        query = """CREATE TABLE COUNTER (N INTEGER);"""
-        cursor.execute(query)
-        query = """INSERT INTO COUNTER (N) VALUES(0);"""
-        cursor.execute(query)
 
         #---------------------------------------------------------------------------
 
-        query = """CREATE TABLE EVENT_RESTAURANTS (
-           ID SERIAL PRIMARY KEY,
-           EVENT_ID INTEGER REFERENCES EVENTS(ID) NOT NULL,
-           USER_ID INTEGER REFERENCES USERS(ID) NOT NULL
+        query = """CREATE TABLE USERS (
+        ID SERIAL PRIMARY KEY,
+        FIRSTNAME VARCHAR(80) NOT NULL,
+        LASTNAME VARCHAR(80) NOT NULL,
+        MAIL VARCHAR(80) NOT NULL,
+        PASSWORD VARCHAR(500) NOT NULL,
+        BIRTHDATE DATE NOT NULL,
+        CITY VARCHAR(80) NOT NULL,
+        GENDER VARCHAR(20),
+        USERTYPE INTEGER NOT NULL,
+        AVATAR VARCHAR(255),
+        BIO VARCHAR(500) NOT NULL
         );"""
         cursor.execute(query)
 
-        query = """CREATE TABLE COMMENTS (
+        query = """CREATE TABLE RESTAURANTS (
            ID SERIAL PRIMARY KEY,
-           USER_ID INTEGER REFERENCES USERS(ID) NOT NULL,
-           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
-           CONTENT VARCHAR(255) NOT NULL,
-           SENDDATE TIMESTAMP NOT NULL
-        );"""
-        cursor.execute(query)
-
-        query = """CREATE TABLE RESTAURANT_FOODS (
-           ID SERIAL PRIMARY KEY,
-           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
-           FOOD_ID INTEGER REFERENCES FOODS(ID) NOT NULL,
-           SELL_COUNT INTEGER NOT NULL
+           NAME VARCHAR(80) NOT NULL,
+           ADDRESS VARCHAR(255) NOT NULL,
+           CREATOR_ID INTEGER REFERENCES USERS(ID),
+           CONTACT_NAME VARCHAR(80) NOT NULL,
+           SCORE INTEGER NOT NULL DEFAULT 0 CHECK( SCORE >= 0 AND SCORE <= 5),
+           PROFILE_PICTURE VARCHAR(500) NOT NULL,
+           HOURS VARCHAR(80) NOT NULL,
+           CURRENT_STATUS VARCHAR(80) NOT NULL
         );"""
         cursor.execute(query)
 
@@ -240,19 +236,6 @@ def initialize_database():
         );"""
         cursor.execute(query)
 
-        query = """CREATE TABLE RESTAURANTS (
-           ID SERIAL PRIMARY KEY,
-           NAME VARCHAR(80) NOT NULL,
-           ADDRESS VARCHAR(255) NOT NULL,
-           CONTACT_NAME INTEGER REFERENCES USER(ID),
-           CONTACT_PHONE VARCHAR(80) NOT NULL,
-           SCORE INTEGER NOT NULL DEFAULT 0 CHECK( SCORE >= 0 AND SCORE <= 5),
-           PROFILE_PICTURE VARCHAR(500) NOT NULL,
-           HOURS VARCHAR(80) NOT NULL,
-           CURRENT_STATUS VARCHAR(80) NOT NULL
-        );"""
-        cursor.execute(query)
-
         query = """CREATE TABLE STAR_RESTAURANTS(
             ID SERIAL PRIMARY KEY,
             USER_ID INTEGER REFERENCES USERS(ID) NOT NULL,
@@ -260,21 +243,6 @@ def initialize_database():
             STAR INTEGER NOT NULL
         )
         """
-        cursor.execute(query)
-
-        query = """CREATE TABLE USERS (
-        ID SERIAL PRIMARY KEY,
-        FIRSTNAME VARCHAR(80) NOT NULL,
-        LASTNAME VARCHAR(80) NOT NULL,
-        MAIL VARCHAR(80) NOT NULL,
-        PASSWORD VARCHAR(500) NOT NULL,
-        BIRTHDATE DATE NOT NULL,
-        CITY VARCHAR(80) NOT NULL,
-        GENDER VARCHAR(20),
-        USERTYPE INTEGER NOT NULL,
-        AVATAR VARCHAR(255),
-        BIO VARCHAR(500) NOT NULL
-        );"""
         cursor.execute(query)
 
         query = """CREATE TABLE MESSAGES (
@@ -342,7 +310,30 @@ def initialize_database():
         );"""
         cursor.execute(query)
 
-        connection.commit()
+        query = """CREATE TABLE EVENT_RESTAURANTS (
+           ID SERIAL PRIMARY KEY,
+           EVENT_ID INTEGER REFERENCES EVENTS(ID) NOT NULL,
+           USER_ID INTEGER REFERENCES USERS(ID) NOT NULL
+        );"""
+        cursor.execute(query)
+
+        query = """CREATE TABLE COMMENTS (
+           ID SERIAL PRIMARY KEY,
+           USER_ID INTEGER REFERENCES USERS(ID) NOT NULL,
+           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
+           CONTENT VARCHAR(255) NOT NULL,
+           SENDDATE TIMESTAMP NOT NULL
+        );"""
+        cursor.execute(query)
+
+        query = """CREATE TABLE RESTAURANT_FOODS (
+           ID SERIAL PRIMARY KEY,
+           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
+           FOOD_ID INTEGER REFERENCES FOODS(ID) NOT NULL,
+           SELL_COUNT INTEGER NOT NULL
+        );"""
+        cursor.execute(query)
+
 
         query = """
                INSERT INTO USERS (FIRSTNAME, LASTNAME, MAIL, PASSWORD, BIRTHDATE, CITY,GENDER,USERTYPE,AVATAR,BIO)
@@ -391,7 +382,7 @@ def restaurant_create_page():
                 return render_template('restaurant/new.html')
             else:
                 restaurant = Restaurant()
-                restaurant.create_restaurant(request.form)
+                restaurant.create_restaurant(request.form, current_user.get_Id)
                 return redirect(url_for('site.restaurant_home_page'))
     return redirect(url_for('site.home_page'))
 
@@ -413,9 +404,9 @@ def restaurant_edit_page(restaurant_id):
             if request.method == 'GET':
                 restaurant.select_restaurant_by_id(restaurant_id)
             else:
-                restaurant.update_restaurant_by_id(form, restaurant_id)
+                restaurant.update_restaurant_by_id(form, restaurant_id, current_user.get_Id)
                 return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
-            return render_template('restaurant/edit.html', form = form , address = restaurant.address, name = restaurant.name, contactName = restaurant.contactName, contactPhone = restaurant.contactPhone, pp = restaurant.profilePicture, hours = restaurant.hours, currentStatus = restaurant.currentStatus)
+            return render_template('restaurant/edit.html', form = form , address = restaurant.address, name = restaurant.name, contactName = restaurant.contactName, pp = restaurant.profilePicture, hours = restaurant.hours, currentStatus = restaurant.currentStatus)
     return redirect(url_for('site.restaurant_home_page'))
 
 
