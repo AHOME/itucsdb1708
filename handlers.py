@@ -290,7 +290,6 @@ def initialize_database():
         DRINKCOLD BOOLEAN,
         ALCOHOL BOOLEAN
         );"""
-
         cursor.execute(query)
 
         query = """CREATE TABLE EVENTS(
