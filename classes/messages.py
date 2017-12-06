@@ -1,6 +1,7 @@
 import psycopg2 as dbapi2
 from flask import current_app
 from flask import request,flash,session
+from flask_login import current_user
 
 class Messages:
     def __init__(self,Id,Sender,Receiver,Topic,Content,SendDate):
@@ -73,7 +74,7 @@ def validate_message_data(form):
     form.errors = {}
 
     receiver = request.form['message_target']
-    sender = session['id']
+    sender = current_user.get_Id
     topic = request.form['message_topic']
     body = request.form['message_body']
 

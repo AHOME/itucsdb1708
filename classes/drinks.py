@@ -13,12 +13,13 @@ class Drinks():
             self.drinkCold =form['drink_cold']
             self.alcohol = form['alcohol']
             self.drinkType = form['Soda']
+            self.price = form['price']
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()
                 query = """
-                    INSERT INTO DRINKS (NAME, TYPE, CALORIE, DRINKCOLD, ALCOHOL)
-                    VALUES (%s,%s,%s,%s,%s)"""
-                cursor.execute(query, [self.name, self.drinkType, self.calorie, self.drinkCold, self.alcohol])
+                    INSERT INTO DRINKS (NAME, TYPE, CALORIE, DRINKCOLD, ALCOHOL, PRICE)
+                    VALUES (%s,%s,%s,%s,%s, %s)"""
+                cursor.execute(query, [self.name, self.drinkType, self.calorie, self.drinkCold, self.alcohol, self.price])
                 connection.commit()
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()

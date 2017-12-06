@@ -18,7 +18,6 @@ class Restaurant():
         self.currentStatus = ""
 
     def create_restaurant(self, form):
-
         self.primaryId = ""
         self.name =  form['Name']
         self.address = form['Address']
@@ -34,6 +33,18 @@ class Restaurant():
                 VALUES (%s,%s,%s,%s,%s,%s,%s)"""
             cursor.execute(query, [self.name, self.address, self.contactName, self.contactPhone, self.profilePicture, self.hours, self.currentStatus])
             connection.commit()
+
+    def create_restaurant_with_attributes(self, id, name, address, contactName, contactPhone, score, profilePic, hours, currentStatus):
+        self.primaryId = id
+        self.name = name
+        self.address = address
+        self.contactName = contactName
+        self.contactPhone = contactPhone
+        self.score = score
+        self.profilePicture = profilePic
+        self.hours = hours
+        self.currentStatus = currentStatus
+
 
     def select_all_restaurants(self):
         with dbapi2.connect(current_app.config['dsn']) as connection:
