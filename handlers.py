@@ -244,7 +244,7 @@ def initialize_database():
            ID SERIAL PRIMARY KEY,
            NAME VARCHAR(80) NOT NULL,
            ADDRESS VARCHAR(255) NOT NULL,
-           CONTACT_NAME VARCHAR(80) NOT NULL,
+           CONTACT_NAME INTEGER REFERENCES USER(ID),
            CONTACT_PHONE VARCHAR(80) NOT NULL,
            SCORE INTEGER NOT NULL DEFAULT 0 CHECK( SCORE >= 0 AND SCORE <= 5),
            PROFILE_PICTURE VARCHAR(500) NOT NULL,
@@ -472,18 +472,18 @@ def food_home_page(restaurant_id):
         return render_template('food/index.html', foods = foods, drinks = drinkList, restaurant = restaurant)
     return redirect(url_for('site.home_page'))
 
-@site.route('/order/create/<restaurant_id>/<user_id>/<food>/<price>')
+@site.route('/food/order/create/<restaurant_id>/<user_id>/<food>/<price>')
 def food_order_create_page(restaurant_id, user_id, food, price):
     if(current_user.is_authenticated):
         order = FoodOrders()
-        order.create_order(restaurant_id, user_id, food, price)
+        order.create_foodOrders(restaurant_id, user_id, food, price)
     return redirect(url_for('site.home_page'))
 
-@site.route('/order/create/<restaurant_id>/<user_id>/<drink>')
+@site.route('/drink/order/create/<restaurant_id>/<user_id>/<drink>/<price>')
 def drink_order_create_page(restaurant_id, user_id, drink, price):
     if(current_user.is_authenticated):
         order = DrinkOrders()
-        order.create_order(restaurant_id, user_id, drink, price)
+        order.create_drinkOrders(restaurant_id, user_id, drink, price)
     return redirect(url_for('site.home_page'))
 
 @site.route('/food/create', methods=['GET','POST'])

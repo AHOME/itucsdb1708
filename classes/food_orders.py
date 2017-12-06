@@ -2,7 +2,7 @@ import psycopg2 as dbapi2
 from flask import current_app
 from flask_login import UserMixin
 from passlib.apps import custom_app_context as pwd_context
-import time
+import datetime
 
 class FoodOrders():
     def __init__(self):
@@ -20,11 +20,11 @@ class FoodOrders():
         self.restaurantId = restaurant_id
         self.foodId = food
         self.price = price
-        self.date = now.date().isoformat()
+        self.date = datetime.datetime.now()
         self.status = "Not Recieved"
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             query = """INSERT INTO FOOD_ORDERS (USER_ID, REST_ID, FOOD_ID, PRICE, BUYDATE, STATUS)
                 VALUES (%s,%s,%s,%s,%s,%s)"""
-            cursor.execute(query, [self.user_id, self.restaurant_id, self.food_id, self.price,self.date,self.status])
+            cursor.execute(query, [self.userId, self.restaurantId, self.foodId, self.price,self.date,self.status])
             connection.commit()

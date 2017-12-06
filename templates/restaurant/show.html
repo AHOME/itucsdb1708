@@ -78,6 +78,7 @@
                 <thead>
                   <tr>
                     <th>Item Name</th>
+                    <th>Item Price</th>
                     <th>Item Calorie</th>
                     <th>Is cold</th>
                     <th>Alcohol?</th>
@@ -87,8 +88,8 @@
                   {%for i in drinks%}
                   <tr>
                     <td>{{i[5]}}</td>
-                    <td><a href="{{ url_for('site.drin_order_create_page', user_id = current_user.Id, restaurant_id = restaurant.primaryId, drink = i[0], price = i[]) }}">{{i[7]}} Calorie </a></td>
-                    <td>{{i[8]}}</td>
+                    <td><a href="{{ url_for('site.drink_order_create_page', user_id = current_user.Id, restaurant_id = restaurant.primaryId, drink = i[0], price = i[7]) }}">{{i[7]}}  </a></td>
+                    <td>{{i[8]}} Calorie</td>
                     <td>{{i[9]}}</td>
                   </tr>
                   {%endfor%}
