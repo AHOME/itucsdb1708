@@ -902,6 +902,8 @@ def validate_event_data(form):
 
     if len(form['endDate'].strip()) == 0:
         form.error['endDate'] = 'Ending date of the event can not be blank'
+    elif form['endDate'] < form['startDate']:
+        form.error['endDate'] = 'Ending date must be earlier date from starting date'
     else:
         form.data['endDate'] = form['endDate']
 
@@ -911,6 +913,7 @@ def validate_event_data(form):
         form.data['link'] = form['link']
 
     return len(form.error) == 0
+
 def validate_drink_data(form):
     if form == None:
         return True
