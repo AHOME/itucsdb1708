@@ -192,8 +192,8 @@ def initialize_database():
            ID SERIAL PRIMARY KEY,
            NAME VARCHAR(80) NOT NULL,
            ADDRESS VARCHAR(255) NOT NULL,
-           CONTACT_NAME INTEGER REFERENCES USERS(ID) ON DELETE CASCADE,
-           CONTACT_PHONE VARCHAR(80) NOT NULL,
+           CONTACT_NAME VARCHAR(80) NOT NULL,
+           CREATOR_ID INTEGER REFERENCES USERS(ID),
            SCORE INTEGER NOT NULL DEFAULT 0 CHECK( SCORE >= 0 AND SCORE <= 5),
            PROFILE_PICTURE VARCHAR(500) NOT NULL,
            HOURS VARCHAR(80) NOT NULL,
@@ -456,12 +456,35 @@ def food_order_create_page(restaurant_id, user_id, food, price):
         order.create_foodOrders(restaurant_id, user_id, food, price)
     return redirect(url_for('site.home_page'))
 
+@site.route('/food/order/delete/<int:orderId>')
+def delete_food_order(orderId):
+    delete_food_order_by_id(orderId)
+    return redirect(url_for('site.user_show_page',user_id = current_user.get_type ))
+
+@site.route('/food/order/update/<int:orderId>')
+def update_food_order(orderId):
+    update_food_order_by_id(orderId)
+    return redirect(url_for('site.user_show_page',user_id = current_user.get_type ))
+
+
 @site.route('/drink/order/create/<restaurant_id>/<user_id>/<drink>/<price>')
 def drink_order_create_page(restaurant_id, user_id, drink, price):
     if(current_user.is_authenticated):
         order = DrinkOrders()
         order.create_drinkOrders(restaurant_id, user_id, drink, price)
     return redirect(url_for('site.home_page'))
+
+@site.route('/drink/order/delete/<int:orderId>')
+def delete_drink_order(orderId):
+    delete_drink_order_by_id(orderId)
+    return redirect(url_for('site.user_show_page',user_id = current_user.get_type ))
+
+@site.route('/drink/order/update/<int:orderId>')
+def update_drink_order(orderId):
+    update_drink_order_by_id(orderId)
+    return redirect(url_for('site.user_show_page',user_id = current_user.get_type ))
+
+
 
 @site.route('/food/create', methods=['GET','POST'])
 def food_create_page():
@@ -606,8 +629,13 @@ def user_show_page(user_id):
         db_user = get_user(current_user.get_mail)
         return render_template('user/show.html',user_id = current_user.get_Id, user=db_user )
     else:
+        recent_drink_orders_notR = select_drink_oders_user_notReceived(user_id)
+        recent_drink_orders_rec = select_drink_oders_user_Received(user_id)
+
+        recent_food_orders_notR = select_food_oders_user_notReceived(user_id)
+        recent_food_orders_rec = select_food_oders_user_Received(user_id)
         db_user = get_user(current_user.get_mail)
-        return render_template('user/show.html',user_id = current_user.get_Id, user=db_user )
+        return render_template('user/show.html',user_id = current_user.get_Id, user=db_user,foodListNR = recent_food_orders_notR,foodListR = recent_food_orders_rec ,drinkListNR = recent_drink_orders_notR,drinkListR = recent_drink_orders_rec )
 
 
 @site.route('/user/<int:user_id>/edit',methods=['GET','POST']) #Change me with model [ID]

@@ -139,6 +139,54 @@
             </tr>
     </table>
     </div>
+    <!--Not complete orders  -->
+    {% if foodListNR or drinkListNR %}
+    <h1>Unreceived Orders</h1>
+    <div class="row col-md-12 custyle">
+    <table class="table table-striped custab">
+    <thead>
+        <tr>
+            <th>Restaurant Name</th>
+            <th>Items</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <!-- List Foods -->
+    {% if foodListNR %}
+              {% for food in foodListNR %}
+              <tr>
+                <td><a href="{{ url_for('site.restaurant_show_page',restaurant_id = food[5]) }}">{{food[0]}}</a>  </td>
+                <td>{{food[1]}}</td>
+                <td>{{food[2]}}</td>
+                <td>{{food[4]}}</td>
+                <td>{{food[3]}}</td>
+                <td><a href="{{ url_for('site.update_food_order',orderId = food[6] ) }}" class="btn btn-warning" >Finish Order</a></td>
+                <td><a href="{{ url_for('site.delete_food_order',orderId = food[6] ) }}" class="btn btn-warning" >Cancel Order</a></td>
+              </tr>
+                {% endfor %}
+    {% endif %}
+    <!--List drinks  -->
+    {% if drinkListNR %}
+              {% for drink in drinkListNR %}
+              <tr>
+                <td><a href="{{ url_for('site.restaurant_show_page',restaurant_id = drink[5]) }}">{{drink[0]}}</a>  </td>
+                <td>{{drink[1]}}</td>
+                <td>{{drink[2]}}</td>
+                <td>{{drink[4]}}</td>
+                <td>{{drink[3]}}</td>
+                <td><a href="{{ url_for('site.update_drink_order',orderId = drink[6] ) }}" class="btn btn-warning" >Finish Order</a></td>
+                <td><a href="{{ url_for('site.delete_drink_order',orderId = drink[6] ) }}" class="btn btn-warning" >Cancel Order</a></td>
+              </tr>
+                {% endfor %}
+    {% endif %}
+    </table>
+    </div>
+    {% endif %}
+
+    <!--Completed orders  -->
+    {% if foodListR %}
     <h1>Recent Orders</h1>
     <div class="row col-md-12 custyle">
     <table class="table table-striped custab">
@@ -147,18 +195,40 @@
             <th>Restaurant Name</th>
             <th>Items</th>
             <th>Price</th>
+            <th>Status</th>
+            <th>Date</th>
         </tr>
     </thead>
-            <tr>
-                <td><a href="{{ url_for('site.restaurant_home_page') }}">Köfteci Ahmet</a></td>
-                <td>1 Izmir Köfte Porsiyon, 1 Ayran</td>
-                <td>13.5 TL</td>
-            </tr>
+    <!--List Foods  -->
+    {% if foodListR %}
+              {% for foodNR in foodListR %}
+              <tr>
+                <td><a href="{{ url_for('site.restaurant_show_page',restaurant_id = foodNR[5]) }}">{{foodNR[0]}}</a>  </td>
+                <td>{{foodNR[1]}}</td>
+                <td>{{foodNR[2]}}</td>
+                <td>{{foodNR[4]}}</td>
+                <td>{{foodNR[3]}}</td>
+              </tr>
+                {% endfor %}
+    {% endif %}
+    <!--List Drinks  -->
+    {% if drinkListR %}
+              {% for drink in drinkListR %}
+              <tr>
+                <td><a href="{{ url_for('site.restaurant_show_page',restaurant_id = drink[5]) }}">{{drink[0]}}</a>  </td>
+                <td>{{drink[1]}}</td>
+                <td>{{drink[2]}}</td>
+                <td>{{drink[4]}}</td>
+                <td>{{drink[3]}}</td>
+              </tr>
+                {% endfor %}
+    {% endif %}
     </table>
     </div>
+    {% endif %}
 
 </div>
 {% endif %}
- {% endif%}
+ {% endif %}
 
 {% endblock %}
