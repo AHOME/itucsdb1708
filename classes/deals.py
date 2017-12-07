@@ -43,14 +43,14 @@ def select_deals_of_restaurant(restaurantId):
     #Select name from user table who comes to that event.
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
-        statement = """SELECT FOODS.NAME, DEALS.DISCOUNT_RATE, FOODS.PRICE FROM FOODS, DEALS, RESTAURANT_FOODS
+        statement = """SELECT FOODS.NAME, DEALS.DISCOUNT_RATE, FOODS.PRICE, DEALS.ID FROM FOODS, DEALS, RESTAURANT_FOODS
             WHERE FOODS.ID = DEALS.FOOD_ID AND RESTAURANT_FOODS.RESTAURANT_ID = %s AND RESTAURANT_FOODS.FOOD_ID = DEALS.FOOD_ID
             AND DEALS.REST_ID = %s"""
         cursor.execute(statement,[restaurantId, restaurantId])
         comers = cursor.fetchall()
         return comers
 
-def delete_comers_by_Id(Id):
+def delete_deals_by_Id(Id):
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
         query = """

@@ -427,7 +427,7 @@ def give_star_func(user_id, restaurant_id, score):
 
 @site.route('/save_foods_to_restaurant', methods=['POST'])
 def add_food_to_restaurant_page():
-    if current_user.is_admin:
+    if current_user.is_admin or current_user.get_type == 1:
         foods = request.form.getlist("food",None)
         drinks = request.form.getlist("drink",None)
         restaurant_id = request.form['restaurant_id']
@@ -438,7 +438,7 @@ def add_food_to_restaurant_page():
 
 @site.route('/menuitems/<restaurant_id>')
 def food_home_page(restaurant_id):
-    if current_user.is_admin:
+    if current_user.is_admin or current_user.get_type == 1:
         food = Foods()
         foods = food.select_all_foods()
         restaurant = Restaurant()
@@ -475,7 +475,7 @@ def food_create_page():
             food = Foods()
             food.create_food(request.form)
             return redirect(url_for('site.restaurant_home_page'))
-    return redirect(url_for('site.restaurant_show_page', restaurant_id))
+    return redirect(url_for('site.restaurant_home_page'))
 
 @site.route('/food/<int:food_id>/delete')
 def food_delete_func(food_id):
@@ -880,6 +880,11 @@ def deals_add_function(restaurant_id, food_id):
         if isValid:
             deal = Deals(form = form, foodId = food_id, restaurantId = restaurant_id)
             return render_template('deals/new.html', form=form)
+
+@site.route('/deals/delete/<int:deal_id>/<int:restaurant_id>', methods = ['GET','POST'])
+def deals_delete_function(deal_id, restaurant_id):
+    delete_deals_by_Id(deal_id)
+    return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
 
 def validate_edit_data(form):
     if form == None:
