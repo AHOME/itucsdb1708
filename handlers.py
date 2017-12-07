@@ -523,7 +523,8 @@ def register_home_page():
     if request.method == 'GET':
         return render_template('register/index.html',form=None)
     else:
-        valid = validate_user_data(request.form)
+        form = request.form
+        valid = validate_user_data(form)
         if valid:
             name = request.form['firstName']
             nameList= name.split(" ")
@@ -543,6 +544,7 @@ def register_home_page():
             userType = request.form['userType']
             avatar = request.form['avatar']
 
+
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()
                 query = """
@@ -552,7 +554,8 @@ def register_home_page():
                 cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate,city, gender, userType, avatar,bio))
                 connection.commit()
             return redirect(url_for('site.home_page'))
-
+        else:
+            form.errors['notComplete'] = 'We couldn\'t registred you as user please fix your answers.'
         form = request.form
         return render_template('register/index.html',form=form)
 
@@ -754,8 +757,7 @@ def achievement_show_page(achievement_id):
     else:
         achievementMod.achievement_update(request.form, achievement_id)
         return redirect(url_for('site.admin_page'))
-        #select = cursor.fetchone()
-        #achievement = Achievements(select=select)
+
 
 
 @site.route('/achievement/new',methods = ['GET','POST'])
@@ -764,14 +766,9 @@ def achievement_create_page():
     if request.method == 'GET':
         return render_template('achievement/new.html', form = None)
     else:
-        isValid = validate_achievement_data(request.form)
-    if isValid:
-        #create an object from form and add it to database.
         achievement = achievementMod.Achievements(form = request.form)
         return redirect(url_for('site.admin_page'))
-    form = request.form
-    return render_template('achievement/new.html',form=form)
-
+    
 
 @site.route('/event/new',methods = ['GET','POST'])
 @login_required
@@ -837,14 +834,11 @@ def drink_create_page():
     if request.method == 'GET':
         return render_template('drinks/new.html',form = None)
     else:
-        valid = validate_drink_data(request.form)
-        if valid:
-            drink = Drinks(request.form)
-            return render_template('drinks/new.html',form = None)
-        form = request.form
-        return render_template('drinks/new.html',form=form)
+        drink = Drinks(request.form)
+        return render_template('drinks/new.html',form = None)
+        
 
-@site.route('/drink/edit/<int:drinkId>',methods = ['GET','POST'])
+@site.route('/drink/<int:drinkId>/edit',methods = ['GET','POST'])
 def drink_edit_page(drinkId):
     #select one element from id
     drink = Drinks(select = select_drink_by_id(drinkId))
@@ -873,15 +867,12 @@ def deals_add_function():
         return render_template('deals/new.html', form=None)
     else:
         form = request.form
-        isValid = validate_deal_data(form)
-
-        if isValid:
-            deal = Deals(form = form, foodId = 1, restaurantId = 1)
-            return render_template('deals/new.html', form=None)
+        deal = Deals(form = form, foodId = 1, restaurantId = 1)
+        return render_template('deals/new.html', form=None)
 
 def validate_edit_data(form):
     if form == None:
-        return true
+        return False
 
     form.data = {}
     form.errors = {}
@@ -914,148 +905,51 @@ def validate_edit_data(form):
 
 def validate_user_data(form):
     if form == None:
-        return true
+        return False
 
     form.data = {}
     form.errors = {}
 
-    if len(form['firstName'].strip()) == 0:
-        form.errors['firstName'] = 'Name can not be blank'
-    else:
-        form.data['firstName'] = form['firstName']
+    form.data['firstName'] = form['firstName']
 
-    if len(form['email'].strip()) == 0:
-        form.errors['email'] = 'Email can not be blank'
-    else:
-        form.data['email'] = form['email']
+    form.data['email'] = form['email']
 
-    if len(form['birthDate'].strip()) == 0:
-        form.errors['birthDate'] = 'Birthdate can not be blank'
-    else:
-        form.data['birthDate'] = form['birthDate']
+    form.data['birthDate'] = form['birthDate']
 
-    if not form['userType']:
-        form.errors['userType'] = 'User type can not be blank'
-    else:
-        form.data['userType'] = form['userType']
-
-    form.data['bio'] = form['bio']
-
-    if form['terms'] == 0:
-        form.errors['terms'] = 'You should accept the terms'
-    else:
-        form.data['terms'] = form['terms']
+    if not form['bio']:
+        form.data['bio'] = form['bio']
 
     if len(form['avatar'].strip()) == 0:
-        form.errors['avatar'] = 'Avatar link is not acceptable'
+        form.data['avatar']='http://gazettereview.com/wp-content/uploads/2016/03/facebook-avatar.jpg'
     else:
         form.data['avatar'] = form['avatar']
+    
 
     return len(form.errors) == 0
 
 
 def validate_event_data(form):
     if form == None:
-        return True
+        return False
     form.data = {}
     form.error = {}
 
-    if len(form['Name'].strip()) == 0:
-        form.error['Name'] = 'Name of the event can not be blank'
-    else:
-        form.data['Name'] = form['Name']
+    form.data['Name'] = form['Name']
 
-    if len(form['Explanations'].strip()) == 0:
-        form.error['Explanations'] = 'Explanations of the event can not be blank'
-    else:
-        form.data['Explanations'] = form['Explanations']
+    form.data['Explanations'] = form['Explanations']
 
-    if len(form['place'].strip()) == 0:
-        form.error['place'] = 'Place of the event can not be blank'
-    else:
-        form.data['place'] = form['place']
+    form.data['place'] = form['place']
 
-    if len(form['startDate'].strip()) == 0:
-        form.error['startDate'] = 'Starting date of the event can not be blank'
-    else:
-        form.data['startDate'] = form['startDate']
+ 
+    form.data['startDate'] = form['startDate']
 
-    if len(form['endDate'].strip()) == 0:
-        form.error['endDate'] = 'Ending date of the event can not be blank'
-    elif form['endDate'] < form['startDate']:
+    if form['endDate'] < form['startDate']:
         form.error['endDate'] = 'Ending date must be earlier date from starting date'
     else:
         form.data['endDate'] = form['endDate']
 
-    if len(form['link'].strip()) == 0:
-        form.error['link'] = 'A photograph must given'
-    else:
-        form.data['link'] = form['link']
+    
+    form.data['link'] = form['link']
 
     return len(form.error) == 0
 
-def validate_drink_data(form):
-    if form == None:
-        return True
-    form.data = {}
-    form.error = {}
-    print(len(form['Name'].strip()))
-    if len(form['Name'].strip()) == 0:
-        form.error['Name'] = 'Name of the drink can not be blank'
-    else:
-        form.data['Name'] = form['Name']
-
-    if len(form['calorie'].strip()) == 0:
-        form.error['calorie'] = 'Calorie value must be specified'
-    else:
-        form.data['calorie'] = form['calorie']
-
-    return len(form.error) == 0
-
-
-def validate_achievement_data(form):
-    if form == None:
-        return True
-    form.data = {}
-    form.error = {}
-
-    if len(form['Name'].strip()) == 0:
-        form.error['Name'] = 'Name of the achievement can not be blank'
-    else:
-        form.data['Name'] = form['Name']
-
-    if len(form['Explanation'].strip()) == 0:
-        form.error['Explanation'] = 'Explanation of the achievement can not be blank'
-    else:
-        form.data['Explanation'] = form['Explanation']
-
-    if len(form['Goal'].strip()) == 0:
-        form.error['Goal'] = 'Goal of the achievement can not be blank'
-    else:
-        form.data['Explanation'] = form['Explanation']
-
-    if len(form['endDate'].strip()) == 0:
-        form.error['endDate'] = 'endDate of the achievement can not be blank'
-    else:
-        form.data['endDate'] = form['endDate']
-
-
-    return len(form.error) == 0
-
-def validate_deal_data(form):
-    if form == None:
-        return True
-    form.data = {}
-    form.error = {}
-
-    if len(form['rate'].strip()) == 0:
-        form.error['rate'] = 'Discount rate of the deal can not be blank'
-    else:
-        form.data['rate'] = form['rate']
-
-    if len(form['ValidDate'].strip()) == 0:
-        form.error['ValidDate'] = 'Valid date of the deal can not be blank'
-    else:
-        form.data['ValidDate'] = form['ValidDate']
-
-    return len(form.error) == 0

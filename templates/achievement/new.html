@@ -10,35 +10,40 @@
                <div class="form-group">
                    <label for="Name" class="col-sm-3 control-label">Achievement Name</label>
                    <div class="col-sm-9">
-                       <input type="text" id="Name" name="Name" class="form-control" autofocus>
+                       <input type="text" id="Name" name="Name" class="form-control" required="true" autofocus>
                    </div>
                </div>
                <div class="form-group">
                    <label for="Explanation" class="col-sm-3 control-label">Explanation </label>
                    <div class="col-sm-9">
-                       <textarea class="form-control" rows="5" id="Explanation" name="Explanation"></textarea>
+                       <textarea class="form-control" rows="5" id="Explanation" required="true" name="Explanation"></textarea>
                    </div>
                </div>
                <div class="form-group">
                    <label for="Goal" class="col-sm-3 control-label">Goal</label>
                    <div class="col-sm-9">
-                       <input type="number" id="Goal" name="Goal" class="form-control">
+                       <input type="number" id="Goal" name="Goal" class="form-control" required="true">
                    </div>
                </div>
                <div class="form-group">
                    <label for="endDate" class="col-sm-3 control-label">End Date</label>
                    <div class="col-sm-9">
-                       <input type="date" id="endDate" name="endDate" class="form-control">
+                       <input type="date" id="endDate" name="endDate" class="form-control" required="true">
                    </div>
                </div>
                <div>
-            <div class="pull-right" id="imageUpload">
-               <input type="file" name="...">
-             </div>
+
+          <div class="form-group">
+                    <label for="avatar" class="col-sm-3 control-label">Icon</label>
+                    <div class="col-sm-9">
+                        <input type="text" id="icon" name="Icon" placeholder="Image Link" class="form-control" required="true">
+                    </div>
+            </div>
+
            </div>
                <div class="form-group">
                    <div class="col-sm-9 col-sm-offset-3">
-                       <button type="submit" class="btn btn-danger btn-block">Create Achievement</button>
+                       <button type="submit" class="btn btn-danger btn-block" required="true">Create Achievement</button>
                    </div>
                </div>
            </form> <!-- /form -->

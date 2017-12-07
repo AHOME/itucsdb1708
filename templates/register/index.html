@@ -9,12 +9,18 @@
             <form class="form-horizontal" method="POST" role="form" name="user_edit">
                 <h2>Registration Form</h2>
 
+                {% if form != None %}
+                <div class="alert alert-danger">
+                             {{ form.errors['notComplete'] }}
+                </div>
+                {% endif %}
+
 
 
                 <div class="form-group">
                     <label for="firstName" class="col-sm-3 control-label">Full Name</label>
                     <div class="col-sm-9">
-                        <input type="text" id="firstName" name="firstName" placeholder="Full Name" class="form-control" autofocus>
+                        <input type="text" id="firstName" name="firstName" placeholder="Full Name" class="form-control" required="true" autofocus>
 
                          {% if 'firstName' in form.errors %}
                         <div class="alert alert-danger">
@@ -28,7 +34,7 @@
                 <div class="form-group">
                     <label for="email" class="col-sm-3 control-label">Email</label>
                     <div class="col-sm-9">
-                        <input type="email" id="email" name="email" placeholder="Email" class="form-control">
+                        <input type="email" id="email" required="true" name="email" placeholder="Email" class="form-control">
 
                         {% if 'email' in form.errors %}
                         <div class="alert alert-danger">
@@ -41,14 +47,14 @@
                 <div class="form-group">
                     <label for="password" class="col-sm-3 control-label">Password</label>
                     <div class="col-sm-9">
-                        <input type="password" id="password" name="password" placeholder="Password" class="form-control">
+                        <input type="password" id="password" required="true" name="password" placeholder="Password" class="form-control">
 
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="birthDate" class="col-sm-3 control-label">Date of Birth</label>
                     <div class="col-sm-9">
-                        <input type="date" id="birthDate" name="birthDate" class="form-control">
+                        <input type="date" required="true" id="birthDate" name="birthDate" class="form-control">
 
                         {% if 'birthDate' in form.errors %}
                         <div class="alert alert-danger">
@@ -196,12 +202,13 @@
                          </div>
                         {% endif %}
 
-                </div> <!-- /.form-group -->
+                </div>
                 <div class="form-group">
                     <div class="col-sm-9 col-sm-offset-3">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" name='terms' value= 1>I accept <a href="#">terms</a>
+                                <input type="checkbox" 
+                                name='terms' value=1 >I accept <a href="#">terms</a>
 
                                 {% if 'terms' in form.errors %}
                                  <div class="alert alert-danger">
@@ -212,7 +219,7 @@
                             </label>
                         </div>
                     </div>
-                </div> <!-- /.form-group -->
+                </div> 
 
                 <div>
 
@@ -221,7 +228,6 @@
                     <label for="avatar" class="col-sm-3 control-label">Avatar Link</label>
                     <div class="col-sm-9">
                         <input type="text" id="avatar" name="avatar" placeholder="Image Link" class="form-control">
-
                     </div>
                 </div>
 

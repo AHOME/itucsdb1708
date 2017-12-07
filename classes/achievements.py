@@ -3,7 +3,7 @@ import psycopg2 as dbapi2
 from flask import current_app
 from flask_login import UserMixin
 from passlib.apps import custom_app_context as pwd_context
-#from passlib.ext.django.models import password_context
+
 
 class Achievements():
     def __init__(self,form = None,select = None):
@@ -17,7 +17,7 @@ class Achievements():
         elif select is None:
             self.Id = ""
             self.name = form['Name']
-            self.icon = ""
+            self.icon = form['Icon']
             self.content = form['Explanation']
             self.goal = form['Goal']
             self.endDate = form['endDate']
