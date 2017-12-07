@@ -8,6 +8,7 @@ import psycopg2 as dbapi2
 
 from classes.messages import *
 from classes.drinks import *
+from classes.news import *
 from classes.foods import *
 from classes.events import *
 from classes.restaurants import *
@@ -29,7 +30,7 @@ from server import load_user
 def logout_page():
     logout_user()
     session['logged_in'] = False
-    return redirect(url_for('site.home_page',firstEvent=None,eventDic=None))
+    return redirect(url_for('site.home_page',firstEvent=None,eventDic=None,news=None))
 
 
 @site.route('/', methods=['GET', 'POST'])
@@ -42,8 +43,12 @@ def home_page():
             firstEvent = Events(select = eventSelect)
         else:
             eventList.append(Events(select = eventSelect))
+
+    newList = get_all_news()
+
+
     if request.method == 'GET':
-        return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
+        return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList,news=newList)
     else:
         input_mail = request.form['InputEmail']
         input_password = request.form['InputPassword']
@@ -52,7 +57,7 @@ def home_page():
             login_user(user)
             session['logged_in'] = True
             flash('You have successfully logged in!','user_login')
-            return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
+            return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList,news=newList)
 
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
@@ -67,13 +72,13 @@ def home_page():
                     login_user(user)
                     session['logged_in'] = True
                     flash('You have successfully logged in!','user_login')
-                    return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
+                    return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList,news=newList)
                 else:
                     flash('Either mail or password is wrong!','user_login')
-                    return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList) #Couldn't login
+                    return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList,news=newList) #Couldn't login
             else:
                 flash('Either mail or password is wrong!','user_login')
-                return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
+                return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList,news=newList)
 
 @site.route('/results', methods=['GET', 'POST'])
 def home_page_search():
@@ -318,6 +323,16 @@ def initialize_database():
         BUYDATE DATE NOT NULL,
         STATUS VARCHAR(80) NOT NULL
         );"""
+        cursor.execute(query)
+
+        query = """CREATE TABLE NEWS (
+        ID SERIAL PRIMARY KEY,
+        TOPIC VARCHAR(80) NOT NULL,
+        CONTENT VARCHAR(800) NOT NULL,
+        LINK VARCHAR(200),
+        RESTAURANT INTEGER REFERENCES RESTAURANTS(ID) ON DELETE CASCADE
+        );"""
+
         cursor.execute(query)
 
         connection.commit()
@@ -776,6 +791,31 @@ def achievement_create_page():
         achievement = achievementMod.Achievements(form = request.form)
         return redirect(url_for('site.admin_page'))
     
+
+@site.route('/news/new',methods = ['GET','POST'])
+@login_required
+def news_create_page():
+    if request.method == 'POST':
+        form = request.form
+        title = form['title']
+        content = form['content']
+        link = form['link']
+        restaurant_name = form['restaurant_name']
+        if len(link.strip()) == 0:
+            link = ""
+
+        if len(restaurant_name.strip()) == 0:
+            restaurant_name = ""
+        else:
+            Id = find_restaurant_id_by_name(restaurant_name)
+            if Id == None:
+                restaurant_name = ""
+
+        new_news = News(Topic=title,Content=content,Link=link,Restaurant=restaurant_name)
+        new_news.insert_news()
+        new_news.find_news_id()
+    return redirect(url_for('site.admin_page'))
+
 
 @site.route('/event/new',methods = ['GET','POST'])
 @login_required

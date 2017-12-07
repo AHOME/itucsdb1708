@@ -61,14 +61,23 @@
 	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 		<div class="container">
 			<div class="news">
+				{% if news %}
+					{% for new in news %}
 		        <hr>
-		        <h1>First Restaurant Added</h1>
-		        <p>We are celebrating to have a restaurant. With your help this network will become larger. Sign up now!. The honor of being our first restaurant goes to: Restaurant at the End of the Universe </p>
-		         <a href="#">Link to the Restaurant</a>
-		         <hr>
-		        <h1>Website is Open Now!</h1>
-		            <p>The only website for visualizing and ordering from restaurants is now ready to serve you. Created by Alperen Kantarcı, Sadık Ekin Özbay, Onat Şahin and Burak Bekci</p>
-		        <hr>
+
+		        <h1 style="text-transform: uppercase;">{{new[1]}}</h1>
+		        <p>{{new[2]}}</p>
+		        {% if new[3] != "" %}
+		         <a href="{{ new[3]}}">{{new[3]}}</a>
+		 		{% endif %}
+
+		 		{% if new[4] != None %}
+		         <a href="{{new[4]}}">You can access to this restaurant</a>
+		 		{% endif %}
+
+		       	 <hr>
+		       	   {% endfor %}
+		       	 {% endif %}
 		    </div>
 		</div>
 	</div>

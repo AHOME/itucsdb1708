@@ -215,3 +215,15 @@ class Restaurant():
             cursor.execute(query, [restaurant_id])
             drinks = cursor.fetchall()
         return (foods,drinks)
+
+def find_restaurant_id_by_name(restaurant_name):
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """SELECT ID FROM RESTAURANTS WHERE NAME = %s"""
+            cursor.execute(query, [r_id])
+            value = cursor.fetchone()
+            empty = {}
+            if value is not None:
+                return value
+            else:
+                return None

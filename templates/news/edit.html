@@ -1,0 +1,49 @@
+{% extends "layouts/layout.html" %}
+
+{% block title %} News Creation Page{% endblock %}
+{% block csslinks %}  <link rel="stylesheet" type="text/css" href="/static/event/index.css" > {% endblock %}
+{% block content %}
+
+ <div class="container" align="left">
+  <h2 style="margin-left: 28%;max-width: 400px">News Edit Form</h2>
+           <form class="form-horizontal " method="POST" action={{url_for('site.admin_page')}} role="form">
+               <div class="form-group">
+                   <label for="header" class="col-sm-5 control-label">News Header</label>
+                   <div class="col-sm-9">
+                       <input type="text" id="header" name="header" class="form-control" required="true" autofocus>
+                   </div>
+               </div>
+               <div class="form-group">
+                   <label for="content" class="col-sm-5 control-label">Content of News </label>
+                   <div class="col-sm-9">
+                       <textarea class="form-control" rows="5" id="content" required="true" name="content"></textarea>
+                   </div>
+               </div>
+
+
+          <div class="form-group">
+                    <label for="link" class="col-sm-5 control-label">Link address</label>
+                    <div class="col-sm-9">
+                        <input type="text" id="link" name="link" placeholder="If you want to add link here" class="form-control" >
+                    </div>
+            </div>
+
+
+             <div class="form-group">
+                    <label for="restaurant_name" class="col-sm-5 control-label">Restaurant Name</label>
+                    <div class="col-sm-9">
+                        <input type="text" id="restaurant_name" name="restaurant_name" placeholder="If you want to add restaurant link here" class="form-control" >
+                    </div>
+            </div>
+
+
+           </div>
+               <div class="form-group">
+                   <div class="col-sm-3 col-md-3 col-sm-3 col-md-3 col-lg-3 col-sm-offset-4">
+                       <button type="submit" class="btn btn-danger btn-block" required="true">Create</button>
+                   </div>
+               </div>
+           </form> 
+       </div> 
+
+{% endblock %}
