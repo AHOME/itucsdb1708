@@ -335,6 +335,7 @@ def initialize_database():
 def restaurant_home_page():
     restaurants = Restaurant()
     allValues = restaurants.select_all_restaurants()
+    print(allValues)
     return render_template('restaurant/index.html', allValues = allValues)
 
 @site.route('/restaurant/<int:restaurant_id>/')
@@ -394,7 +395,7 @@ def restaurant_edit_page(restaurant_id):
             else:
                 restaurant.update_restaurant_by_id(form, restaurant_id)
                 return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
-            return render_template('restaurant/edit.html', form = form , address = restaurant.address, name = restaurant.name, contactName = restaurant.contactName, contactPhone = restaurant.contactPhone, pp = restaurant.profilePicture, hours = restaurant.hours, currentStatus = restaurant.currentStatus)
+            return render_template('restaurant/edit.html', form = form , address = restaurant.address, name = restaurant.name, contactName = restaurant.contactName, creatorId = restaurant.creatorId, pp = restaurant.profilePicture, hours = restaurant.hours, currentStatus = restaurant.currentStatus)
     return redirect(url_for('site.restaurant_home_page'))
 
 
