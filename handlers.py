@@ -17,7 +17,7 @@ from classes.event_control_functions import *
 from classes.drink_control_functions import *
 import classes.event_restaurants as EventRestaurantFile
 import classes.achievements as achievementMod
-from classes.deals import Deals
+from classes.deals import *
 site = Blueprint('site', __name__)
 
 
@@ -355,7 +355,10 @@ def restaurant_show_page(restaurant_id, methods=['GET','POST']):
         if (int(i[3]) > int(best_seller_food[0])):
             best_seller_food[0] = int(i[3])
             best_seller_food[1] = i[5]
-    return render_template('restaurant/show.html', restaurant = restaurant, comments = comments, check = check, best_seller_food = best_seller_food[1], foods = all_foods, drinks = all_drinks)
+
+    dealList = select_deals_of_restaurant(restaurant_id)
+    print(dealList)
+    return render_template('restaurant/show.html', restaurant = restaurant, comments = comments, check = check, best_seller_food = best_seller_food[1], foods = all_foods, drinks = all_drinks, deals = dealList)
 
 
 @site.route('/restaurant/create', methods=['GET','POST'])
@@ -424,8 +427,8 @@ def give_star_func(user_id, restaurant_id, score):
 @site.route('/save_foods_to_restaurant', methods=['POST'])
 def add_food_to_restaurant_page():
     if current_user.is_admin:
-        foods = request.form.getlist("food")
-        drinks = request.form.getlist("drink")
+        foods = request.form.getlist("food",None)
+        drinks = request.form.getlist("drink",None)
         restaurant_id = request.form['restaurant_id']
         restaurant = Restaurant()
         restaurant.take_food_to_restaurant(foods,drinks,restaurant_id)
