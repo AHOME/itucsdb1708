@@ -4,13 +4,12 @@
 
 {% block content %}
  {% if current_user.is_authenticated %}
- {% if current_user.get_type ==1 %}
+ {% if current_user.get_type == 1 %}
 <div class="container">
     <div class="span3 well">
         <center>
         <a href="#aboutModal" data-toggle="modal" data-target="#myModal"><img src="https://i1.wp.com/img11.deviantart.net/fcd9/i/2010/182/b/9/aang_the_last_airbender_by_cigsace.png?resize=498%2C413" name="aboutme" width="140" height="140" class="img-circle"></a>
-        <h3>Ahmet Usta</h3>
-        <!-- change me -->
+        <h3>{{user.get_name}} {{user.get_lastname}}</h3>
 		</center>
     </div>
     <!-- Modal -->
@@ -19,28 +18,29 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                    <h4 class="modal-title" id="myModalLabel">More About Ahmet Usta</h4> <!-- change me -->
+                    <h4 class="modal-title" id="myModalLabel">More About {{user.get_name}} {{user.get_lastname}}</h4>
                     </div>
                 <div class="modal-body">
                     <center>
                     <img src="https://i1.wp.com/img11.deviantart.net/fcd9/i/2010/182/b/9/aang_the_last_airbender_by_cigsace.png?resize=498%2C413" name="aboutme" width="140" height="140" border="0" class="img-circle"></a>
-                    <h3 class="media-heading">Ahmet Usta <small>TR</small></h3><!-- change me -->
+                    <h3 class="media-heading">{{user.get_name}} {{user.get_lastname}}<small>TR</small></h3><!-- change me -->
                     <span><strong>Restaurant Locations: </strong></span>
-                        <span class="label label-info">Adana</span>
-                        <span class="label label-info">Istanbul</span>
-                        <span class="label label-info">Urfa</span>
+                    {% if restaurants_of_owner %}
+                      {% for res in restaurants_of_owner %}
+                      <span class="label label-info"> {{ res[2] }}</span>
+                      {% endfor %}
+                    {%endif%}
                     </center>
                     <hr>
                     <center>
                     <p class="text-left"><strong>Bio: </strong><br>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut sem dui, tempor sit amet commodo a, vulputate vel tellus.</p>
+                      {{ user.get_bio }}</p>
                     <br>
                     </center>
                 </div>
                 <div class="modal-footer">
                     <center>
                     <button type="button" class="btn btn-warning" data-dismiss="modal">OK</button>
-                    <button type="button" class="btn btn-warning" data-dismiss="modal">Edit</button>
                     <a href="{{ url_for('site.user_edit_page',user_id=current_user.get_Id) }}" class="btn btn-warning" >Edit</a>
                     </center>
                 </div>
@@ -59,21 +59,21 @@
             <th>Location</th>
             <th>Score</th>
             <th class="text-center">Action</th>
-
-
-
         </tr>
     </thead>
+    {% if restaurants_of_owner %}
+    {% for res in restaurants_of_owner %}
             <tr>
-                <td>1</td>
-                <td><a href="{{ url_for('site.restaurant_home_page') }}">Köfteci Ahmet</a></td>
-                <td>Adana</td>
-                <td>9</td>
-                <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a> <a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
+                <td>{{ res[0] }}</td>
+                <td><a href="{{ url_for('site.restaurant_home_page') }}">{{ res[1] }}</a></td>
+                <td>{{ res[2] }}</td>
+                <td>{{ res[3] }}</td>
+                <td class="text-center"><a class='btn btn-info btn-xs' href="{{ url_for('site.restaurant_edit_page',restaurant_id = res[0])}}"><span class="glyphicon glyphicon-edit"></span> Edit</a> <a href="{{ url_for('site.restaurant_delete_func',restaurant_id = res[0]) }}" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
             </tr>
+            {% endfor %}
     </table>
     </div>
-
+{% endif %}
 </div>
 
 {% elif current_user.get_type == 2%}
@@ -122,7 +122,9 @@
             </div>
         </div>
     </div>
-    <h1>Liked Restaurants</h1>
+
+    {% if voted_res %}
+    <h1>Votes</h1>
     <div class="row col-md-12 custyle">
     <table class="table table-striped custab">
     <thead>
@@ -132,13 +134,16 @@
             <th>Score</th>
         </tr>
     </thead>
+        {%for res in voted_res %}
             <tr>
-                <td><a href="{{ url_for('site.restaurant_home_page') }}">Köfteci Ahmet</a></td>
-                <td>Adana</td>
-                <td>9</td>
+                <td><a href="{{ url_for('site.restaurant_home_page',restaurant_id = res[3]) }}">{{res[0]}}</a></td>
+                <td>{{res[1]}}</td>
+                <td>{{res[2]}}</td>
             </tr>
+        {% endfor %}
     </table>
     </div>
+    {% endif %}
     <!--Not complete orders  -->
     {% if foodListNR or drinkListNR %}
     <h1>Unreceived Orders</h1>

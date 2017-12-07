@@ -215,16 +215,16 @@ def initialize_database():
 
         query = """CREATE TABLE RESTAURANT_FOODS (
            ID SERIAL PRIMARY KEY,
-           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) ON DELETE SET NULL,
-           FOOD_ID INTEGER REFERENCES FOODS(ID) ON DELETE SET  NULL,
+           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) ON DELETE CASCADE,
+           FOOD_ID INTEGER REFERENCES FOODS(ID) ON DELETE CASCADE,
            SELL_COUNT INTEGER NOT NULL
         );"""
         cursor.execute(query)
 
         query = """CREATE TABLE RESTAURANT_DRINKS (
            ID SERIAL PRIMARY KEY,
-           RESTAURANT_ID INTEGER  REFERENCES RESTAURANTS(ID) ON DELETE SET NULL,
-           DRINK_ID INTEGER  REFERENCES DRINKS(ID) ON DELETE SET NULL,
+           RESTAURANT_ID INTEGER  REFERENCES RESTAURANTS(ID) ON DELETE CASCADE,
+           DRINK_ID INTEGER  REFERENCES DRINKS(ID) ON DELETE CASCADE,
            SELL_COUNT INTEGER NOT NULL
         );"""
         cursor.execute(query)
@@ -241,8 +241,8 @@ def initialize_database():
 
         query = """CREATE TABLE COMMENTS (
            ID SERIAL PRIMARY KEY,
-           USER_ID INTEGER REFERENCES USERS(ID) ON DELETE SET NULL,
-           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) ON DELETE SET NULL,
+           USER_ID INTEGER REFERENCES USERS(ID) ON DELETE CASCADE,
+           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) ON DELETE CASCADE,
            CONTENT VARCHAR(255) NOT NULL,
            SENDDATE TIMESTAMP NOT NULL
         );"""
@@ -250,8 +250,8 @@ def initialize_database():
 
         query = """CREATE TABLE STAR_RESTAURANTS(
             ID SERIAL PRIMARY KEY,
-            USER_ID INTEGER REFERENCES USERS(ID) ON DELETE SET NULL,
-            RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) ON DELETE SET NULL,
+            USER_ID INTEGER REFERENCES USERS(ID) ON DELETE CASCADE,
+            RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) ON DELETE CASCADE,
             STAR INTEGER NOT NULL
         )
         """
@@ -259,8 +259,8 @@ def initialize_database():
 
         query = """CREATE TABLE MESSAGES (
         ID SERIAL PRIMARY KEY,
-        SENDER INTEGER REFERENCES USERS(ID) ON DELETE SET NULL,
-        RECEIVER INTEGER REFERENCES USERS(ID) ON DELETE SET NULL,
+        SENDER INTEGER REFERENCES USERS(ID) ON DELETE CASCADE,
+        RECEIVER INTEGER REFERENCES USERS(ID) ON DELETE CASCADE,
         TOPIC VARCHAR(80) NOT NULL,
         CONTENT VARCHAR(800) NOT NULL,
         SENDDATE TIMESTAMP NOT NULL
@@ -284,8 +284,8 @@ def initialize_database():
 
         query = """CREATE TABLE DEALS (
         ID SERIAL PRIMARY KEY,
-        FOOD_ID INTEGER REFERENCES FOODS(ID) ON DELETE SET NULL,
-        REST_ID INTEGER REFERENCES RESTAURANTS(ID) ON DELETE SET NULL,
+        FOOD_ID INTEGER REFERENCES FOODS(ID) ON DELETE CASCADE,
+        REST_ID INTEGER REFERENCES RESTAURANTS(ID) ON DELETE CASCADE,
         DATE DATE NOT NULL,
         DISCOUNT_RATE INTEGER NOT NULL CHECK(DISCOUNT_RATE >= 0 AND DISCOUNT_RATE <= 100)
         );"""
@@ -293,16 +293,16 @@ def initialize_database():
 
         query = """CREATE TABLE EVENT_RESTAURANTS (
             ID SERIAL PRIMARY KEY,
-            EVENT_ID INTEGER REFERENCES EVENTS(ID) ON DELETE SET NULL,
-            USER_ID INTEGER REFERENCES USERS(ID) ON DELETE SET NULL
+            EVENT_ID INTEGER REFERENCES EVENTS(ID) ON DELETE CASCADE,
+            USER_ID INTEGER REFERENCES USERS(ID) ON DELETE CASCADE
             );"""
         cursor.execute(query)
 
         query = """CREATE TABLE FOOD_ORDERS (
         ID SERIAL PRIMARY KEY,
-        USER_ID INTEGER REFERENCES USERS(ID) ON DELETE SET NULL,
-        REST_ID INTEGER REFERENCES RESTAURANTS(ID) ON DELETE SET NULL,
-        FOOD_ID INTEGER REFERENCES FOODS(ID) ON DELETE SET NULL,
+        USER_ID INTEGER REFERENCES USERS(ID) ON DELETE CASCADE,
+        REST_ID INTEGER REFERENCES RESTAURANTS(ID) ON DELETE CASCADE,
+        FOOD_ID INTEGER REFERENCES FOODS(ID) ON DELETE CASCADE,
         PRICE VARCHAR(80) NOT NULL,
         BUYDATE DATE NOT NULL,
         STATUS VARCHAR(80) NOT NULL
@@ -311,9 +311,9 @@ def initialize_database():
 
         query = """CREATE TABLE DRINK_ORDERS (
         ID SERIAL PRIMARY KEY,
-        USER_ID INTEGER REFERENCES USERS(ID) ON DELETE SET NULL,
-        REST_ID INTEGER REFERENCES RESTAURANTS(ID) ON DELETE SET NULL,
-        DRINK_ID INTEGER REFERENCES DRINKS(ID) ON DELETE SET NULL,
+        USER_ID INTEGER REFERENCES USERS(ID) ON DELETE CASCADE,
+        REST_ID INTEGER REFERENCES RESTAURANTS(ID) ON DELETE CASCADE,
+        DRINK_ID INTEGER REFERENCES DRINKS(ID) ON DELETE CASCADE,
         PRICE VARCHAR(80) NOT NULL,
         BUYDATE DATE NOT NULL,
         STATUS VARCHAR(80) NOT NULL
@@ -375,7 +375,7 @@ def restaurant_create_page():
 @site.route('/restaurant/<int:restaurant_id>/delete')
 @login_required
 def restaurant_delete_func(restaurant_id):
-    if(current_user.is_admin):
+    if(current_user.is_admin or current_user.get_type == 1):
         restaurant = Restaurant()
         restaurant.delete_restaurant_by_id(restaurant_id)
     return redirect(url_for('site.restaurant_home_page'))
@@ -390,9 +390,9 @@ def restaurant_edit_page(restaurant_id):
             if request.method == 'GET':
                 restaurant.select_restaurant_by_id(restaurant_id)
             else:
-                restaurant.update_restaurant_by_id(form, restaurant_id)
+                restaurant.update_restaurant_by_id(form, restaurant_id,current_user.get_Id)
                 return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
-            return render_template('restaurant/edit.html', form = form , address = restaurant.address, name = restaurant.name, contactName = restaurant.contactName, contactPhone = restaurant.contactPhone, pp = restaurant.profilePicture, hours = restaurant.hours, currentStatus = restaurant.currentStatus)
+            return render_template('restaurant/edit.html', form = form , address = restaurant.address, name = restaurant.name, contactName = restaurant.contactName, pp = restaurant.profilePicture, hours = restaurant.hours, currentStatus = restaurant.currentStatus)
     return redirect(url_for('site.restaurant_home_page'))
 
 
@@ -459,12 +459,12 @@ def food_order_create_page(restaurant_id, user_id, food, price):
 @site.route('/food/order/delete/<int:orderId>')
 def delete_food_order(orderId):
     delete_food_order_by_id(orderId)
-    return redirect(url_for('site.user_show_page',user_id = current_user.get_type ))
+    return redirect(url_for('site.DRINK_ORDERShow_page',user_id = current_user.get_Id ))
 
 @site.route('/food/order/update/<int:orderId>')
 def update_food_order(orderId):
     update_food_order_by_id(orderId)
-    return redirect(url_for('site.user_show_page',user_id = current_user.get_type ))
+    return redirect(url_for('site.user_show_page',user_id = current_user.get_Id ))
 
 
 @site.route('/drink/order/create/<restaurant_id>/<user_id>/<drink>/<price>')
@@ -477,12 +477,12 @@ def drink_order_create_page(restaurant_id, user_id, drink, price):
 @site.route('/drink/order/delete/<int:orderId>')
 def delete_drink_order(orderId):
     delete_drink_order_by_id(orderId)
-    return redirect(url_for('site.user_show_page',user_id = current_user.get_type ))
+    return redirect(url_for('site.user_show_page',user_id = current_user.get_Id ))
 
 @site.route('/drink/order/update/<int:orderId>')
 def update_drink_order(orderId):
     update_drink_order_by_id(orderId)
-    return redirect(url_for('site.user_show_page',user_id = current_user.get_type ))
+    return redirect(url_for('site.user_show_page',user_id = current_user.get_Id ))
 
 
 
@@ -495,7 +495,7 @@ def food_create_page():
             food = Foods()
             food.create_food(request.form)
             return redirect(url_for('site.restaurant_home_page'))
-    return redirect(url_for('site.restaurant_show_page', restaurant_id))
+    return redirect(url_for('site.restaurant_home_page'))
 
 @site.route('/food/<int:food_id>/delete')
 def food_delete_func(food_id):
@@ -623,19 +623,20 @@ def messages_new_page(user_id):
 @login_required
 def user_show_page(user_id):
     userType = current_user.get_type
+    recent_drink_orders_notR = select_drink_oders_user_notReceived(user_id)
+    recent_drink_orders_rec = select_drink_oders_user_Received(user_id)
+    recent_food_orders_notR = select_food_oders_user_notReceived(user_id)
+    recent_food_orders_rec = select_food_oders_user_Received(user_id)
+    voted_res = get_voted_restaurants(user_id)
     if userType==0:
         return redirect(url_for('site.admin_page'))
     elif userType == 1:
         db_user = get_user(current_user.get_mail)
-        return render_template('user/show.html',user_id = current_user.get_Id, user=db_user )
+        restaurants_of_owner = get_restaurants(user_id)
+        return render_template('user/show.html',user_id = current_user.get_Id, user=db_user ,restaurants_of_owner = restaurants_of_owner)
     else:
-        recent_drink_orders_notR = select_drink_oders_user_notReceived(user_id)
-        recent_drink_orders_rec = select_drink_oders_user_Received(user_id)
-
-        recent_food_orders_notR = select_food_oders_user_notReceived(user_id)
-        recent_food_orders_rec = select_food_oders_user_Received(user_id)
         db_user = get_user(current_user.get_mail)
-        return render_template('user/show.html',user_id = current_user.get_Id, user=db_user,foodListNR = recent_food_orders_notR,foodListR = recent_food_orders_rec ,drinkListNR = recent_drink_orders_notR,drinkListR = recent_drink_orders_rec )
+        return render_template('user/show.html',user_id = current_user.get_Id, user=db_user,foodListNR = recent_food_orders_notR,foodListR = recent_food_orders_rec ,drinkListNR = recent_drink_orders_notR,drinkListR = recent_drink_orders_rec,voted_res = voted_res )
 
 
 @site.route('/user/<int:user_id>/edit',methods=['GET','POST']) #Change me with model [ID]
