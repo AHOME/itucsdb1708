@@ -51,8 +51,7 @@ def home_page():
             user= load_user(input_mail)
             login_user(user)
             session['logged_in'] = True
-
-            flash( current_user.get_mail)
+            flash('You have successfully logged in!','user_login')
             return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
 
         with dbapi2.connect(current_app.config['dsn']) as connection:
@@ -67,12 +66,13 @@ def home_page():
                 if pwd_context.verify(input_password,user.Password) is True:
                     login_user(user)
                     session['logged_in'] = True
-                    flash( current_user.get_mail)
-
+                    flash('You have successfully logged in!','user_login')
                     return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
                 else:
+                    flash('Either mail or password is wrong!','user_login')
                     return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList) #Couldn't login
             else:
+                flash('Either mail or password is wrong!','user_login')
                 return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
 
 @site.route('/results', methods=['GET', 'POST'])
@@ -521,6 +521,8 @@ def food_edit_page(food_id):
 @site.route('/register', methods=['GET','POST'])
 def register_home_page():
     if request.method == 'GET':
+        if current_user.is_authenticated:
+            return redirect(url_for('site.home_page'))
         return render_template('register/index.html',form=None)
     else:
         form = request.form
@@ -553,11 +555,13 @@ def register_home_page():
 
                 cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate,city, gender, userType, avatar,bio))
                 connection.commit()
+            flash('This is great! You have successfully registered! Now you can login via navbar.','user_login')
             return redirect(url_for('site.home_page'))
         else:
             form.errors['notComplete'] = 'We couldn\'t registred you as user please fix your answers.'
         form = request.form
-        return render_template('register/index.html',form=form)
+
+        render_template('home/index.html',form=form)
 
 
 @site.route('/user/<int:user_id>/messages')
@@ -570,33 +574,36 @@ def messages_home_page(user_id):
 @login_required
 def messages_new_page(user_id):
     if request.method == 'GET':
-        return render_template('messages/new.html',form=None)
+        return render_template('messages/new.html',form=None,errors=None)
     else:
+        form = request.form
         receiver = request.form['message_target']
         sender = current_user.get_Id
         topic = request.form['message_topic']
         body = request.form['message_body']
         time = dt.now()
-        form = request.form
-        valid = validate_message_data(form)
-        if valid:
-            with dbapi2.connect(current_app.config['dsn']) as connection:
-                cursor = connection.cursor()
-                statement = """SELECT ID FROM USERS WHERE MAIL = %s"""
-                cursor.execute(statement,[receiver])
-                receiver_id = cursor.fetchone()
+        errors = {}
+        errors['userNotFound'] = 'There is no user with this email'
 
-            with dbapi2.connect(current_app.config['dsn']) as connection:
-                cursor = connection.cursor()
-                query = """
-                    INSERT INTO MESSAGES (SENDER,RECEIVER,TOPIC,CONTENT,SENDDATE)
-                    VALUES (%s,%s,%s,%s,%s)"""
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            statement = """SELECT ID FROM USERS WHERE MAIL = %s"""
+            cursor.execute(statement,[receiver])
+            receiver_id = cursor.fetchone()
+        if receiver_id == None:
+            return  render_template('messages/new.html',form=form,errors = errors)
 
-                cursor.execute(query, (sender,receiver_id,topic,body,time))
-                connection.commit()
-            return redirect(url_for('site.messages_home_page',user_id=sender))
-        else:
-            return  render_template('messages/new.html',form=form)
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """
+                INSERT INTO MESSAGES (SENDER,RECEIVER,TOPIC,CONTENT,SENDDATE)
+                VALUES (%s,%s,%s,%s,%s)"""
+
+            cursor.execute(query, (sender,receiver_id,topic,body,time))
+            connection.commit()
+        return redirect(url_for('site.messages_home_page',user_id=sender))
+        
+            
 
 
 @site.route('/user/<int:user_id>/show')
@@ -773,7 +780,7 @@ def achievement_create_page():
 @site.route('/event/new',methods = ['GET','POST'])
 @login_required
 def event_create_page():
-    print('ss')
+
     if request.method == 'GET':
         return render_template('event/new.html',form = None)
     else:
@@ -781,7 +788,7 @@ def event_create_page():
         if isValid:
             #create an object from form and add it to database.
             event = Events(form = request.form)
-            print('ss')
+
             return redirect(url_for('site.home_page'))
         form = request.form
         return render_template('event/new.html',form=form)
@@ -814,7 +821,6 @@ def event_show_page(eventId):
     currentUserId = current_user.get_Id
     #Is person coming
     is_coming = EventRestaurantFile.does_user_come(currentUserId,eventId)
-    print(is_coming)
     return render_template('event/show.html',event = event,is_coming = is_coming,comers = comers)
 
 @site.route('/event/<int:eventId>/not_going')

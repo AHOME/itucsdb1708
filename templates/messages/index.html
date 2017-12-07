@@ -7,10 +7,10 @@
 
 <div class="container" >
    {% if messages %}
-    <div class="row"   >
-        <div class="col-md-8" style="margin-left: 15%; margin-right: auto;" >
+    <div class="row">
+        <div class="col-md-20" style="margin-left: 5%; margin-right: auto;" >
             <div class="panel panel-primary" id="mainpanel" style="margin-right: 5px;border-color: #D32F2F">
-                <div class="panel-heading" style="background: #D32F2F;border-color: #D32F2F">
+                <div class="panel-heading" style=" background:#D32F2F;background-color:#D32F2F !important ;border-color: #D32F2F">
                     <span class="glyphicon glyphicon-comment" style="margin-right: 5px;"></span> Chat
                 <div class="panel-body" style="background: #D32F2F;">
                     <ul class="chat" >
@@ -31,8 +31,8 @@
                                     {{message[3]}}
                                     </strong> 
 
-                                    <small class="pull-right text-muted"  style="color: LightSlateGray ">
-                                        <span class="glyphicon glyphicon-time"  style="color: LightSlateGray"></span>{{message[5]}}</small>
+                                    <small class="pull-right text-muted"  style="color: white ">
+                                        <span class="glyphicon glyphicon-time"  style="color: white"></span>{{message[5]}}</small>
                                 </div>
                                 <p style="color: white">
                                     {{message[4]}}
@@ -41,22 +41,6 @@
                             </div>
                         </li>
                         
-                        <!--
-                        <li class="right clearfix"><span class="chat-img pull-right">
-                            <img src="http://placehold.it/50/FA6F57/fff&text=ME" alt="User Avatar" class="img-circle" />
-                        </span>
-                            <div class="chat-body clearfix">
-                                <div class="header">
-                                    <small class=" text-muted"><span class="glyphicon glyphicon-time"></span>15 mins ago</small>
-                                    <strong class="pull-right primary-font">Bhaumik Patel</strong>
-                                </div>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare
-                                    dolor, quis ullamcorper ligula sodales.
-                                </p>
-                            </div>
-                        </li> !-->
-
                          {% endfor%}
                     </ul>
                    
@@ -66,7 +50,6 @@
 
     </div>
 
-        
             
             <div class="btn-panel" style="font-size: 18px; max-width:500px; margin: auto; margin-top: 10%">  
                 <a href="{{ url_for('site.messages_new_page',user_id = current_user.get_Id) }}">
