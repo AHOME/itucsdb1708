@@ -150,7 +150,6 @@ def initialize_database():
         query = """DROP TABLE IF EXISTS DRINK_ORDERS;"""
         cursor.execute(query)
 
-<<<<<<< HEAD
         query = """DROP TABLE IF EXISTS DRINKS;"""
         cursor.execute(query)
 
@@ -160,19 +159,6 @@ def initialize_database():
         query = """DROP TABLE IF EXISTS FOODS;"""
         cursor.execute(query)
 
-||||||| merged common ancestors
-=======
-        query = """DROP TABLE IF EXISTS DRINKS;"""
-        cursor.execute(query)
-
-
-        query = """DROP TABLE IF EXISTS RESTAURANTS;"""
-        cursor.execute(query)
-
-        query = """DROP TABLE IF EXISTS FOODS;"""
-        cursor.execute(query)
-
->>>>>>> ee7eb497e897853dbfed0a82e31110964248a9b0
         query = """DROP TABLE IF EXISTS USERS;"""
         cursor.execute(query)
 
@@ -879,7 +865,7 @@ def drink_delete_function(drinkId):
     delete_drink_by_id(drinkId)
     return redirect(url_for('site.food_home_page'))
 
-@site.route('/deals/new', methods = ['GET','POST'])
+@site.route('/deals/new/<int:restaurant_id>/<int:food_id>', methods = ['GET','POST'])
 def deals_add_function(restaurant_id, food_id):
     if request.method == 'GET':
         return render_template('deals/new.html', form=None, restaurant_id=restaurant_id, food_id=food_id)
