@@ -122,6 +122,9 @@ def initialize_database():
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
 
+        query = """DROP TABLE IF EXISTS NEWS;"""
+        cursor.execute(query)
+
         query = """DROP TABLE IF EXISTS MESSAGES;"""
         cursor.execute(query)
 
@@ -166,6 +169,8 @@ def initialize_database():
         cursor.execute(query)
 
         query = """DROP TABLE IF EXISTS USERS;"""
+
+
         cursor.execute(query)
 
         query = """CREATE TABLE USERS (
@@ -193,6 +198,7 @@ def initialize_database():
         );"""
         cursor.execute(query)
 
+
         query = """CREATE TABLE RESTAURANTS (
            ID SERIAL PRIMARY KEY,
            NAME VARCHAR(80) NOT NULL,
@@ -205,6 +211,7 @@ def initialize_database():
            CURRENT_STATUS VARCHAR(80) NOT NULL
         );"""
         cursor.execute(query)
+
 
 
         query = """CREATE TABLE DRINKS(
@@ -324,6 +331,7 @@ def initialize_database():
         STATUS VARCHAR(80) NOT NULL
         );"""
         cursor.execute(query)
+
 
         query = """CREATE TABLE NEWS (
         ID SERIAL PRIMARY KEY,
@@ -815,6 +823,55 @@ def news_create_page():
         new_news.insert_news()
         new_news.find_news_id()
     return redirect(url_for('site.admin_page'))
+
+@site.route('/news/<int:news_id>/edit',methods = ['GET','POST'])
+@login_required
+def news_edit_page(news_id):
+    if request.method == 'POST':
+        the_old_news = get_news_by_id(news_id)
+        form = request.form
+        title = form['header']
+        the_old_news.Topic =title
+        content = form['content']
+        the_old_news.Content =content
+        link = form['link']
+        restaurant_name = form['restaurant_name']
+        if len(link.strip()) == 0:
+            link = ""
+
+        the_old_news.Link =link
+        if len(restaurant_name.strip()) == 0:
+            restaurant_name = ""
+        else:
+            Id = find_restaurant_id_by_name(restaurant_name)
+            if Id == None:
+                restaurant_name = ""
+        the_old_news.Restaurant =restaurant_name
+        the_old_news.update_news()
+        flash('You have successfully updated the news','user_login')
+        return redirect(url_for('site.home_page'))
+
+    else:
+        NewsClass = get_news_by_id(news_id)
+        form = {}
+        form['id'] = NewsClass.Id
+        form['title'] = NewsClass.Topic
+        form['content'] =  NewsClass.Content
+        form['link'] =  NewsClass.Link
+        if NewsClass.Restaurant != None:
+            restaurant = Restaurant()
+            restaurant.select_restaurant_by_id(NewsClass.Restaurant)
+            form['restaurant_name'] = restaurant.name
+        else:
+            form['restaurant_name'] = ""
+        return render_template('news/edit.html',form=form)
+
+@site.route('/news/<int:news_id>/delete')
+@login_required
+def news_delete_page(news_id):
+    delete_news(news_id)
+    flash('You have successfully delted the news','user_login')
+    return redirect(url_for('site.home_page'))
 
 
 @site.route('/event/new',methods = ['GET','POST'])

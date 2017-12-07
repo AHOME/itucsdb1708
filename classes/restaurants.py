@@ -61,17 +61,20 @@ class Restaurant():
             query = """SELECT * FROM RESTAURANTS WHERE id = %s"""
             cursor.execute(query, [r_id])
             value = cursor.fetchall()
-            selectedRestaurant = value[0]
-            self.primaryId  =  selectedRestaurant[0]
-            self.name =  selectedRestaurant[1]
-            self.address =  selectedRestaurant[2]
-            self.contactName =  selectedRestaurant[4]
-            self.creatorId =  selectedRestaurant[3]
-            self.score =  selectedRestaurant[5]
-            self.profilePicture =  selectedRestaurant[6]
-            self.hours =  selectedRestaurant[7]
-            self.currentStatus =  selectedRestaurant[8]
-
+            if not value:
+                print(value)
+                selectedRestaurant = value[0]
+                self.primaryId  =  selectedRestaurant[0]
+                self.name =  selectedRestaurant[1]
+                self.address =  selectedRestaurant[2]
+                self.contactName =  selectedRestaurant[4]
+                self.creatorId =  selectedRestaurant[3]
+                self.score =  selectedRestaurant[5]
+                self.profilePicture =  selectedRestaurant[6]
+                self.hours =  selectedRestaurant[7]
+                self.currentStatus =  selectedRestaurant[8]
+            else:
+                return None
 
     def delete_restaurant_by_id(self, r_id):
         with dbapi2.connect(current_app.config['dsn']) as connection:
