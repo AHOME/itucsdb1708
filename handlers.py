@@ -435,7 +435,7 @@ def add_food_to_restaurant_page():
 
 @site.route('/menuitems/<restaurant_id>')
 def food_home_page(restaurant_id):
-    if current_user.is_admin:
+    if current_user.is_admin or current_user.get_type == 1:
         food = Foods()
         foods = food.select_all_foods()
         restaurant = Restaurant()
@@ -446,7 +446,7 @@ def food_home_page(restaurant_id):
 
         restaurant = Restaurant()
         restaurant.select_restaurant_by_id(restaurant_id)
-        return render_template('food/index.html', foods = foods, drinks = drinkList, restaurant = restaurant)
+        return render_template('food/index.html', foods = foods, drinks = drinkList, restaurant = restaurant,restaurant_id=restaurant_id)
     return redirect(url_for('site.home_page'))
 
 @site.route('/food/order/create/<restaurant_id>/<user_id>/<food>/<price>')
@@ -488,7 +488,7 @@ def update_drink_order(orderId):
 
 @site.route('/food/create', methods=['GET','POST'])
 def food_create_page():
-    if current_user.is_admin:
+    if current_user.is_admin or current_user.get_type == 1:
         if request.method == 'GET':
             return render_template('food/new.html')
         else:
@@ -497,19 +497,20 @@ def food_create_page():
             return redirect(url_for('site.restaurant_home_page'))
     return redirect(url_for('site.restaurant_home_page'))
 
-@site.route('/food/<int:food_id>/delete')
-def food_delete_func(food_id):
-    if current_user.is_admin:
+@site.route('/food/<int:food_id>/<int:restaurant_id>/delete')
+def food_delete_func(food_id,restaurant_id):
+    if current_user.is_admin or current_user.get_type == 1:
+        print("sd")
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             query = """DELETE FROM FOODS WHERE ID = %s"""
             cursor.execute(query, [food_id])
             connection.commit()
-    return redirect(url_for('site.food_home_page'))
+    return redirect(url_for('site.food_home_page',restaurant_id = restaurant_id))
 
-@site.route('/food/<int:food_id>/edit', methods=['GET','POST'])
-def food_edit_page(food_id):
-    if current_user.is_admin:
+@site.route('/food/<int:food_id>/<int:restaurant_id>/edit', methods=['GET','POST'])
+def food_edit_page(food_id,restaurant_id):
+    if current_user.is_admin or current_user.get_type == 1:
         if request.method == 'GET':
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()
@@ -532,11 +533,11 @@ def food_edit_page(food_id):
                 query = """UPDATE FOODS SET NAME = %s, ICON = %s, FOOD_TYPE = %s, PRICE = %s, CALORIE = %s WHERE ID = %s"""
                 cursor.execute(query, [nameInput, iconInput, typeNameInput, priceInput, calorieInput, food_id])
                 connection.commit()
-            return redirect(url_for('site.food_home_page'))
+            return redirect(url_for('site.food_home_page',restaurant_id = restaurant_id))
 
         form = request.form
         return render_template('food/edit.html', form = form, name = name, icon = icon, food_type = food_type, price = price, calorie = calorie)
-    return redirect(url_for('site.food_home_page'))
+    return redirect(url_for('site.food_home_page',restaurant_id = restaurant_id))
 
 
 
@@ -873,8 +874,8 @@ def drink_create_page():
         form = request.form
         return render_template('drinks/new.html',form=form)
 
-@site.route('/drink/edit/<int:drinkId>',methods = ['GET','POST'])
-def drink_edit_page(drinkId):
+@site.route('/drink/edit/<int:drinkId>/<int:restaurant_id>',methods = ['GET','POST'])
+def drink_edit_page(drinkId,restaurant_id):
     #select one element from id
     drink = Drinks(select = select_drink_by_id(drinkId))
     if request.method == 'GET':
@@ -887,14 +888,14 @@ def drink_edit_page(drinkId):
             update_drink_by_id(form,drinkId)
             #After update take it from database again
             drink = Drinks(select = select_drink_by_id(drinkId))
-            return redirect(url_for('site.food_home_page'))
+            return redirect(url_for('site.food_home_page',restaurant_id=restaurant_id))
         else:
             return render_template('drink/drink.html',drink = drink,form = form)
 
-@site.route('/drink/delete/<int:drinkId>')
-def drink_delete_function(drinkId):
+@site.route('/drink/delete/<int:drinkId>/<int:restaurant_id>')
+def drink_delete_function(drinkId,restaurant_id):
     delete_drink_by_id(drinkId)
-    return redirect(url_for('site.food_home_page'))
+    return redirect(url_for('site.food_home_page',restaurant_id=restaurant_id))
 
 @site.route('/deals/new', methods = ['GET','POST'])
 def deals_add_function():
