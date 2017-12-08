@@ -353,13 +353,13 @@ def initialize_database():
         query = """
                 INSERT INTO ACHIEVEMENTS (NAME, ICON, CONTENT, GOAL, ENDDATE)
                     VALUES (%s,%s,%s,%s,%s)"""
-        cursor.execute(query,["Carnivorous","", "Give 10 kebab orders.", "10", "2020-10-10"])
+        cursor.execute(query,["Carnivorous","", "Give 10 orders", "10", "2020-10-10"])
         connection.commit()
 
         query = """
                 INSERT INTO ACHIEVEMENTS (NAME, ICON, CONTENT, GOAL, ENDDATE)
                     VALUES (%s,%s,%s,%s,%s)"""
-        cursor.execute(query,["Eating Less","", "Give 10 order that do not exceed 100 calories.", "10", "2020-10-10"])
+        cursor.execute(query,["Eating Less","", "Give 10 orders that includes meat.", "10", "2020-10-10"])
         connection.commit()
 
         return redirect(url_for('site.home_page'))
@@ -383,8 +383,6 @@ def restaurant_show_page(restaurant_id, methods=['GET','POST']):
     best_seller_food = [0,""]
     best_seller_drink = [0,""]
     all_foods,all_drinks = restaurant.get_food_and_drink(restaurant_id)
-    print(all_foods)
-    print(all_drinks)
     for i in all_foods:
         if (int(i[3]) > int(best_seller_food[0])):
             best_seller_food[0] = int(i[3])
@@ -943,6 +941,17 @@ def deals_add_function():
         if isValid:
             deal = Deals(form = form, foodId = 1, restaurantId = 1)
             return render_template('deals/new.html', form=None)
+
+@site.route('/menu/delete/food/<int:restaurant_id>/<int:food_id>')
+def menu_food_delete(restaurant_id,food_id):
+    delete_food_from_restaurant(restaurant_id,food_id)
+    return redirect(url_for('site.restaurant_show_page',restaurant_id  = restaurant_id ))
+
+@site.route('/menu/delete/drink/<int:restaurant_id>/<int:drink_id>')
+def menu_drink_delete(restaurant_id,drink_id):
+    delete_drink_from_restaurant(restaurant_id,drink_id)
+    return redirect(url_for('site.restaurant_show_page',restaurant_id  = restaurant_id ))
+
 
 def validate_edit_data(form):
     if form == None:

@@ -8,7 +8,7 @@
 <div class="container">
     <div class="span3 well">
         <center>
-        <a href="#aboutModal" data-toggle="modal" data-target="#myModal"><img src="https://i1.wp.com/img11.deviantart.net/fcd9/i/2010/182/b/9/aang_the_last_airbender_by_cigsace.png?resize=498%2C413" name="aboutme" width="140" height="140" class="img-circle"></a>
+        <a href="#aboutModal" data-toggle="modal" data-target="#myModal"><img src= "{{ user.get_avatar }}" name="aboutme" width="140" height="140" class="img-circle"></a>
         <h3>{{user.get_name}} {{user.get_lastname}}</h3>
 		</center>
     </div>
@@ -22,7 +22,7 @@
                     </div>
                 <div class="modal-body">
                     <center>
-                    <img src="https://i1.wp.com/img11.deviantart.net/fcd9/i/2010/182/b/9/aang_the_last_airbender_by_cigsace.png?resize=498%2C413" name="aboutme" width="140" height="140" border="0" class="img-circle"></a>
+                    <img src="{{ user.get_avatar }}" name="aboutme" width="140" height="140" border="0" class="img-circle"></a>
                     <h3 class="media-heading">{{user.get_name}} {{user.get_lastname}}<small>TR</small></h3><!-- change me -->
                     <span><strong>Restaurant Locations: </strong></span>
                     {% if restaurants_of_owner %}
@@ -240,12 +240,14 @@
     <thead>
         <tr>
             <th>Achievement Name</th>
+            <th>Achievement Content</th>
         </tr>
     </thead>
     <!--List Completed Achievements -->
               {% for achievement in completed_achievements %}
               <tr>
-                <td><a href="{{ url_for('site.achievement_show_page',achievement_id = achievement[0]) }}">{{achievement[1]}}</a>  </td>
+                <td>{{achievement[1]}}</td>
+                <td>{{achievement[2]}}</td>
               </tr>
                 {% endfor %}
     {% endif %}

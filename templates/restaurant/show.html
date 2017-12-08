@@ -58,6 +58,9 @@
                     <th>Item Price</th>
                     <th>Item Calorie</th>
                     <th>Food Type</th>
+                    {% if current_user.get_Id | int == restaurant.creatorId | int %}
+                    <th></th>
+                    {% endif %}
                   </tr>
                 </thead>
                 <tbody>
@@ -67,6 +70,9 @@
                     <td><a href="{{ url_for('site.food_order_create_page', user_id = current_user.Id, restaurant_id = restaurant.primaryId, food = i[2], price = i[8]) }}">{{i[8]}} £</a></td>
                     <td>{{i[9]}} Calorie</td>
                     <td>{{i[7]}}</td>
+                    {% if current_user.get_Id | int == restaurant.creatorId | int %}
+                    <td><a href="{{ url_for('site.menu_food_delete', restaurant_id = restaurant.primaryId, food_id = i[0]) }}"> Delete from Menu</a></td>
+                    {% endif %}
                   </tr>
                   {%endfor%}
                 </tbody>
@@ -82,6 +88,9 @@
                     <th>Item Calorie</th>
                     <th>Is cold</th>
                     <th>Alcohol?</th>
+                    {% if current_user.get_Id | int == restaurant.creatorId | int %}
+                    <th></th>
+                    {% endif %}
                   </tr>
                 </thead>
                 <tbody>
@@ -91,6 +100,10 @@
                     <td><a href="{{ url_for('site.drink_order_create_page', user_id = current_user.Id, restaurant_id = restaurant.primaryId, drink = i[2], price = i[7]) }}">{{i[7]}}  </a></td>
                     <td>{{i[8]}} Calorie</td>
                     <td>{{i[9]}}</td>
+                    <td>{{i[10]}}</td>
+                    {% if current_user.get_Id | int  == restaurant.creatorId | int %}
+                    <td><a href="{{ url_for('site.menu_drink_delete', restaurant_id = restaurant.primaryId, drink_id = i[0]) }}"> Delete from Menu</a></td>
+                    {% endif %}
                   </tr>
                   {%endfor%}
                 </tbody>

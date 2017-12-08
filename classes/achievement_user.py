@@ -36,7 +36,7 @@ def add_row(userId,ach_id):
 def select_completed_achievements_by_userID(userId):
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
-        statement = """SELECT ACHIEVEMENTS.ID,ACHIEVEMENTS.NAME FROM ACHIEVEMENTS,ACHIEVEMENT_USER WHERE (ACH_ID = ACHIEVEMENTS.ID)
+        statement = """SELECT ACHIEVEMENTS.ID,ACHIEVEMENTS.NAME,ACHIEVEMENTS.CONTENT FROM ACHIEVEMENTS,ACHIEVEMENT_USER WHERE (ACH_ID = ACHIEVEMENTS.ID)
         AND (USER_ID = %s ) AND ( USER_ACHIEVED >= ACHIEVEMENTS.GOAL )"""
         cursor.execute(statement,[userId])
         return cursor.fetchall()

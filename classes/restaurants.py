@@ -215,3 +215,19 @@ class Restaurant():
             cursor.execute(query, [restaurant_id])
             drinks = cursor.fetchall()
         return (foods,drinks)
+
+
+def delete_food_from_restaurant(restaurant_id,food_id):
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        query = """
+            DELETE FROM RESTAURANT_FOODS WHERE RESTAURANT_ID = %s AND FOOD_ID = %s"""
+        cursor.execute(query, [restaurant_id,food_id] )
+        connection.commit()
+def delete_drink_from_restaurant(restaurant_id,drink_id):
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        query = """
+            DELETE FROM RESTAURANT_DRINKS WHERE RESTAURANT_ID = %s AND DRINK_ID = %s"""
+        cursor.execute(query, [restaurant_id,drink_id] )
+        connection.commit()
