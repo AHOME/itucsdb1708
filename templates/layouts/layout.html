@@ -47,9 +47,8 @@
       <li class="active"><a href="{{ url_for('site.user_show_page',user_id=0) }}" style="color: #ffffff;">Profile</a></li>
       <li class="active"><a href="{{ url_for('site.messages_home_page',user_id=0 ) }}" style="color: #ffffff;">Messages</a></li>
       {% endif %}
-  {% with messages = get_flashed_messages() %}
     {% if session['logged_in'] == True  %}
-     <li class="active"><a href="{{ url_for('site.logout_page') }}" style="color: #ffffff;">{{session['name']}}  Logout</a></li>
+     <li class="active"><a href="{{ url_for('site.logout_page') }}" style="color: #ffffff;">Logout</a></li>
     {% else %}
 
       <li class="dropdown">
@@ -81,7 +80,6 @@
       </ul>
         </li>
         {% endif %}
-        {% endwith %}
     </ul>
   </div>
 

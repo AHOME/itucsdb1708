@@ -162,8 +162,6 @@ def initialize_database():
         query = """DROP TABLE IF EXISTS USERS;"""
         cursor.execute(query)
 
-
-
         query = """CREATE TABLE USERS (
         ID SERIAL PRIMARY KEY,
         FIRSTNAME VARCHAR(80) NOT NULL,
@@ -193,8 +191,8 @@ def initialize_database():
            ID SERIAL PRIMARY KEY,
            NAME VARCHAR(80) NOT NULL,
            ADDRESS VARCHAR(255) NOT NULL,
-           CREATOR_ID INTEGER REFERENCES USERS(ID),
-           CONTACT_NAME VARCHAR(80) NOT NULL,
+           CONTACT_NAME INTEGER REFERENCES USERS(ID) ON DELETE CASCADE,
+           CONTACT_PHONE VARCHAR(80) NOT NULL,
            SCORE INTEGER NOT NULL DEFAULT 0 CHECK( SCORE >= 0 AND SCORE <= 5),
            PROFILE_PICTURE VARCHAR(500) NOT NULL,
            HOURS VARCHAR(80) NOT NULL,
@@ -203,18 +201,29 @@ def initialize_database():
         cursor.execute(query)
 
 
+        query = """CREATE TABLE DRINKS(
+        ID SERIAL PRIMARY KEY,
+        NAME VARCHAR(20) NOT NULL,
+        TYPE BOOLEAN,
+        PRICE INTEGER,
+        CALORIE INTEGER,
+        DRINKCOLD BOOLEAN,
+        ALCOHOL BOOLEAN
+        );"""
+        cursor.execute(query)
+
         query = """CREATE TABLE RESTAURANT_FOODS (
            ID SERIAL PRIMARY KEY,
-           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
-           FOOD_ID INTEGER REFERENCES FOODS(ID) NOT NULL,
+           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) ON DELETE SET NULL,
+           FOOD_ID INTEGER REFERENCES FOODS(ID) ON DELETE SET  NULL,
            SELL_COUNT INTEGER NOT NULL
         );"""
         cursor.execute(query)
 
         query = """CREATE TABLE RESTAURANT_DRINKS (
            ID SERIAL PRIMARY KEY,
-           RESTAURANT_ID INTEGER  NOT NULL,
-           DRINK_ID INTEGER  NOT NULL,
+           RESTAURANT_ID INTEGER  REFERENCES RESTAURANTS(ID) ON DELETE SET NULL,
+           DRINK_ID INTEGER  REFERENCES DRINKS(ID) ON DELETE SET NULL,
            SELL_COUNT INTEGER NOT NULL
         );"""
         cursor.execute(query)
@@ -231,8 +240,8 @@ def initialize_database():
 
         query = """CREATE TABLE COMMENTS (
            ID SERIAL PRIMARY KEY,
-           USER_ID INTEGER REFERENCES USERS(ID) NOT NULL,
-           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
+           USER_ID INTEGER REFERENCES USERS(ID) ON DELETE SET NULL,
+           RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) ON DELETE SET NULL,
            CONTENT VARCHAR(255) NOT NULL,
            SENDDATE TIMESTAMP NOT NULL
         );"""
@@ -240,8 +249,8 @@ def initialize_database():
 
         query = """CREATE TABLE STAR_RESTAURANTS(
             ID SERIAL PRIMARY KEY,
-            USER_ID INTEGER REFERENCES USERS(ID) NOT NULL,
-            RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
+            USER_ID INTEGER REFERENCES USERS(ID) ON DELETE SET NULL,
+            RESTAURANT_ID INTEGER REFERENCES RESTAURANTS(ID) ON DELETE SET NULL,
             STAR INTEGER NOT NULL
         )
         """
@@ -249,24 +258,16 @@ def initialize_database():
 
         query = """CREATE TABLE MESSAGES (
         ID SERIAL PRIMARY KEY,
-        SENDER INTEGER REFERENCES USERS(ID) NOT NULL,
-        RECEIVER INTEGER REFERENCES USERS(ID) NOT NULL,
+        SENDER INTEGER REFERENCES USERS(ID) ON DELETE SET NULL,
+        RECEIVER INTEGER REFERENCES USERS(ID) ON DELETE SET NULL,
         TOPIC VARCHAR(80) NOT NULL,
         CONTENT VARCHAR(800) NOT NULL,
         SENDDATE TIMESTAMP NOT NULL
         );"""
         cursor.execute(query)
 
-        query = """CREATE TABLE DRINKS(
-        ID SERIAL PRIMARY KEY,
-        NAME VARCHAR(20) NOT NULL,
-        TYPE BOOLEAN,
-        PRICE INTEGER,
-        CALORIE INTEGER,
-        DRINKCOLD BOOLEAN,
-        ALCOHOL BOOLEAN
-        );"""
-        cursor.execute(query)
+
+
 
         query = """CREATE TABLE EVENTS(
         ID SERIAL PRIMARY KEY,
@@ -282,8 +283,8 @@ def initialize_database():
 
         query = """CREATE TABLE DEALS (
         ID SERIAL PRIMARY KEY,
-        FOOD_ID INTEGER REFERENCES FOODS(ID) NOT NULL,
-        REST_ID INTEGER REFERENCES RESTAURANTS(ID) NOT NULL,
+        FOOD_ID INTEGER REFERENCES FOODS(ID) ON DELETE SET NULL,
+        REST_ID INTEGER REFERENCES RESTAURANTS(ID) ON DELETE SET NULL,
         DATE DATE NOT NULL,
         DISCOUNT_RATE INTEGER NOT NULL CHECK(DISCOUNT_RATE >= 0 AND DISCOUNT_RATE <= 100)
         );"""
@@ -298,9 +299,9 @@ def initialize_database():
 
         query = """CREATE TABLE FOOD_ORDERS (
         ID SERIAL PRIMARY KEY,
-        USER_ID INTEGER NOT NULL,
-        REST_ID INTEGER NOT NULL,
-        FOOD_ID INTEGER NOT NULL,
+        USER_ID INTEGER REFERENCES USERS(ID) ON DELETE SET NULL,
+        REST_ID INTEGER REFERENCES RESTAURANTS(ID) ON DELETE SET NULL,
+        FOOD_ID INTEGER REFERENCES FOODS(ID) ON DELETE SET NULL,
         PRICE VARCHAR(80) NOT NULL,
         BUYDATE DATE NOT NULL,
         STATUS VARCHAR(80) NOT NULL
@@ -309,9 +310,9 @@ def initialize_database():
 
         query = """CREATE TABLE DRINK_ORDERS (
         ID SERIAL PRIMARY KEY,
-        USER_ID INTEGER NOT NULL,
-        REST_ID INTEGER NOT NULL,
-        DRINK_ID INTEGER NOT NULL,
+        USER_ID INTEGER REFERENCES USERS(ID) ON DELETE SET NULL,
+        REST_ID INTEGER REFERENCES RESTAURANTS(ID) ON DELETE SET NULL,
+        DRINK_ID INTEGER REFERENCES DRINKS(ID) ON DELETE SET NULL,
         PRICE VARCHAR(80) NOT NULL,
         BUYDATE DATE NOT NULL,
         STATUS VARCHAR(80) NOT NULL
@@ -329,7 +330,6 @@ def initialize_database():
         connection.commit()
 
         return redirect(url_for('site.home_page'))
-
 
 @site.route('/restaurants')
 def restaurant_home_page():
@@ -707,6 +707,7 @@ def admin_page():
         if userIds:
             EventRestaurantFile.delete_unnecessary_rows()
             users = get_user_list()
+            users.pop(0)
         #If any restaurant deleted fetch them again.
         if restaurantIds:
             restaurant = Restaurant()
