@@ -886,6 +886,19 @@ def deals_delete_function(deal_id, restaurant_id):
     delete_deals_by_Id(deal_id)
     return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
 
+@site.route('/deals/edit/<int:deal_id>/<int:restaurant_id>', methods = ['GET','POST'])
+def deals_update_function(deal_id, restaurant_id):
+    deal = Deals(select = select_deal_by_Id(deal_id))
+    if request.method == 'GET':
+        return render_template('deals/edit.html',deal = deal,form = None)
+    else:
+        form = request.form
+        isValid = validate_deal_data(form)
+
+        if isValid:
+            update_deal_by_Id(request.form, deal_id)
+            return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
+
 def validate_edit_data(form):
     if form == None:
         return true

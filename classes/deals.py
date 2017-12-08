@@ -19,22 +19,22 @@ class Deals():
             self.date = form['ValidDate']
             self.discountRate = form['rate']
 
-        with dbapi2.connect(current_app.config['dsn']) as connection:
-            cursor = connection.cursor()
-            query = """
-                INSERT INTO DEALS (FOOD_ID, REST_ID, DATE, DISCOUNT_RATE)
-                VALUES (%s,%s,%s,%s)"""
-            cursor.execute(query, [self.foodId, self.restaurantId, self.date, self.discountRate])
-            connection.commit()
-        with dbapi2.connect(current_app.config['dsn']) as connection:
-            cursor = connection.cursor()
-            statement = """SELECT * FROM DEALS WHERE (FOOD_ID = %s)
-            AND (REST_ID = %s)
-            AND (DATE = %s)
-            AND (DISCOUNT_RATE = %s)"""
-            cursor.execute(statement,[self.foodId, self.restaurantId, self.date, self.discountRate])
-            IdofCurrent = cursor.fetchone()[0]
-            self.primaryId = IdofCurrent
+            with dbapi2.connect(current_app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """
+                    INSERT INTO DEALS (FOOD_ID, REST_ID, DATE, DISCOUNT_RATE)
+                    VALUES (%s,%s,%s,%s)"""
+                cursor.execute(query, [self.foodId, self.restaurantId, self.date, self.discountRate])
+                connection.commit()
+            with dbapi2.connect(current_app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                statement = """SELECT * FROM DEALS WHERE (FOOD_ID = %s)
+                AND (REST_ID = %s)
+                AND (DATE = %s)
+                AND (DISCOUNT_RATE = %s)"""
+                cursor.execute(statement,[self.foodId, self.restaurantId, self.date, self.discountRate])
+                IdofCurrent = cursor.fetchone()[0]
+                self.primaryId = IdofCurrent
 
 
 
@@ -50,12 +50,27 @@ def select_deals_of_restaurant(restaurantId):
         comers = cursor.fetchall()
         return comers
 
+def select_deal_by_Id(Id):
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        statement = """SELECT * FROM DEALS WHERE (ID = %s)"""
+        cursor.execute(statement,[Id])
+        return cursor.fetchone()
+
 def delete_deals_by_Id(Id):
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
         query = """
             DELETE FROM DEALS WHERE ID = %s"""
         cursor.execute(query, [Id])
+        connection.commit()
+
+def update_deal_by_Id(form, Id):
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        statement = """
+        UPDATE DEALS SET DISCOUNT_RATE = %s, DATE = %s WHERE (ID = %s)"""
+        cursor.execute(statement,[form['rate'],form['ValidDate'],Id])
         connection.commit()
 
 def delete_unnecessary_rows():

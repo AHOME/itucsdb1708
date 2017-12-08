@@ -112,6 +112,7 @@
                     <td>{{ (deal[2]| int)* ((100-(deal[1] | int))/100 ) }}</td>
                     {% if current_user.is_admin or current_user.get_Id == restaurant.creatorId %}
                     <td><a href="{{ url_for('site.deals_delete_function', deal_id = deal[3], restaurant_id = restaurant.primaryId) }}">Delete</a></td>
+                    <td><a href="{{ url_for('site.deals_update_function', deal_id = deal[3], restaurant_id = restaurant.primaryId) }}">Update</a></td>
                     {% endif %}
                   </tr>
                   {%endfor%}
