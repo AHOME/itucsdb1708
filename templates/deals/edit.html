@@ -6,33 +6,25 @@
 
  <div class="container" align="left">
            <form class="form-horizontal" method="POST" role="form">
-               <h2>Deal Creation Form</h2>
+               <h2>Deal Update Form</h2>
 
                <div class="form-group">
                    <label for="password" class="col-sm-3 control-label">Discount Rate</label>
                    <div class="col-sm-9">
-                       <input type="number" id="place" name="rate" class="form-control">
-                       {% if 'rate' in form.error %}
-                      <div class="alert alert-danger">
-                           {{ form.error['rate'] }}
-                       </div>
-                      {% endif %}
+                       <input type="number" id="place" required="true" name="rate" value="{{ deal.discountRate }}" class="form-control">
+                       
                    </div>
                </div>
                <div class="form-group">
                    <label for="startDate" class="col-sm-3 control-label">Valid Until</label>
                    <div class="col-sm-9">
-                       <input type="date" id="ValidDate" name="ValidDate" class="form-control">
-                       {% if 'ValidDate' in form.error %}
-                      <div class="alert alert-danger">
-                           {{ form.error['ValidDate'] }}
-                       </div>
-                      {% endif %}
+                       <input type="date" required="true" id="ValidDate" name="ValidDate" value="{{ deal.date }}" class="form-control">
+                       
                    </div>
                </div>
                <div class="form-group">
                    <div class="col-sm-9 col-sm-offset-3">
-                       <button type="submit" class="btn btn-danger btn-block">Create Deal</button>
+                       <button type="submit" class="btn btn-danger btn-block">Update Deal</button>
                    </div>
                </div>
            </form> <!-- /form -->

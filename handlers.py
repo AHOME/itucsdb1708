@@ -17,7 +17,7 @@ from classes.event_control_functions import *
 from classes.drink_control_functions import *
 import classes.event_restaurants as EventRestaurantFile
 import classes.achievements as achievementMod
-from classes.deals import Deals
+from classes.deals import *
 site = Blueprint('site', __name__)
 
 
@@ -152,7 +152,6 @@ def initialize_database():
 
         query = """DROP TABLE IF EXISTS DRINKS;"""
         cursor.execute(query)
-
 
         query = """DROP TABLE IF EXISTS RESTAURANTS;"""
         cursor.execute(query)
@@ -356,7 +355,9 @@ def restaurant_show_page(restaurant_id, methods=['GET','POST']):
         if (int(i[3]) > int(best_seller_food[0])):
             best_seller_food[0] = int(i[3])
             best_seller_food[1] = i[5]
-    return render_template('restaurant/show.html', restaurant = restaurant, comments = comments, check = check, best_seller_food = best_seller_food[1], foods = all_foods, drinks = all_drinks)
+
+    dealList = select_deals_of_restaurant(restaurant_id)
+    return render_template('restaurant/show.html', restaurant = restaurant, comments = comments, check = check, best_seller_food = best_seller_food[1], foods = all_foods, drinks = all_drinks, deals = dealList)
 
 
 @site.route('/restaurant/create', methods=['GET','POST'])
@@ -392,7 +393,7 @@ def restaurant_edit_page(restaurant_id):
             else:
                 restaurant.update_restaurant_by_id(form, restaurant_id)
                 return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
-            return render_template('restaurant/edit.html', form = form , address = restaurant.address, name = restaurant.name, contactName = restaurant.contactName, contactPhone = restaurant.contactPhone, pp = restaurant.profilePicture, hours = restaurant.hours, currentStatus = restaurant.currentStatus)
+            return render_template('restaurant/edit.html', form = form , address = restaurant.address, name = restaurant.name, contactName = restaurant.contactName, creatorId = restaurant.creatorId, pp = restaurant.profilePicture, hours = restaurant.hours, currentStatus = restaurant.currentStatus)
     return redirect(url_for('site.restaurant_home_page'))
 
 
@@ -424,9 +425,9 @@ def give_star_func(user_id, restaurant_id, score):
 
 @site.route('/save_foods_to_restaurant', methods=['POST'])
 def add_food_to_restaurant_page():
-    if current_user.is_admin:
-        foods = request.form.getlist("food")
-        drinks = request.form.getlist("drink")
+    if current_user.is_admin or current_user.get_type == 1:
+        foods = request.form.getlist("food",None)
+        drinks = request.form.getlist("drink",None)
         restaurant_id = request.form['restaurant_id']
         restaurant = Restaurant()
         restaurant.take_food_to_restaurant(foods,drinks,restaurant_id)
@@ -435,7 +436,7 @@ def add_food_to_restaurant_page():
 
 @site.route('/menuitems/<restaurant_id>')
 def food_home_page(restaurant_id):
-    if current_user.is_admin:
+    if current_user.is_admin or current_user.get_type == 1:
         food = Foods()
         foods = food.select_all_foods()
         restaurant = Restaurant()
@@ -472,7 +473,7 @@ def food_create_page():
             food = Foods()
             food.create_food(request.form)
             return redirect(url_for('site.restaurant_home_page'))
-    return redirect(url_for('site.restaurant_show_page', restaurant_id))
+    return redirect(url_for('site.restaurant_home_page'))
 
 @site.route('/food/<int:food_id>/delete')
 def food_delete_func(food_id):
@@ -867,17 +868,29 @@ def drink_delete_function(drinkId):
     delete_drink_by_id(drinkId)
     return redirect(url_for('site.food_home_page'))
 
-@site.route('/deals/new', methods = ['GET','POST'])
-def deals_add_function():
+@site.route('/deals/new/<int:restaurant_id>/<int:food_id>', methods = ['GET','POST'])
+def deals_add_function(restaurant_id, food_id):
     if request.method == 'GET':
-        return render_template('deals/new.html', form=None)
+        return render_template('deals/new.html', form=None, restaurant_id=restaurant_id, food_id=food_id)
     else:
         form = request.form
-        isValid = validate_deal_data(form)
+        deal = Deals(form = form, foodId = food_id, restaurantId = restaurant_id)
+        return render_template('deals/new.html', form=form)
 
-        if isValid:
-            deal = Deals(form = form, foodId = 1, restaurantId = 1)
-            return render_template('deals/new.html', form=None)
+@site.route('/deals/delete/<int:deal_id>/<int:restaurant_id>', methods = ['GET','POST'])
+def deals_delete_function(deal_id, restaurant_id):
+    delete_deals_by_Id(deal_id)
+    return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
+
+@site.route('/deals/edit/<int:deal_id>/<int:restaurant_id>', methods = ['GET','POST'])
+def deals_update_function(deal_id, restaurant_id):
+    deal = Deals(select = select_deal_by_Id(deal_id))
+    if request.method == 'GET':
+        return render_template('deals/edit.html',deal = deal,form = None)
+    else:
+        form = request.form
+        update_deal_by_Id(request.form, deal_id)
+        return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
 
 def validate_edit_data(form):
     if form == None:
@@ -1042,20 +1055,3 @@ def validate_achievement_data(form):
 
     return len(form.error) == 0
 
-def validate_deal_data(form):
-    if form == None:
-        return True
-    form.data = {}
-    form.error = {}
-
-    if len(form['rate'].strip()) == 0:
-        form.error['rate'] = 'Discount rate of the deal can not be blank'
-    else:
-        form.data['rate'] = form['rate']
-
-    if len(form['ValidDate'].strip()) == 0:
-        form.error['ValidDate'] = 'Valid date of the deal can not be blank'
-    else:
-        form.data['ValidDate'] = form['ValidDate']
-
-    return len(form.error) == 0
