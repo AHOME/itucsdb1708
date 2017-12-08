@@ -3,6 +3,7 @@ from flask import current_app
 from flask_login import UserMixin
 from passlib.apps import custom_app_context as pwd_context
 import datetime
+from classes.achievement_user import add_row
 
 class FoodOrders():
     def __init__(self):
@@ -56,7 +57,7 @@ def delete_food_order_by_id(orderId):
             DELETE FROM FOOD_ORDERS WHERE ID = %s"""
         cursor.execute(query, [orderId] )
         connection.commit()
-def update_food_order_by_id(orderId):
+def update_food_order_by_id(orderId,user_id):
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
         statement = """
@@ -65,3 +66,15 @@ def update_food_order_by_id(orderId):
         WHERE (ID = %s)"""
         cursor.execute(statement,["Received",orderId])
         connection.commit()
+    #Find food from its table to update achievements.
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        query = """SELECT FOODS.NAME,FOODS.FOOD_TYPE,FOODS.CALORIE FROM FOODS,FOOD_ORDERS WHERE (FOOD_ORDERS.ID = %s)
+        AND (FOODS.ID = FOOD_ID) """
+        cursor.execute(query, [orderId])
+        food_info = cursor.fetchone()
+        add_row(user_id,1) #First order achievement.
+        if food_info[1] == "Meat": #Eat meat achievement.
+            add_row(user_id,2)
+        if int(food_info[2]) < 100:#Eat healthy achievement.
+            add_row(user_id,3)

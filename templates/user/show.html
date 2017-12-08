@@ -232,8 +232,28 @@
     </div>
     {% endif %}
 
+
+    {% if completed_achievements %}
+    <h1>Completed Achievements</h1>
+    <div class="row col-md-12 custyle">
+    <table class="table table-striped custab">
+    <thead>
+        <tr>
+            <th>Achievement Name</th>
+        </tr>
+    </thead>
+    <!--List Completed Achievements -->
+              {% for achievement in completed_achievements %}
+              <tr>
+                <td><a href="{{ url_for('site.achievement_show_page',achievement_id = achievement[0]) }}">{{achievement[1]}}</a>  </td>
+              </tr>
+                {% endfor %}
+    {% endif %}
+    </table>
+    </div>
+    {% endif %}
 </div>
 {% endif %}
- {% endif %}
+
 
 {% endblock %}

@@ -16,6 +16,7 @@ from classes.drink_orders import *
 from classes.event_control_functions import *
 from classes.drink_control_functions import *
 import classes.event_restaurants as EventRestaurantFile
+from classes.achievement_user import select_completed_achievements_by_userID
 import classes.achievements as achievementMod
 from classes.deals import Deals
 site = Blueprint('site', __name__)
@@ -116,6 +117,9 @@ def initialize_database():
 
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
+
+        query = """DROP TABLE IF EXISTS ACHIEVEMENT_USER"""
+        cursor.execute(query)
 
         query = """DROP TABLE IF EXISTS MESSAGES;"""
         cursor.execute(query)
@@ -320,6 +324,14 @@ def initialize_database():
         );"""
         cursor.execute(query)
 
+        query = """CREATE TABLE ACHIEVEMENT_USER (
+        ID SERIAL PRIMARY KEY,
+        USER_ID INTEGER REFERENCES USERS(ID) ON DELETE CASCADE,
+        ACH_ID INTEGER REFERENCES ACHIEVEMENTS(ID) ON DELETE CASCADE,
+        USER_ACHIEVED INTEGER NOT NULL
+        );"""
+        cursor.execute(query)
+
         connection.commit()
 
         query = """
@@ -328,6 +340,26 @@ def initialize_database():
 
         hashed_password = pwd_context.encrypt("12345")
         cursor.execute(query, ("admin", "admin", "admin@restoranlandin.com", hashed_password, "2012-10-10", "","",0,"avatar",""))
+        connection.commit()
+
+        #Add achievements.
+        query = """
+                INSERT INTO ACHIEVEMENTS (NAME, ICON, CONTENT, GOAL, ENDDATE)
+                    VALUES (%s,%s,%s,%s,%s)"""
+        cursor.execute(query,["First Order","", "Give your first order from any restaurant.", "1", "2020-10-10"])
+        connection.commit()
+
+
+        query = """
+                INSERT INTO ACHIEVEMENTS (NAME, ICON, CONTENT, GOAL, ENDDATE)
+                    VALUES (%s,%s,%s,%s,%s)"""
+        cursor.execute(query,["Carnivorous","", "Give 10 kebab orders.", "10", "2020-10-10"])
+        connection.commit()
+
+        query = """
+                INSERT INTO ACHIEVEMENTS (NAME, ICON, CONTENT, GOAL, ENDDATE)
+                    VALUES (%s,%s,%s,%s,%s)"""
+        cursor.execute(query,["Eating Less","", "Give 10 order that do not exceed 100 calories.", "10", "2020-10-10"])
         connection.commit()
 
         return redirect(url_for('site.home_page'))
@@ -351,7 +383,8 @@ def restaurant_show_page(restaurant_id, methods=['GET','POST']):
     best_seller_food = [0,""]
     best_seller_drink = [0,""]
     all_foods,all_drinks = restaurant.get_food_and_drink(restaurant_id)
-
+    print(all_foods)
+    print(all_drinks)
     for i in all_foods:
         if (int(i[3]) > int(best_seller_food[0])):
             best_seller_food[0] = int(i[3])
@@ -424,10 +457,11 @@ def give_star_func(user_id, restaurant_id, score):
 
 @site.route('/save_foods_to_restaurant', methods=['POST'])
 def add_food_to_restaurant_page():
-    if current_user.is_admin:
+    if current_user.is_admin or current_user.get_type ==1:
         foods = request.form.getlist("food")
         drinks = request.form.getlist("drink")
         restaurant_id = request.form['restaurant_id']
+        print(foods)
         restaurant = Restaurant()
         restaurant.take_food_to_restaurant(foods,drinks,restaurant_id)
         return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
@@ -463,7 +497,7 @@ def delete_food_order(orderId):
 
 @site.route('/food/order/update/<int:orderId>')
 def update_food_order(orderId):
-    update_food_order_by_id(orderId)
+    update_food_order_by_id(orderId,current_user.get_Id)
     return redirect(url_for('site.user_show_page',user_id = current_user.get_Id ))
 
 
@@ -629,6 +663,7 @@ def user_show_page(user_id):
     recent_food_orders_notR = select_food_oders_user_notReceived(user_id)
     recent_food_orders_rec = select_food_oders_user_Received(user_id)
     voted_res = get_voted_restaurants(user_id)
+    completed_achievements = select_completed_achievements_by_userID(user_id)
     if userType==0:
         return redirect(url_for('site.admin_page'))
     elif userType == 1:
@@ -637,7 +672,7 @@ def user_show_page(user_id):
         return render_template('user/show.html',user_id = current_user.get_Id, user=db_user ,restaurants_of_owner = restaurants_of_owner)
     else:
         db_user = get_user(current_user.get_mail)
-        return render_template('user/show.html',user_id = current_user.get_Id, user=db_user,foodListNR = recent_food_orders_notR,foodListR = recent_food_orders_rec ,drinkListNR = recent_drink_orders_notR,drinkListR = recent_drink_orders_rec,voted_res = voted_res )
+        return render_template('user/show.html',user_id = current_user.get_Id, user=db_user,foodListNR = recent_food_orders_notR,foodListR = recent_food_orders_rec ,drinkListNR = recent_drink_orders_notR,drinkListR = recent_drink_orders_rec,voted_res = voted_res,completed_achievements = completed_achievements )
 
 
 @site.route('/user/<int:user_id>/edit',methods=['GET','POST']) #Change me with model [ID]
