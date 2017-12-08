@@ -11,12 +11,8 @@
                <div class="form-group">
                    <label for="password" class="col-sm-3 control-label">Discount Rate</label>
                    <div class="col-sm-9">
-                       <input type="number" id="place" name="rate" value="{{ deal.discountRate }}" class="form-control">
-                       {% if 'rate' in form.error %}
-                      <div class="alert alert-danger">
-                           {{ form.error['rate'] }}
-                       </div>
-                      {% endif %}
+                       <input type="number" id="place" required="true" name="rate" value="{{ deal.discountRate }}" class="form-control">
+                       
                    </div>
                </div>
                <div class="form-group">
