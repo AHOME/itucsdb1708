@@ -335,7 +335,6 @@ def initialize_database():
 def restaurant_home_page():
     restaurants = Restaurant()
     allValues = restaurants.select_all_restaurants()
-    print(allValues)
     return render_template('restaurant/index.html', allValues = allValues)
 
 @site.route('/restaurant/<int:restaurant_id>/')
@@ -358,7 +357,6 @@ def restaurant_show_page(restaurant_id, methods=['GET','POST']):
             best_seller_food[1] = i[5]
 
     dealList = select_deals_of_restaurant(restaurant_id)
-    print(dealList)
     return render_template('restaurant/show.html', restaurant = restaurant, comments = comments, check = check, best_seller_food = best_seller_food[1], foods = all_foods, drinks = all_drinks, deals = dealList)
 
 
@@ -876,11 +874,8 @@ def deals_add_function(restaurant_id, food_id):
         return render_template('deals/new.html', form=None, restaurant_id=restaurant_id, food_id=food_id)
     else:
         form = request.form
-        isValid = validate_deal_data(form)
-
-        if isValid:
-            deal = Deals(form = form, foodId = food_id, restaurantId = restaurant_id)
-            return render_template('deals/new.html', form=form)
+        deal = Deals(form = form, foodId = food_id, restaurantId = restaurant_id)
+        return render_template('deals/new.html', form=form)
 
 @site.route('/deals/delete/<int:deal_id>/<int:restaurant_id>', methods = ['GET','POST'])
 def deals_delete_function(deal_id, restaurant_id):
@@ -894,11 +889,8 @@ def deals_update_function(deal_id, restaurant_id):
         return render_template('deals/edit.html',deal = deal,form = None)
     else:
         form = request.form
-        isValid = validate_deal_data(form)
-
-        if isValid:
-            update_deal_by_Id(request.form, deal_id)
-            return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
+        update_deal_by_Id(request.form, deal_id)
+        return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
 
 def validate_edit_data(form):
     if form == None:
@@ -1063,20 +1055,3 @@ def validate_achievement_data(form):
 
     return len(form.error) == 0
 
-def validate_deal_data(form):
-    if form == None:
-        return True
-    form.data = {}
-    form.error = {}
-
-    if len(form['rate'].strip()) == 0:
-        form.error['rate'] = 'Discount rate of the deal can not be blank'
-    else:
-        form.data['rate'] = form['rate']
-
-    if len(form['ValidDate'].strip()) == 0:
-        form.error['ValidDate'] = 'Valid date of the deal can not be blank'
-    else:
-        form.data['ValidDate'] = form['ValidDate']
-
-    return len(form.error) == 0
