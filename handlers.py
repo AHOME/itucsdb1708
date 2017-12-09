@@ -397,7 +397,7 @@ def restaurant_show_page(restaurant_id, methods=['GET','POST']):
     restaurant.select_restaurant_by_id(restaurant_id)
 
     check = True
-    if( current_user.is_authenticated ):
+    if current_user.is_authenticated :
         check = restaurant.check_user_gave_a_star_or_not(current_user.Id,restaurant_id)
     comments = restaurant.select_all_comments(restaurant_id)
     foods,drinks = restaurant.get_food_and_drink(restaurant_id)
