@@ -786,6 +786,7 @@ def admin_page():
         eventIds = request.form.getlist('eventIDs',None)
         userIds =  request.form.getlist('userIDs',None)
         restaurantIds = request.form.getlist('restaurantIDs',None)
+        achievement_ids = request.form.getlist('achievement_ids')
         #delete events which have ids in eventIds list
         rest = Restaurant()
         for Id in eventIds:
@@ -804,13 +805,13 @@ def admin_page():
             users = get_user_list()
             users.pop(0)
         #If any restaurant deleted fetch them again.
-        if restaurantIds:
-            restaurant = Restaurant()
-            restaurants = restaurant.select_all_restaurants()
 
         for Id in restaurantIds:
             rest.delete_restaurant_by_id(Id)
-        achievement_ids = request.form.getlist('achievement_ids')
+
+        if restaurantIds:
+            restaurant = Restaurant()
+            restaurants = restaurant.select_all_restaurants()
 
         for ach_id in achievement_ids:
             achievementMod.achievement_delete_by_Id(ach_id)
@@ -1085,9 +1086,7 @@ def validate_edit_data(form):
 
     if not form['bio']:
         form.data['bio'] = form['bio']
-
-
-   if len(form['avatar'].strip()) == 0:
+    if len(form['avatar'].strip()) == 0:
         form.data['avatar']='http://gazettereview.com/wp-content/uploads/2016/03/facebook-avatar.jpg'
     else:
         form.data['avatar'] = form['avatar']
