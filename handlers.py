@@ -976,13 +976,15 @@ def event_edit_page(eventId):
 @site.route('/event/<int:eventId>')
 def event_show_page(eventId):
     #select specific event from databse
+    is_coming = False
     select = select_event_by_id(eventId)
     event = Events(select = select)
     # fetch people attend this event
     comers = EventRestaurantFile.select_comers_all(eventId)
-    currentUserId = current_user.get_Id
+    if current_user.is_authenticated:
+        currentUserId = current_user.get_Id
+        is_coming = EventRestaurantFile.does_user_come(currentUserId,eventId)
     #Is person coming
-    is_coming = EventRestaurantFile.does_user_come(currentUserId,eventId)
     return render_template('event/show.html',event = event,is_coming = is_coming,comers = comers)
 
 @site.route('/event/<int:eventId>/not_going')

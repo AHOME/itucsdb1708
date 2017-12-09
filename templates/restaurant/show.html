@@ -71,7 +71,8 @@
                     <td>{{i[9]}} Calorie</td>
                     <td>{{i[7]}}</td>
                     {% if current_user.get_Id | int == restaurant.creatorId | int %}
-                    <td><a href="{{ url_for('site.menu_food_delete', restaurant_id = restaurant.primaryId, food_id = i[0]) }}"> Delete from Menu</a></td>
+                    <td><a href="{{ url_for('site.menu_food_delete', restaurant_id = restaurant.primaryId, food_id = i[2]) }}"> Delete from Menu</a></td>
+                    <td><a href="{{ url_for('site.deals_add_function', restaurant_id = restaurant.primaryId, food_id = i[2]) }}"> Add Deal </a></td>
                     {% endif %}
                   </tr>
                   {%endfor%}

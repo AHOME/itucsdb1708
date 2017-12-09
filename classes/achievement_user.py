@@ -14,9 +14,7 @@ def add_row(userId,ach_id):
         AND (USER_ID = %s )"""
         cursor.execute(statement,[ach_id,userId])
         currentRow = cursor.fetchone()
-    print("Current Row: ",currentRow)
     if not currentRow: #There is no information. Insert it to table
-        print("If happened")
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             statement = """INSERT INTO ACHIEVEMENT_USER (USER_ACHIEVED,USER_ID,ACH_ID)
@@ -24,7 +22,6 @@ def add_row(userId,ach_id):
             cursor.execute(statement,["1",userId,ach_id])
             #currentRow = cursor.fetchone()
     else: # There is an information update it.
-        print("Else happened")
         current = int(currentRow[3])
         current = current+1
         with dbapi2.connect(current_app.config['dsn']) as connection:

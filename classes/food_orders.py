@@ -31,7 +31,6 @@ class FoodOrders():
             deal_info = cursor.fetchone()
         if deal_info:
             self.price = str( float(self.price) - float(deal_info[0]) * float(self.price) / 100.0)
-            print(self.price)
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             query = """INSERT INTO FOOD_ORDERS (USER_ID, REST_ID, FOOD_ID, PRICE, BUYDATE, STATUS)
