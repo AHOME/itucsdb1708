@@ -1086,7 +1086,8 @@ def validate_edit_data(form):
     if not form['bio']:
         form.data['bio'] = form['bio']
 
-    if len(form['avatar'].strip()) == 0:
+
+   if len(form['avatar'].strip()) == 0:
         form.data['avatar']='http://gazettereview.com/wp-content/uploads/2016/03/facebook-avatar.jpg'
     else:
         form.data['avatar'] = form['avatar']
@@ -1114,6 +1115,7 @@ def validate_user_data(form):
         form.data['avatar']='http://gazettereview.com/wp-content/uploads/2016/03/facebook-avatar.jpg'
     else:
         form.data['avatar'] = form['avatar']
+
 
 
     return len(form.errors) == 0
