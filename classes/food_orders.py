@@ -23,6 +23,15 @@ class FoodOrders():
         self.price = price
         self.date = datetime.datetime.now()
         self.status = "Not Recieved"
+        #Check if any deal for that food present.
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """SELECT DISCOUNT_RATE FROM DEALS WHERE (FOOD_ID = %s) AND (REST_ID = %s)"""
+            cursor.execute(query, [self.foodId,self.restaurantId])
+            deal_info = cursor.fetchone()
+        if deal_info:
+            self.price = str( float(self.price) - float(deal_info[0]) * float(self.price) / 100.0)
+            print(self.price)
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             query = """INSERT INTO FOOD_ORDERS (USER_ID, REST_ID, FOOD_ID, PRICE, BUYDATE, STATUS)

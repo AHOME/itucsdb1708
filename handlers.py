@@ -352,7 +352,7 @@ def initialize_database():
         USER_ACHIEVED INTEGER NOT NULL
         );"""
         cursor.execute(query)
-        
+
         connection.commit()
 
         query = """
@@ -395,6 +395,7 @@ def restaurant_home_page():
 def restaurant_show_page(restaurant_id, methods=['GET','POST']):
     restaurant = Restaurant()
     restaurant.select_restaurant_by_id(restaurant_id)
+
     check = True
     if( current_user.is_authenticated ):
         check = restaurant.check_user_gave_a_star_or_not(current_user.Id,restaurant_id)
@@ -410,7 +411,7 @@ def restaurant_show_page(restaurant_id, methods=['GET','POST']):
             best_seller_food[1] = i[5]
 
     dealList = select_deals_of_restaurant(restaurant_id)
-    return render_template('restaurant/show.html', restaurant = restaurant, comments = comments, check = check, best_seller_food = best_seller_food[1], foods = all_foods, drinks = all_drinks, deals = dealList)
+    return render_template('restaurant/show.html', restaurant = restaurant,restaurant_id = restaurant_id, comments = comments, check = check, best_seller_food = best_seller_food[1], foods = all_foods, drinks = all_drinks, deals = dealList)
 
 
 @site.route('/restaurant/create', methods=['GET','POST'])
@@ -482,7 +483,7 @@ def add_food_to_restaurant_page():
         foods = request.form.getlist("food",None)
         drinks = request.form.getlist("drink",None)
         restaurant_id = request.form['restaurant_id']
-        print(foods)
+        print("Restoran: ",restaurant_id)
         restaurant = Restaurant()
         restaurant.take_food_to_restaurant(foods,drinks,restaurant_id)
         return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
@@ -501,6 +502,7 @@ def food_home_page(restaurant_id):
 
         restaurant = Restaurant()
         restaurant.select_restaurant_by_id(restaurant_id)
+        print("FOOOD: " ,restaurant_id)
         return render_template('food/index.html', foods = foods, drinks = drinkList, restaurant = restaurant,restaurant_id=restaurant_id)
     return redirect(url_for('site.home_page'))
 
@@ -514,7 +516,7 @@ def food_order_create_page(restaurant_id, user_id, food, price):
 @site.route('/food/order/delete/<int:orderId>')
 def delete_food_order(orderId):
     delete_food_order_by_id(orderId)
-    return redirect(url_for('site.DRINK_ORDERShow_page',user_id = current_user.get_Id ))
+    return redirect(url_for('site.user_show_page',user_id = current_user.get_Id ))
 
 @site.route('/food/order/update/<int:orderId>')
 def update_food_order(orderId):
@@ -1082,8 +1084,7 @@ def validate_edit_data(form):
     if not form['bio']:
         form.data['bio'] = form['bio']
 
-
-   if len(form['avatar'].strip()) == 0:
+    if len(form['avatar'].strip()) == 0:
         form.data['avatar']='http://gazettereview.com/wp-content/uploads/2016/03/facebook-avatar.jpg'
     else:
         form.data['avatar'] = form['avatar']
