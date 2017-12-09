@@ -11,34 +11,22 @@
                <div class="form-group">
                    <label for="firstName" class="col-sm-3 control-label">Name of the Drink</label>
                    <div class="col-sm-9">
-                       <input type="text" id="Name" name="Name" placeholder="Name" value = "{{ drink.name }}" class="form-control" autofocus>
-                       {% if 'Name' in form.error %}
-                      <div class="alert alert-danger">
-                           {{ form.error['Name'] }}
-                       </div>
-                      {% endif %}
+                       <input type="text" id="Name" name="Name" placeholder="Name" value = "{{ drink.name }}" class="form-control" required="true" autofocus>
+  
                    </div>
                </div>
                <div class="form-group">
                    <label for="calorie" class="col-sm-3 control-label">Calorie</label>
                    <div class="col-sm-9">
-                       <input type="number" id="calorie" name="calorie" value="{{ drink.calorie }}"class="form-control">
-                       {% if 'calorie' in form.error %}
-                      <div class="alert alert-danger">
-                           {{ form.error['calorie'] }}
-                       </div>
-                      {% endif %}
+                       <input type="number" id="calorie" name="calorie" required="true" value="{{ drink.calorie }}"class="form-control">
+
                    </div>
                </div>
                <div class="form-group">
                    <label for="calorie" class="col-sm-3 control-label">Price</label>
                    <div class="col-sm-9">
-                       <input type="number" id="calorie" name="price" class="form-control">
-                       {% if 'calorie' in form.error %}
-                      <div class="alert alert-danger">
-                           {{ form.error['calorie'] }}
-                       </div>
-                      {% endif %}
+                       <input type="number"  required="true" id="calorie" name="price" class="form-control">
+
                    </div>
                </div>
                <div class="form-group">

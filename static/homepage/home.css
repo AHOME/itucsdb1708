@@ -1,6 +1,7 @@
 h1{
     color:red;
 }
+
 div.contact h1,h2,h3 {
 	margin:0 0 35px 0;
 	font-family: 'Patua One', cursive;
@@ -22,6 +23,15 @@ div.contact{
 	color:#f4f4f4;
     width: 100%;
 }
+
+div.news a,h1{
+    color:red !important; 
+}
+
+#linkedA {
+	color:red !important; 
+}
+
 /*#####################
 Additional Styles (required)
 ######################*/

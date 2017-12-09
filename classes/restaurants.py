@@ -61,17 +61,19 @@ class Restaurant():
             query = """SELECT * FROM RESTAURANTS WHERE id = %s"""
             cursor.execute(query, [r_id])
             value = cursor.fetchall()
-            selectedRestaurant = value[0]
-            self.primaryId  =  selectedRestaurant[0]
-            self.name =  selectedRestaurant[1]
-            self.address =  selectedRestaurant[2]
-            self.contactName =  selectedRestaurant[4]
-            self.creatorId =  selectedRestaurant[3]
-            self.score =  selectedRestaurant[5]
-            self.profilePicture =  selectedRestaurant[6]
-            self.hours =  selectedRestaurant[7]
-            self.currentStatus =  selectedRestaurant[8]
-
+            if not value:
+                selectedRestaurant = value[0]
+                self.primaryId  =  selectedRestaurant[0]
+                self.name =  selectedRestaurant[1]
+                self.address =  selectedRestaurant[2]
+                self.contactName =  selectedRestaurant[4]
+                self.creatorId =  selectedRestaurant[3]
+                self.score =  selectedRestaurant[5]
+                self.profilePicture =  selectedRestaurant[6]
+                self.hours =  selectedRestaurant[7]
+                self.currentStatus =  selectedRestaurant[8]
+            else:
+                return None
 
     def delete_restaurant_by_id(self, r_id):
         with dbapi2.connect(current_app.config['dsn']) as connection:
@@ -215,3 +217,15 @@ class Restaurant():
             cursor.execute(query, [restaurant_id])
             drinks = cursor.fetchall()
         return (foods,drinks)
+
+def find_restaurant_id_by_name(restaurant_name):
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """SELECT ID FROM RESTAURANTS WHERE NAME = %s"""
+            cursor.execute(query, [r_id])
+            value = cursor.fetchone()
+            empty = {}
+            if value is not None:
+                return value
+            else:
+                return None

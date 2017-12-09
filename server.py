@@ -22,7 +22,6 @@ def create_app():
     app.config.from_object('settings')
     app.register_blueprint(site)
     login_manager.init_app(app)
-    #login_manager.login_view = 'site.home_page'
     return app
 
 

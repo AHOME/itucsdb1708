@@ -8,6 +8,7 @@ import psycopg2 as dbapi2
 
 from classes.messages import *
 from classes.drinks import *
+from classes.news import *
 from classes.foods import *
 from classes.events import *
 from classes.restaurants import *
@@ -29,7 +30,7 @@ from server import load_user
 def logout_page():
     logout_user()
     session['logged_in'] = False
-    return redirect(url_for('site.home_page',firstEvent=None,eventDic=None))
+    return redirect(url_for('site.home_page',firstEvent=None,eventDic=None,news=None))
 
 
 @site.route('/', methods=['GET', 'POST'])
@@ -42,8 +43,12 @@ def home_page():
             firstEvent = Events(select = eventSelect)
         else:
             eventList.append(Events(select = eventSelect))
+
+    newList = get_all_news()
+
+
     if request.method == 'GET':
-        return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
+        return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList,news=newList)
     else:
         input_mail = request.form['InputEmail']
         input_password = request.form['InputPassword']
@@ -51,9 +56,8 @@ def home_page():
             user= load_user(input_mail)
             login_user(user)
             session['logged_in'] = True
-
-            flash( current_user.get_mail)
-            return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
+            flash('You have successfully logged in!','user_login')
+            return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList,news=newList)
 
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
@@ -67,13 +71,14 @@ def home_page():
                 if pwd_context.verify(input_password,user.Password) is True:
                     login_user(user)
                     session['logged_in'] = True
-                    flash( current_user.get_mail)
-
-                    return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
+                    flash('You have successfully logged in!','user_login')
+                    return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList,news=newList)
                 else:
-                    return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList) #Couldn't login
+                    flash('Either mail or password is wrong!','user_login')
+                    return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList,news=newList) #Couldn't login
             else:
-                return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList)
+                flash('Either mail or password is wrong!','user_login')
+                return render_template('home/index.html',firstEvent = firstEvent,eventDic = eventList,news=newList)
 
 @site.route('/results', methods=['GET', 'POST'])
 def home_page_search():
@@ -116,6 +121,9 @@ def initialize_database():
 
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
+
+        query = """DROP TABLE IF EXISTS NEWS;"""
+        cursor.execute(query)
 
         query = """DROP TABLE IF EXISTS MESSAGES;"""
         cursor.execute(query)
@@ -160,6 +168,8 @@ def initialize_database():
         cursor.execute(query)
 
         query = """DROP TABLE IF EXISTS USERS;"""
+
+
         cursor.execute(query)
 
         query = """CREATE TABLE USERS (
@@ -187,6 +197,7 @@ def initialize_database():
         );"""
         cursor.execute(query)
 
+
         query = """CREATE TABLE RESTAURANTS (
            ID SERIAL PRIMARY KEY,
            NAME VARCHAR(80) NOT NULL,
@@ -199,6 +210,7 @@ def initialize_database():
            CURRENT_STATUS VARCHAR(80) NOT NULL
         );"""
         cursor.execute(query)
+
 
 
         query = """CREATE TABLE DRINKS(
@@ -317,6 +329,17 @@ def initialize_database():
         BUYDATE DATE NOT NULL,
         STATUS VARCHAR(80) NOT NULL
         );"""
+        cursor.execute(query)
+
+
+        query = """CREATE TABLE NEWS (
+        ID SERIAL PRIMARY KEY,
+        TOPIC VARCHAR(80) NOT NULL,
+        CONTENT VARCHAR(800) NOT NULL,
+        LINK VARCHAR(200),
+        RESTAURANT INTEGER REFERENCES RESTAURANTS(ID) ON DELETE CASCADE
+        );"""
+
         cursor.execute(query)
 
         connection.commit()
@@ -522,9 +545,12 @@ def food_edit_page(food_id):
 @site.route('/register', methods=['GET','POST'])
 def register_home_page():
     if request.method == 'GET':
+        if current_user.is_authenticated:
+            return redirect(url_for('site.home_page'))
         return render_template('register/index.html',form=None)
     else:
-        valid = validate_user_data(request.form)
+        form = request.form
+        valid = validate_user_data(form)
         if valid:
             name = request.form['firstName']
             nameList= name.split(" ")
@@ -544,6 +570,7 @@ def register_home_page():
             userType = request.form['userType']
             avatar = request.form['avatar']
 
+
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()
                 query = """
@@ -552,10 +579,13 @@ def register_home_page():
 
                 cursor.execute(query, (firstName, lastName, email, hashed_password, birthDate,city, gender, userType, avatar,bio))
                 connection.commit()
+            flash('This is great! You have successfully registered! Now you can login via navbar.','user_login')
             return redirect(url_for('site.home_page'))
-
+        else:
+            form.errors['notComplete'] = 'We couldn\'t registred you as user please fix your answers.'
         form = request.form
-        return render_template('register/index.html',form=form)
+
+        render_template('home/index.html',form=form)
 
 
 @site.route('/user/<int:user_id>/messages')
@@ -568,33 +598,36 @@ def messages_home_page(user_id):
 @login_required
 def messages_new_page(user_id):
     if request.method == 'GET':
-        return render_template('messages/new.html',form=None)
+        return render_template('messages/new.html',form=None,errors=None)
     else:
+        form = request.form
         receiver = request.form['message_target']
         sender = current_user.get_Id
         topic = request.form['message_topic']
         body = request.form['message_body']
         time = dt.now()
-        form = request.form
-        valid = validate_message_data(form)
-        if valid:
-            with dbapi2.connect(current_app.config['dsn']) as connection:
-                cursor = connection.cursor()
-                statement = """SELECT ID FROM USERS WHERE MAIL = %s"""
-                cursor.execute(statement,[receiver])
-                receiver_id = cursor.fetchone()
+        errors = {}
+        errors['userNotFound'] = 'There is no user with this email'
 
-            with dbapi2.connect(current_app.config['dsn']) as connection:
-                cursor = connection.cursor()
-                query = """
-                    INSERT INTO MESSAGES (SENDER,RECEIVER,TOPIC,CONTENT,SENDDATE)
-                    VALUES (%s,%s,%s,%s,%s)"""
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            statement = """SELECT ID FROM USERS WHERE MAIL = %s"""
+            cursor.execute(statement,[receiver])
+            receiver_id = cursor.fetchone()
+        if receiver_id == None:
+            return  render_template('messages/new.html',form=form,errors = errors)
 
-                cursor.execute(query, (sender,receiver_id,topic,body,time))
-                connection.commit()
-            return redirect(url_for('site.messages_home_page',user_id=sender))
-        else:
-            return  render_template('messages/new.html',form=form)
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """
+                INSERT INTO MESSAGES (SENDER,RECEIVER,TOPIC,CONTENT,SENDDATE)
+                VALUES (%s,%s,%s,%s,%s)"""
+
+            cursor.execute(query, (sender,receiver_id,topic,body,time))
+            connection.commit()
+        return redirect(url_for('site.messages_home_page',user_id=sender))
+        
+            
 
 
 @site.route('/user/<int:user_id>/show')
@@ -755,8 +788,7 @@ def achievement_show_page(achievement_id):
     else:
         achievementMod.achievement_update(request.form, achievement_id)
         return redirect(url_for('site.admin_page'))
-        #select = cursor.fetchone()
-        #achievement = Achievements(select=select)
+
 
 
 @site.route('/achievement/new',methods = ['GET','POST'])
@@ -765,19 +797,88 @@ def achievement_create_page():
     if request.method == 'GET':
         return render_template('achievement/new.html', form = None)
     else:
-        isValid = validate_achievement_data(request.form)
-    if isValid:
-        #create an object from form and add it to database.
         achievement = achievementMod.Achievements(form = request.form)
         return redirect(url_for('site.admin_page'))
-    form = request.form
-    return render_template('achievement/new.html',form=form)
+    
+
+@site.route('/news/new',methods = ['GET','POST'])
+@login_required
+def news_create_page():
+    if request.method == 'POST':
+        form = request.form
+        title = form['title']
+        content = form['content']
+        link = form['link']
+        restaurant_name = form['restaurant_name']
+        if len(link.strip()) == 0:
+            link = ""
+
+        if len(restaurant_name.strip()) == 0:
+            restaurant_name = ""
+        else:
+            Id = find_restaurant_id_by_name(restaurant_name)
+            if Id == None:
+                restaurant_name = ""
+
+        new_news = News(Topic=title,Content=content,Link=link,Restaurant=restaurant_name)
+        new_news.insert_news()
+        new_news.find_news_id()
+    return redirect(url_for('site.admin_page'))
+
+@site.route('/news/<int:news_id>/edit',methods = ['GET','POST'])
+@login_required
+def news_edit_page(news_id):
+    if request.method == 'POST':
+        the_old_news = get_news_by_id(news_id)
+        form = request.form
+        title = form['header']
+        the_old_news.Topic =title
+        content = form['content']
+        the_old_news.Content =content
+        link = form['link']
+        restaurant_name = form['restaurant_name']
+        if len(link.strip()) == 0:
+            link = ""
+
+        the_old_news.Link =link
+        if len(restaurant_name.strip()) == 0:
+            restaurant_name = ""
+        else:
+            Id = find_restaurant_id_by_name(restaurant_name)
+            if Id == None:
+                restaurant_name = ""
+        the_old_news.Restaurant =restaurant_name
+        the_old_news.update_news()
+        flash('You have successfully updated the news','user_login')
+        return redirect(url_for('site.home_page'))
+
+    else:
+        NewsClass = get_news_by_id(news_id)
+        form = {}
+        form['id'] = NewsClass.Id
+        form['title'] = NewsClass.Topic
+        form['content'] =  NewsClass.Content
+        form['link'] =  NewsClass.Link
+        if NewsClass.Restaurant != None:
+            restaurant = Restaurant()
+            restaurant.select_restaurant_by_id(NewsClass.Restaurant)
+            form['restaurant_name'] = restaurant.name
+        else:
+            form['restaurant_name'] = ""
+        return render_template('news/edit.html',form=form)
+
+@site.route('/news/<int:news_id>/delete')
+@login_required
+def news_delete_page(news_id):
+    delete_news(news_id)
+    flash('You have successfully delted the news','user_login')
+    return redirect(url_for('site.home_page'))
 
 
 @site.route('/event/new',methods = ['GET','POST'])
 @login_required
 def event_create_page():
-    print('ss')
+
     if request.method == 'GET':
         return render_template('event/new.html',form = None)
     else:
@@ -785,7 +886,7 @@ def event_create_page():
         if isValid:
             #create an object from form and add it to database.
             event = Events(form = request.form)
-            print('ss')
+
             return redirect(url_for('site.home_page'))
         form = request.form
         return render_template('event/new.html',form=form)
@@ -818,7 +919,6 @@ def event_show_page(eventId):
     currentUserId = current_user.get_Id
     #Is person coming
     is_coming = EventRestaurantFile.does_user_come(currentUserId,eventId)
-    print(is_coming)
     return render_template('event/show.html',event = event,is_coming = is_coming,comers = comers)
 
 @site.route('/event/<int:eventId>/not_going')
@@ -838,14 +938,11 @@ def drink_create_page():
     if request.method == 'GET':
         return render_template('drinks/new.html',form = None)
     else:
-        valid = validate_drink_data(request.form)
-        if valid:
-            drink = Drinks(request.form)
-            return render_template('drinks/new.html',form = None)
-        form = request.form
-        return render_template('drinks/new.html',form=form)
+        drink = Drinks(request.form)
+        return render_template('drinks/new.html',form = None)
+        
 
-@site.route('/drink/edit/<int:drinkId>',methods = ['GET','POST'])
+@site.route('/drink/<int:drinkId>/edit',methods = ['GET','POST'])
 def drink_edit_page(drinkId):
     #select one element from id
     drink = Drinks(select = select_drink_by_id(drinkId))
@@ -874,6 +971,7 @@ def deals_add_function(restaurant_id, food_id):
         return render_template('deals/new.html', form=None, restaurant_id=restaurant_id, food_id=food_id)
     else:
         form = request.form
+
         deal = Deals(form = form, foodId = food_id, restaurantId = restaurant_id)
         return render_template('deals/new.html', form=form)
 
@@ -894,31 +992,26 @@ def deals_update_function(deal_id, restaurant_id):
 
 def validate_edit_data(form):
     if form == None:
-        return true
+        return False
 
     form.data = {}
     form.errors = {}
 
-    if len(form['firstName'].strip()) == 0:
-        form.errors['firstName'] = 'Name can not be blank'
-    else:
-        form.data['firstName'] = form['firstName']
 
-    if len(form['email'].strip()) == 0:
-        form.errors['email'] = 'Email can not be blank'
-    else:
-        form.data['email'] = form['email']
+    form.data['firstName'] = form['firstName']
 
-    if len(form['birthDate'].strip()) == 0:
-        form.errors['birthDate'] = 'Birthdate can not be blank'
-    else:
-        form.data['birthDate'] = form['birthDate']
+    
+    form.data['email'] = form['email']
 
-    form.data['bio'] = form['bio']
+    
+    form.data['birthDate'] = form['birthDate']
+
+    if not form['bio']:
+        form.data['bio'] = form['bio']
 
 
-    if len(form['avatar'].strip()) == 0:
-        form.errors['avatar'] = 'Avatar link is not acceptable'
+   if len(form['avatar'].strip()) == 0:
+        form.data['avatar']='http://gazettereview.com/wp-content/uploads/2016/03/facebook-avatar.jpg'
     else:
         form.data['avatar'] = form['avatar']
 
@@ -927,131 +1020,50 @@ def validate_edit_data(form):
 
 def validate_user_data(form):
     if form == None:
-        return true
+        return False
 
     form.data = {}
     form.errors = {}
 
-    if len(form['firstName'].strip()) == 0:
-        form.errors['firstName'] = 'Name can not be blank'
-    else:
-        form.data['firstName'] = form['firstName']
+    form.data['firstName'] = form['firstName']
 
-    if len(form['email'].strip()) == 0:
-        form.errors['email'] = 'Email can not be blank'
-    else:
-        form.data['email'] = form['email']
+    form.data['email'] = form['email']
 
-    if len(form['birthDate'].strip()) == 0:
-        form.errors['birthDate'] = 'Birthdate can not be blank'
-    else:
-        form.data['birthDate'] = form['birthDate']
+    form.data['birthDate'] = form['birthDate']
 
-    if not form['userType']:
-        form.errors['userType'] = 'User type can not be blank'
-    else:
-        form.data['userType'] = form['userType']
-
-    form.data['bio'] = form['bio']
-
-    if form['terms'] == 0:
-        form.errors['terms'] = 'You should accept the terms'
-    else:
-        form.data['terms'] = form['terms']
+    if not form['bio']:
+        form.data['bio'] = form['bio']
 
     if len(form['avatar'].strip()) == 0:
-        form.errors['avatar'] = 'Avatar link is not acceptable'
+        form.data['avatar']='http://gazettereview.com/wp-content/uploads/2016/03/facebook-avatar.jpg'
     else:
         form.data['avatar'] = form['avatar']
+    
 
     return len(form.errors) == 0
 
 
 def validate_event_data(form):
     if form == None:
-        return True
+        return False
     form.data = {}
     form.error = {}
 
-    if len(form['Name'].strip()) == 0:
-        form.error['Name'] = 'Name of the event can not be blank'
-    else:
-        form.data['Name'] = form['Name']
+    form.data['Name'] = form['Name']
 
-    if len(form['Explanations'].strip()) == 0:
-        form.error['Explanations'] = 'Explanations of the event can not be blank'
-    else:
-        form.data['Explanations'] = form['Explanations']
+    form.data['Explanations'] = form['Explanations']
 
-    if len(form['place'].strip()) == 0:
-        form.error['place'] = 'Place of the event can not be blank'
-    else:
-        form.data['place'] = form['place']
+    form.data['place'] = form['place']
 
-    if len(form['startDate'].strip()) == 0:
-        form.error['startDate'] = 'Starting date of the event can not be blank'
-    else:
-        form.data['startDate'] = form['startDate']
+ 
+    form.data['startDate'] = form['startDate']
 
-    if len(form['endDate'].strip()) == 0:
-        form.error['endDate'] = 'Ending date of the event can not be blank'
-    elif form['endDate'] < form['startDate']:
+    if form['endDate'] < form['startDate']:
         form.error['endDate'] = 'Ending date must be earlier date from starting date'
     else:
         form.data['endDate'] = form['endDate']
 
-    if len(form['link'].strip()) == 0:
-        form.error['link'] = 'A photograph must given'
-    else:
-        form.data['link'] = form['link']
+    
+    form.data['link'] = form['link']
 
     return len(form.error) == 0
-
-def validate_drink_data(form):
-    if form == None:
-        return True
-    form.data = {}
-    form.error = {}
-    print(len(form['Name'].strip()))
-    if len(form['Name'].strip()) == 0:
-        form.error['Name'] = 'Name of the drink can not be blank'
-    else:
-        form.data['Name'] = form['Name']
-
-    if len(form['calorie'].strip()) == 0:
-        form.error['calorie'] = 'Calorie value must be specified'
-    else:
-        form.data['calorie'] = form['calorie']
-
-    return len(form.error) == 0
-
-
-def validate_achievement_data(form):
-    if form == None:
-        return True
-    form.data = {}
-    form.error = {}
-
-    if len(form['Name'].strip()) == 0:
-        form.error['Name'] = 'Name of the achievement can not be blank'
-    else:
-        form.data['Name'] = form['Name']
-
-    if len(form['Explanation'].strip()) == 0:
-        form.error['Explanation'] = 'Explanation of the achievement can not be blank'
-    else:
-        form.data['Explanation'] = form['Explanation']
-
-    if len(form['Goal'].strip()) == 0:
-        form.error['Goal'] = 'Goal of the achievement can not be blank'
-    else:
-        form.data['Explanation'] = form['Explanation']
-
-    if len(form['endDate'].strip()) == 0:
-        form.error['endDate'] = 'endDate of the achievement can not be blank'
-    else:
-        form.data['endDate'] = form['endDate']
-
-
-    return len(form.error) == 0
-
