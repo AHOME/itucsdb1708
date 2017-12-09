@@ -62,7 +62,6 @@ class Restaurant():
             cursor.execute(query, [r_id])
             value = cursor.fetchall()
             if not value:
-                print(value)
                 selectedRestaurant = value[0]
                 self.primaryId  =  selectedRestaurant[0]
                 self.name =  selectedRestaurant[1]
