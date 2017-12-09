@@ -10,45 +10,29 @@
                <div class="form-group">
                    <label for="Name" class="col-sm-3 control-label">Event Name</label>
                    <div class="col-sm-9">
-                       <input type="text" id="Name" name="Name" class="form-control" autofocus>
-                       {% if 'Name' in form.error %}
-                      <div class="alert alert-danger">
-                           {{ form.error['Name'] }}
-                       </div>
-                      {% endif %}
+                       <input type="text" id="Name" name="Name" class="form-control" required="true" autofocus>
+                       
                    </div>
                </div>
                <div class="form-group">
                    <label for="Explanation" class="col-sm-3 control-label">Explanation </label>
                    <div class="col-sm-9">
-                       <textarea class="form-control" rows="5" name="Explanations" id="Explanations"></textarea>
-                       {% if 'Explanations' in form.error %}
-                      <div class="alert alert-danger">
-                           {{ form.error['Explanations'] }}
-                       </div>
-                      {% endif %}
+                       <textarea class="form-control" rows="5" name="Explanations" required="true" id="Explanations"></textarea>
+                       
                    </div>
                </div>
                <div class="form-group">
                    <label for="password" class="col-sm-3 control-label">Place</label>
                    <div class="col-sm-9">
-                       <input type="text" id="place" name="place" class="form-control">
-                       {% if 'place' in form.error %}
-                      <div class="alert alert-danger">
-                           {{ form.error['place'] }}
-                       </div>
-                      {% endif %}
+                       <input type="text" id="place" required="true" name="place" class="form-control">
+                      
                    </div>
                </div>
                <div class="form-group">
                    <label for="startDate" class="col-sm-3 control-label">Starting Date of Event</label>
                    <div class="col-sm-9">
-                       <input type="date" id="startDate" name="startDate" class="form-control">
-                       {% if 'startDate' in form.error %}
-                      <div class="alert alert-danger">
-                           {{ form.error['startDate'] }}
-                       </div>
-                      {% endif %}
+                       <input type="date" id="startDate" name="startDate" class="form-control" required="true">
+                     
                    </div>
                </div>
                <div class="form-group">
@@ -65,12 +49,8 @@
                <div class="form-group">
                    <label for="password" class="col-sm-3 control-label">Potograph link of event</label>
                    <div class="col-sm-9">
-                       <input type="text" id="link" name="link" class="form-control">
-                       {% if 'link' in form.error %}
-                      <div class="alert alert-danger">
-                           {{ form.error['link'] }}
-                       </div>
-                      {% endif %}
+                       <input type="text" id="link" name="link" class="form-control" required="true">
+                       
                    </div>
                </div>   
                 <div class="form-group">

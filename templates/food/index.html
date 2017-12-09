@@ -18,19 +18,21 @@
             <th></th>
             <th></th>
             <th><a href="{{ url_for('site.food_create_page') }}">Create Food</a></th>
+            <th></th>
             {% endif %}
           </tr>
         </thead>
         <tbody>
             {% for r in foods %}
           <tr>
-            <!-- Change me with model or use for loop for showing all item inside the database. -->
+            <!-- Change me with model and use for loop for showing all item inside the database. -->
             <td>{{r[1]}}</td>
             <td>{{r[3]}}</td>
             <td>{{r[4]}}</td>
             {% if current_user.is_admin or current_user.get_type == 1 %}
             <td><a href="{{ url_for('site.food_edit_page', restaurant_id = restaurant_id,food_id = r[0]) }}">Edit</a></td>
             <td><a href="{{ url_for('site.food_delete_func',restaurant_id = restaurant_id ,food_id = r[0]) }}">Delete</a></td>
+            <td><a href="{{ url_for('site.deals_add_function', restaurant_id = restaurant.primaryId, food_id = r[0]) }}">Add deal</a></td>
             <form class="" action="/save_foods_to_restaurant" method="post">
             <td><input type="checkbox" name="food" value={{r[0]}}></td>
             <td></td>

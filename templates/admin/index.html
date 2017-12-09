@@ -92,33 +92,36 @@
     <form method="POST" action={{url_for('site.messages_new_page', user_id= current_user.get_Id)}} >
         <label for="usr">Mail of the User:</label>
         {% if targetMail==None %}
-        <input type="text" value="" name="message_target" class="form-control">
+        <input type="text" required="true" value="" name="message_target" class="form-control">
         {% else %}
-        <input type="text" value="{{targetMail}}" name="message_target" class="form-control">
+        <input type="text" value="{{targetMail}}" required="true" name="message_target" class="form-control">
         {% endif %}
         <label for="usr">Topic:</label>
-        <input type="text"  name="message_topic" class="form-control" >
+        <input type="text" required="true"  name="message_topic" class="form-control" >
         <label for="comment">Message:</label>
-        <textarea class="form-control" name="message_body" rows="5" id="comment"></textarea>
+        <textarea class="form-control" required="true" name="message_body" rows="5" id="comment"></textarea>
         <button type="submit" name="Send"
         class="btn btn-primary" id="send_message_button">Send Message</button>
     </form>
   
   </div>
   </div>
-<!--Post a New-->
+
+<!--List the News -->
     <div class="row" id="post_news">
         <div class="col-xs-3 col-sm-6 col-md-9 col-lg-12">
           <h2>Publish an Article</h2>
           <p>Articles will be visible on homepage.</p>
-          <form>
+          <form method="POST" action={{url_for('site.news_create_page')}}>
             <div class="form-group">
-              <label for="usr">Title: </label>
-              <input type="text" class="form-control" id="usr">
-              <label for="comment">Article:</label>
-              <textarea class="form-control" rows="5" id="comment"></textarea>
+              <label for="title">Title: </label>
+              <input type="text" required="true" name="title" class="form-control" id="title">
+              <label for="content">Article:</label>
+              <textarea class="form-control" required="true" rows="5" id="content" name= "content"></textarea>
               <label for="link">Related Links (If there is any):</label>
-              <input type="text" class="form-control" id="link">
+              <input type="text"  class="form-control" id="link" name="link">
+              <label for="link">Restaurant Name (If you want to direct users):</label>
+              <input type="text" class="form-control" id="restaurant_name" name="restaurant_name">
               <button type="submit" name="Send"
               class="btn btn-primary" id="publish_button">Publish</button>
             </div>
@@ -127,10 +130,10 @@
     </div>
 <br>
     <div class="row" id="links">
-        <div class="col-xs-3 col-sm-3 col-md-6 col-lg-6">
+        <div class="col-md-6 col-sm-6 col-md-6 col-lg-6">
             <a href="{{ url_for('site.event_create_page') }}">Create an Event!</a>
         </div>
-        <div class="col-xs-3 col-sm-3 col-md-6 col-lg-6">
+        <div class="col-md-6 col-sm-6 col-md-6 col-lg-6">
             <a href="{{ url_for('site.achievement_create_page') }}">Create an Achievement!</a>
         </div>
     </div>

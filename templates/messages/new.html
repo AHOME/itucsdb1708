@@ -10,16 +10,17 @@
 <form method="POST" action ={{url_for('site.messages_new_page', user_id= current_user.get_Id)}} class="w3-container w3-card-4 w3-light-grey w3-text-red w3-margin" style="width: 50%; max-height: 4000px; float: left; position: relative;
 left: 25%  " >
 <h2 class="w3-center">Send Message</h2>
- 
+      {% if  errors != None %}
+          <div class="alert alert-danger">
+            {{ errors['userNotFound'] }}
+          </div>
+      {% endif %}
+
 <div class="w3-row w3-section">
   <div class="w3-col" style="width:25%"><i class="w3-xxlarge fa fa-user"></i></div>
     <div class="w3-rest">
-      <input class="w3-input w3-border" name="message_target" type="text" placeholder="To">
-      {% if 'message_target' in form.errors %}
-          <div class="alert alert-danger">
-            {{ form.errors['message_target'] }}
-          </div>
-      {% endif %}
+      <input class="w3-input w3-border" name="message_target" required="true" type="text" placeholder="To">
+
 
     </div>
 </div>
@@ -27,12 +28,8 @@ left: 25%  " >
 <div class="w3-row w3-section">
   <div class="w3-col" style="width:25%"><i class="w3-xxlarge fa fa-info-circle"></i></div>
     <div class="w3-rest">
-      <input class="w3-input w3-border" name="message_topic" type="text" placeholder="Topic">
-      {% if 'message_topic' in form.errors %}
-          <div class="alert alert-danger">
-            {{ form.errors['message_topic'] }}
-          </div>
-      {% endif %}
+      <input class="w3-input w3-border" name="message_topic" required="true" type="text" placeholder="Topic">
+
     </div>
 </div>
 
@@ -40,12 +37,8 @@ left: 25%  " >
 <div class="w3-row w3-section">
   <div class="w3-col " style="width:25%"><i class="w3-xxlarge fa fa-envelope"></i></div>
     <div class="w3-rest">
-      <textarea name=message_body class="form-control send-message" rows="5" placeholder="Write a message..."></textarea>
-      {% if 'message_body' in form.errors %}
-          <div class="alert alert-danger">
-            {{ form.errors['message_body'] }}
-          </div>
-      {% endif %}
+      <textarea name=message_body class="form-control send-message" required="true" rows="5" placeholder="Write a message..."></textarea>
+
     </div>
 </div>
 

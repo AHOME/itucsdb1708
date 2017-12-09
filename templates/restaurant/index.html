@@ -15,6 +15,7 @@
             <th>Restaurant Location</th>
             <th>Restaurant Rating</th>
             <th>Restaurant Working Hours</th>
+            <th>Options</th>
             {% if current_user.is_admin %}
             <th></th>
             <th></th>
@@ -32,6 +33,7 @@
                 <td>{{r[5]}}/5</td>
                 <td>{{r[7]}}</td>
                 {% if current_user.is_admin  or current_user.get_type == 1 %}
+                {% if current_user.is_admin  or current_user.get_Id == r[3] %}
                 <td><a href="{{ url_for('site.restaurant_edit_page', restaurant_id = r[0]) }}">Edit</a></td>
                 <td><a href="{{ url_for('site.restaurant_delete_func', restaurant_id = r[0]) }}">Delete</a></td>
                 <td><a href="{{ url_for('site.food_home_page', restaurant_id = r[0]) }}">Add Some Food</a></td>
