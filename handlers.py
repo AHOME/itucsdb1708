@@ -110,7 +110,7 @@ def home_page_search():
     return render_template('search/index.html', users=userList, restaurants=restaurants, searched=toSearch)
 
 @site.route('/initdb')
-@login_required
+#@login_required
 def initialize_database():
     user = load_user(current_user.get_id())
     if not user.is_admin :
