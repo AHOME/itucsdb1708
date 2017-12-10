@@ -113,8 +113,9 @@
                 </div>
                 <div class="modal-footer">
                     <center>
-                    <button type="button" class="btn btn-warning" >OK</button>
+                    <button type="button" class="btn btn-warning" data-dismiss="modal">OK</button>
                     <form>
+
                     <button formaction="{{url_for('site.user_edit_page',user_id=current_user.get_type)}}" type="submit" class="btn btn-warning" > Edit</button>
                     </form>
                     </center>
