@@ -34,7 +34,13 @@
             <td><a href="{{ url_for('site.food_delete_func', food_id = r[0]) }}">Delete</a></td>
             <td><a href="{{ url_for('site.deals_add_function', restaurant_id = restaurant.primaryId, food_id = r[0]) }}">Add deal</a></td>
             <form class="" action="/save_foods_to_restaurant" method="post">
+            {% if current_user.is_admin or current_user.get_type == 1 %}
+            <td><a href="{{ url_for('site.food_edit_page', restaurant_id = restaurant_id,food_id = r[0]) }}">Edit</a></td>
+            <td><a href="{{ url_for('site.food_delete_func',restaurant_id = restaurant_id ,food_id = r[0]) }}">Delete</a></td>
+            <td><a href="{{ url_for('site.deals_add_function', restaurant_id = restaurant_id, food_id = r[0]) }}">Add deal</a></td>
             <td><input type="checkbox" name="food" value={{r[0]}}></td>
+            <input type="hidden" name="restaurant_id" value={{ restaurant_id }}>
+            <input type="hidden" name="user_id" value={{current_user.Id}}>
             <td></td>
             {% endif %}
 
@@ -64,11 +70,11 @@
               <td>{{drink.drinkType}}</td>
               <td>{{drink.alcohol }}</td>
               {% if current_user.is_admin or current_user.get_type == 1 %}
-              <td><a href="{{ url_for('site.drink_edit_page', drinkId = drink.Id) }}">Edit</a></td>
-              <td><a href="{{ url_for('site.drink_delete_function', drinkId = drink.Id) }}">Delete</a></td>
-              <input type="hidden" name="restaurant_id" value={{restaurant.primaryId}}>
-              <input type="hidden" name="user_id" value={{current_user.Id}}>
+              <td><a href="{{ url_for('site.drink_edit_page',restaurant_id = restaurant_id ,drinkId = drink.Id) }}">Edit</a></td>
+              <td><a href="{{ url_for('site.drink_delete_function',restaurant_id =restaurant_id, drinkId = drink.Id) }}">Delete</a></td>
               <td><input type="checkbox" name="drink" value={{drink.Id}}></td>
+              <input type="hidden" name="restaurant_id" value={{ restaurant_id }}>
+              <input type="hidden" name="user_id" value={{current_user.Id}}>
               {% endif %}
             </tr>
               {% endfor %}

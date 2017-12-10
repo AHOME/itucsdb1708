@@ -33,6 +33,12 @@ class Restaurant():
                 VALUES (%s,%s,%s,%s,%s,%s,%s)"""
             cursor.execute(query, [self.name, self.address, self.contactName,current_user_id , self.profilePicture, self.hours, self.currentStatus])
             connection.commit()
+        with dbapi2.connect(current_app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """SELECT ID FROM RESTAURANTS WHERE (NAME = %s) AND  (ADDRESS = %s) AND (CONTACT_NAME = %s)
+            AND (CREATOR_ID = %s) AND (PROFILE_PICTURE = %s) AND (HOURS = %s) AND (CURRENT_STATUS = %s) """
+            cursor.execute(query, [self.name, self.address, self.contactName,current_user_id , self.profilePicture, self.hours, self.currentStatus])
+            self.primaryId = cursor.fetchone()[0]
 
     def create_restaurant_with_attributes(self, id, name, address, contactName, creatorId, score, profilePic, hours, currentStatus):
         self.primaryId = id
@@ -61,19 +67,16 @@ class Restaurant():
             query = """SELECT * FROM RESTAURANTS WHERE id = %s"""
             cursor.execute(query, [r_id])
             value = cursor.fetchall()
-            if not value:
-                selectedRestaurant = value[0]
-                self.primaryId  =  selectedRestaurant[0]
-                self.name =  selectedRestaurant[1]
-                self.address =  selectedRestaurant[2]
-                self.contactName =  selectedRestaurant[4]
-                self.creatorId =  selectedRestaurant[3]
-                self.score =  selectedRestaurant[5]
-                self.profilePicture =  selectedRestaurant[6]
-                self.hours =  selectedRestaurant[7]
-                self.currentStatus =  selectedRestaurant[8]
-            else:
-                return None
+            selectedRestaurant = value[0]
+            self.primaryId  =  selectedRestaurant[0]
+            self.name =  selectedRestaurant[1]
+            self.address =  selectedRestaurant[2]
+            self.contactName =  selectedRestaurant[4]
+            self.creatorId =  selectedRestaurant[4]
+            self.score =  selectedRestaurant[5]
+            self.profilePicture =  selectedRestaurant[6]
+            self.hours =  selectedRestaurant[7]
+            self.currentStatus =  selectedRestaurant[8]
 
     def delete_restaurant_by_id(self, r_id):
         with dbapi2.connect(current_app.config['dsn']) as connection:
@@ -184,7 +187,7 @@ class Restaurant():
                 cursor = connection.cursor()
                 query = """INSERT INTO RESTAURANT_FOODS (FOOD_ID, RESTAURANT_ID, SELL_COUNT)
                     VALUES (%s,%s,%s)"""
-                cursor.execute(query, [int(i), int(restaurant_id), 0])
+                cursor.execute(query, [i, restaurant_id, 0])
                 connection.commit()
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
@@ -218,14 +221,29 @@ class Restaurant():
             drinks = cursor.fetchall()
         return (foods,drinks)
 
+
+def delete_food_from_restaurant(restaurant_id,food_id):
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        query = """
+            DELETE FROM RESTAURANT_FOODS WHERE RESTAURANT_ID = %s AND FOOD_ID = %s"""
+        cursor.execute(query, [restaurant_id,food_id] )
+        connection.commit()
+def delete_drink_from_restaurant(restaurant_id,drink_id):
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        query = """
+            DELETE FROM RESTAURANT_DRINKS WHERE RESTAURANT_ID = %s AND DRINK_ID = %s"""
+        cursor.execute(query, [restaurant_id,drink_id] )
+        connection.commit()
 def find_restaurant_id_by_name(restaurant_name):
     with dbapi2.connect(current_app.config['dsn']) as connection:
-            cursor = connection.cursor()
-            query = """SELECT ID FROM RESTAURANTS WHERE NAME = %s"""
-            cursor.execute(query, [r_id])
-            value = cursor.fetchone()
-            empty = {}
-            if value is not None:
-                return value
-            else:
-                return None
+        cursor = connection.cursor()
+        query = """SELECT ID FROM RESTAURANTS WHERE NAME = %s"""
+        cursor.execute(query, [r_id])
+        value = cursor.fetchone()
+        empty = {}
+        if value is not None:
+            return value
+        else:
+            return None

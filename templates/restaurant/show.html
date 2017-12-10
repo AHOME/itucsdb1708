@@ -58,15 +58,27 @@
                     <th>Item Price</th>
                     <th>Item Calorie</th>
                     <th>Food Type</th>
+                    {% if current_user.is_authenticated %}
+                    {% if current_user.get_Id | int == restaurant.creatorId | int %}
+                    <th></th>
+                    {% endif %}
+                    {% endif %}
                   </tr>
                 </thead>
                 <tbody>
                   {%for i in foods%}
                   <tr>
                     <td>{{i[5]}}</td>
-                    <td><a href="{{ url_for('site.food_order_create_page', user_id = current_user.Id, restaurant_id = restaurant.primaryId, food = i[2], price = i[8]) }}">{{i[8]}} £</a></td>
+                    <td>
+                      {% if current_user.is_authenticated %} <a href="{{ url_for('site.food_order_create_page', user_id = current_user.Id, restaurant_id = restaurant.primaryId, food = i[2], price = i[8]) }}">{% endif %} {{i[8]}} £</a></td>
                     <td>{{i[9]}} Calorie</td>
                     <td>{{i[7]}}</td>
+                    {% if current_user.is_authenticated %}
+                      {% if current_user.get_Id | int == restaurant.creatorId | int %}
+                        <td><a href="{{ url_for('site.menu_food_delete', restaurant_id = restaurant.primaryId, food_id = i[2]) }}"> Delete from Menu</a></td>
+                        <td><a href="{{ url_for('site.deals_add_function', restaurant_id = restaurant.primaryId, food_id = i[2]) }}"> Add Deal </a></td>
+                      {% endif %}
+                    {% endif %}
                   </tr>
                   {%endfor%}
                 </tbody>
@@ -82,15 +94,27 @@
                     <th>Item Calorie</th>
                     <th>Is cold</th>
                     <th>Alcohol?</th>
+                    {% if current_user.is_authenticated %}
+                      {% if current_user.get_Id | int == restaurant.creatorId | int %}
+                      <th></th>
+                      {% endif %}
+                    {% endif %}
                   </tr>
                 </thead>
                 <tbody>
                   {%for i in drinks%}
                   <tr>
                     <td>{{i[5]}}</td>
-                    <td><a href="{{ url_for('site.drink_order_create_page', user_id = current_user.Id, restaurant_id = restaurant.primaryId, drink = i[2], price = i[7]) }}">{{i[7]}}  </a></td>
+                    <td>
+                      {% if current_user.is_authenticated %} <a href="{{ url_for('site.drink_order_create_page', user_id = current_user.Id, restaurant_id = restaurant.primaryId, drink = i[2], price = i[7]) }}"> {% endif %}{{i[7]}}  </a></td>
                     <td>{{i[8]}} Calorie</td>
                     <td>{{i[9]}}</td>
+                    <td>{{i[10]}}</td>
+                    {% if current_user.is_authenticated %}
+                      {% if current_user.get_Id | int  == restaurant.creatorId | int %}
+                      <td><a href="{{ url_for('site.menu_drink_delete', restaurant_id = restaurant.primaryId, drink_id = i[0]) }}"> Delete from Menu</a></td>
+                      {% endif %}
+                  {% endif %}
                   </tr>
                   {%endfor%}
                 </tbody>
@@ -110,9 +134,11 @@
                     <td>{{deal[0]}}</td>
                     <td> %{{deal[1]}}</td>
                     <td>{{ (deal[2]| int)* ((100-(deal[1] | int))/100 ) }}</td>
-                    {% if current_user.is_admin or current_user.get_Id == restaurant.creatorId %}
-                    <td><a href="{{ url_for('site.deals_delete_function', deal_id = deal[3], restaurant_id = restaurant.primaryId) }}">Delete</a></td>
-                    <td><a href="{{ url_for('site.deals_update_function', deal_id = deal[3], restaurant_id = restaurant.primaryId) }}">Update</a></td>
+                    {% if current_user.is_authenticated %}
+                      {% if current_user.is_admin or current_user.get_Id == restaurant.creatorId %}
+                        <td><a href="{{ url_for('site.deals_delete_function', deal_id = deal[3], restaurant_id = restaurant.primaryId) }}">Delete</a></td>
+                        <td><a href="{{ url_for('site.deals_update_function', deal_id = deal[3], restaurant_id = restaurant.primaryId) }}">Update</a></td>
+                      {% endif %}
                     {% endif %}
                   </tr>
                   {%endfor%}
@@ -137,7 +163,7 @@
               <td>{{restaurant.contactName}}</td>
               <td>{{restaurant.address}}</td>
               <td>{{restaurant.score}}/5
-                {% if (current_user.is_authenticated and check)%}
+                {% if current_user.is_authenticated and check %}
                 <br>
                 <b>Rate: </b>
                 <a href="{{ url_for('site.give_star_func', user_id = current_user.Id, restaurant_id = restaurant.primaryId, score = 1) }}">1</a>

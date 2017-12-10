@@ -113,4 +113,16 @@ def delete_user_by_id(userID):
             DELETE FROM USERS WHERE ID = %s"""
         cursor.execute(query, [userID] )
         connection.commit()
-
+def get_voted_restaurants(userID):
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        query = """SELECT RESTAURANTS.NAME,RESTAURANTS.ADDRESS,STAR,RESTAURANTS.ID FROM RESTAURANTS,STAR_RESTAURANTS WHERE USER_ID = %s AND
+        RESTAURANTS.ID =STAR_RESTAURANTS.RESTAURANT_ID """
+        cursor.execute(query, [userID])
+        return cursor.fetchall()
+def get_restaurants(userId):
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        query = """SELECT ID,NAME,ADDRESS,SCORE FROM RESTAURANTS WHERE CREATOR_ID = %s"""
+        cursor.execute(query, [userId])
+        return cursor.fetchall()
