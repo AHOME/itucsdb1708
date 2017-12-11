@@ -690,23 +690,29 @@ def messages_new_page(user_id):
 @site.route('/user/<int:user_id>/show')
 @login_required
 def user_show_page(user_id):
-    userType = current_user.get_type
+    currentUserType = current_user.get_type
+    user = get_user_by_id(user_id)
     recent_drink_orders_notR = select_drink_oders_user_notReceived(user_id)
     recent_drink_orders_rec = select_drink_oders_user_Received(user_id)
     recent_food_orders_notR = select_food_oders_user_notReceived(user_id)
     recent_food_orders_rec = select_food_oders_user_Received(user_id)
     voted_res = get_voted_restaurants(user_id)
     completed_achievements = select_completed_achievements_by_userID(user_id)
-    if userType==0:
-        return redirect(url_for('site.admin_page'))
-    elif userType == 1:
-        db_user = get_user(current_user.get_mail)
-        restaurants_of_owner = get_restaurants(user_id)
-        return render_template('user/show.html',user_id = current_user.get_Id, user=db_user ,restaurants_of_owner = restaurants_of_owner)
-    else:
-        db_user = get_user(current_user.get_mail)
-        return render_template('user/show.html',user_id = current_user.get_Id, user=db_user,foodListNR = recent_food_orders_notR,foodListR = recent_food_orders_rec ,drinkListNR = recent_drink_orders_notR,drinkListR = recent_drink_orders_rec,voted_res = voted_res,completed_achievements = completed_achievements )
 
+    if current_user.get_Id == user_id:
+        if user.get_type==0:
+            return redirect(url_for('site.admin_page'))
+        elif user.get_type == 1:
+            db_user = get_user(current_user.get_mail)
+            restaurants_of_owner = get_restaurants(user_id)
+            return render_template('user/show.html',user_id = current_user.get_Id, user=db_user ,restaurants_of_owner = restaurants_of_owner)
+        else:
+            db_user = get_user(current_user.get_mail)
+            return render_template('user/show.html',user_id = current_user.get_Id, user=db_user,foodListNR = recent_food_orders_notR,foodListR = recent_food_orders_rec ,drinkListNR = recent_drink_orders_notR,drinkListR = recent_drink_orders_rec,voted_res = voted_res,completed_achievements = completed_achievements )
+    else:
+        return render_template('user/show.html',user_id = user_id, user=user,foodListNR = recent_food_orders_notR,foodListR = recent_food_orders_rec ,drinkListNR = recent_drink_orders_notR,drinkListR = recent_drink_orders_rec,voted_res = voted_res,completed_achievements = completed_achievements )
+
+        
 
 @site.route('/user/<int:user_id>/edit',methods=['GET','POST']) #Change me with model [ID]
 @login_required
