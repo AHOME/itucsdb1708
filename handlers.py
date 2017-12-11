@@ -762,8 +762,7 @@ def user_edit_page(user_id):
 @site.route('/admin',methods = ['GET','POST'])
 @login_required
 def admin_page():
-    user = load_user(current_user.get_id())
-    if not user.is_admin :
+    if not current_user.is_admin :
         abort(401) 
     achievements = achievementMod.achievement_select_all()
     achievementList = []
@@ -881,7 +880,7 @@ def news_create_page():
             restaurant_name = ""
         else:
             Id = find_restaurant_id_by_name(restaurant_name)
-            if Id == None:
+            if not Id:
                 restaurant_name = ""
 
         new_news = News(Topic=title,Content=content,Link=link,Restaurant=restaurant_name)
