@@ -480,7 +480,6 @@ def add_food_to_restaurant_page():
         foods = request.form.getlist("food",None)
         drinks = request.form.getlist("drink",None)
         restaurant_id = request.form['restaurant_id']
-        print("Restoran: ",restaurant_id)
         restaurant = Restaurant()
         restaurant.take_food_to_restaurant(foods,drinks,restaurant_id)
         return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
@@ -499,7 +498,6 @@ def food_home_page(restaurant_id):
 
         restaurant = Restaurant()
         restaurant.select_restaurant_by_id(restaurant_id)
-        print("FOOOD: " ,restaurant_id)
         return render_template('food/index.html', foods = foods, drinks = drinkList, restaurant = restaurant,restaurant_id=restaurant_id)
     return redirect(url_for('site.home_page'))
 
@@ -554,7 +552,6 @@ def food_create_page():
 @site.route('/food/<int:food_id>/<int:restaurant_id>/delete')
 def food_delete_func(food_id,restaurant_id):
     if current_user.is_admin or current_user.get_type == 1:
-        print("sd")
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             query = """DELETE FROM FOODS WHERE ID = %s"""
