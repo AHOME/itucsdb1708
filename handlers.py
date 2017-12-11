@@ -46,6 +46,7 @@ def home_page():
             eventList.append(Events(select = eventSelect))
 
     newList = get_all_news()
+    newList = reversed(newList)
 
 
     if request.method == 'GET':
