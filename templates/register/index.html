@@ -14,32 +14,17 @@
                 </div>
                 {% endif %}
 
-
-
                 <div class="form-group">
                     <label for="firstName" class="col-sm-3 control-label">Full Name</label>
                     <div class="col-sm-9">
-                        <input type="text" id="firstName" name="firstName" placeholder="Full Name" class="form-control" required="true" autofocus>
-
-                         {% if 'firstName' in form.errors %}
-                        <div class="alert alert-danger">
-                             {{ form.errors['firstName'] }}
-                         </div>
-                        {% endif %}
-
+                        <input type="text" id="firstName" value="{{ form['firstName'] }}" name="firstName" placeholder="Full Name" class="form-control" required="true" autofocus>
                         <span class="help-block">First Name, Last Name, eg.: John, Smith</span>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="email" class="col-sm-3 control-label">Email</label>
                     <div class="col-sm-9">
-                        <input type="email" id="email" required="true" name="email" placeholder="Email" class="form-control">
-
-                        {% if 'email' in form.errors %}
-                        <div class="alert alert-danger">
-                             {{ form.errors['email'] }}
-                         </div>
-                        {% endif %}
+                        <input type="email" id="email" required="true" value="{{ form['email'] }}" name="email" placeholder="Email" class="form-control">
 
                     </div>
                 </div>
@@ -53,7 +38,7 @@
                 <div class="form-group">
                     <label for="birthDate" class="col-sm-3 control-label">Date of Birth</label>
                     <div class="col-sm-9">
-                        <input type="date" required="true" id="birthDate" name="birthDate" class="form-control">
+                        <input type="date" required="true" id="birthDate" value="{{ form['birthDate'] }}" name="birthDate" class="form-control">
 
                         {% if 'birthDate' in form.errors %}
                         <div class="alert alert-danger">
@@ -66,7 +51,7 @@
                 <div class="form-group">
                     <label for="password" class="col-sm-3 control-label">Bio</label>
                     <div class="col-sm-9">
-                        <input type="bio" id="bio" name="bio" placeholder="Bio" class="form-control">
+                        <input type="bio" id="bio" name="bio" value="{{ form['bio'] }}" placeholder="Bio" class="form-control">
 
                     </div>
                 </div>
@@ -165,7 +150,7 @@
                         <div class="row">
                             <div class="col-sm-4">
                                 <label class="radio-inline">
-                                    <input type="radio" name ="gender" id="femaleRadio" value="Female">Female
+                                    <input type="radio" name ="gender"  id="femaleRadio" value="Female">Female
                                 </label>
                             </div>
                             <div class="col-sm-4">
@@ -195,11 +180,6 @@
                             </label>
                         </div>
                     </div>
-                        {% if 'userType' in form.errors %}
-                        <div class="alert alert-danger">
-                             {{ form.errors['userType'] }}
-                         </div>
-                        {% endif %}
 
                 </div>
                 <div class="form-group">
@@ -213,8 +193,8 @@
                                  <div class="alert alert-danger">
                                  {{ form.errors['terms'] }}
 
-                         </div>
-                        {% endif %}
+                                </div>
+                                {% endif %}
                             </label>
                         </div>
                     </div>

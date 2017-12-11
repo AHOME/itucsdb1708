@@ -89,9 +89,6 @@ def get_user(db_mail):
         statement = """SELECT * FROM USERS WHERE MAIL = %s"""
         cursor.execute(statement, [db_mail])
         db_user = cursor.fetchone()
-        if db_user is None:
-            adminuser=Users(1,'admin','admin','admin@restoranlandin.com',current_app.config['PASSWORD'], '2012-10-10', '', '',0, '','')
-            return adminuser
         user = Users(db_user[0],db_user[1], db_user[2], db_user[3],db_user[4], db_user[5], db_user[6], db_user[7], db_user[8], db_user[9], db_user[10])
 
 
@@ -99,6 +96,7 @@ def get_user(db_mail):
         user.is_admin = user.Mail in current_app.config['ADMIN_USERS']
 
     return user
+
 def get_user_list():
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
@@ -106,6 +104,7 @@ def get_user_list():
         cursor.execute(statement)
         db_users = cursor.fetchall()
     return db_users
+
 def delete_user_by_id(userID):
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
@@ -113,6 +112,7 @@ def delete_user_by_id(userID):
             DELETE FROM USERS WHERE ID = %s"""
         cursor.execute(query, [userID] )
         connection.commit()
+
 def get_voted_restaurants(userID):
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
@@ -120,6 +120,7 @@ def get_voted_restaurants(userID):
         RESTAURANTS.ID =STAR_RESTAURANTS.RESTAURANT_ID """
         cursor.execute(query, [userID])
         return cursor.fetchall()
+
 def get_restaurants(userId):
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
@@ -135,5 +136,6 @@ def get_user_by_id(userID):
         cursor.execute(query, [userID] )
         db_user = cursor.fetchone()
         user = Users(db_user[0],db_user[1], db_user[2], db_user[3],db_user[4], db_user[5], db_user[6], db_user[7], db_user[8], db_user[9], db_user[10])
+        print(user.Avatar)
         return user
         
