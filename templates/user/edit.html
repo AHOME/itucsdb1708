@@ -31,8 +31,11 @@
                     <label for="birthDate" class="col-sm-3 control-label">Date of Birth</label>
                     <div class="col-sm-9">
                         <input type="date" id="birthDate" value ="{{user.get_birthdate}}" name="birthDate" class="form-control">
-
-
+                        {% if 'birthDate' in form.errors %}
+                        <div class="alert alert-danger">
+                             {{ form.errors['birthDate'] }}
+                         </div>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="form-group">

@@ -724,23 +724,33 @@ def user_edit_page(user_id):
         db_user = get_user(current_user.get_mail)
         return render_template('user/edit.html',user = db_user,form=None)
     else:
-        valid = validate_user_data(request.form)
+        valid = validate_user_edit_data(request.form)
         if valid:
             name = request.form['firstName']
             nameList= name.split(" ")
-            if(len(nameList) >= 2):
+            if(len(nameList) >= 3):
+                firstName = nameList[0]
+                firstName += " " + nameList[1] 
+                lastName = nameList[2]
+            elif len(nameList) == 2 :
                 firstName = nameList[0]
                 lastName = nameList[1]
-            elif(len(nameList) <2):
+            else:
                 firstName = nameList[0]
                 lastName=""
 
             email = request.form['email']
             birthDate = request.form['birthDate']
-            bio = request.form['bio']
             city = request.form['city']
             gender = request.form['gender']
-            avatar = request.form['avatar']
+            
+            if not request.form['bio']:
+                bio = request.form['bio']
+
+            if len(request.form['avatar'].strip()) == 0:
+                avatar='https://twibbon.com/content/images/system/default-image.jpg'
+            else:
+                avatar = request.form['avatar']
 
 
             with dbapi2.connect(current_app.config['dsn']) as connection:
@@ -764,7 +774,8 @@ def user_edit_page(user_id):
             return redirect(url_for('site.user_show_page',user_id=current_user.get_Id,user=db_user))
 
         form = request.form
-        return render_template('user/edit.html',form=form)
+        db_user = get_user(current_user.get_mail)
+        return render_template('user/edit.html',form=form,user=db_user)
 
 @site.route('/admin',methods = ['GET','POST'])
 @login_required
@@ -1088,7 +1099,7 @@ def validate_user_data(form):
     t=dt.date(dt.now())
     birthString=dt.strptime(form['birthDate'], '%Y-%m-%d')
 
-    if '{:%m-%d-%Y}'.format(t) < form['birthDate'] :
+    if '{:%Y-%m-%d}'.format(t) < form['birthDate'] :
         form.errors['birthDate'] = "You can't born in the future."
     elif birthString.year < 1888 :
         form.errors['birthDate'] = "You can't be older than 130 years old."
@@ -1136,6 +1147,39 @@ def validate_event_data(form):
     form.data['link'] = form['link']
 
     return len(form.error) == 0
+
+def validate_user_edit_data(form):
+    if form == None:
+        return False
+
+    form.data = {}
+    form.errors = {}
+
+    form.data['firstName'] = form['firstName']
+
+    form.data['email'] = form['email']
+
+    t=dt.date(dt.now())
+    birthString=dt.strptime(form['birthDate'], '%Y-%m-%d')
+
+    if '{:%Y-%m-%d}'.format(t) < form['birthDate'] :
+        form.errors['birthDate'] = "You can't born in the future."
+    elif birthString.year < 1888 :
+        form.errors['birthDate'] = "You can't be older than 130 years old."
+    else:
+        form.data['birthDate'] = form['birthDate']
+    
+
+    if not form['bio']:
+        form.data['bio'] = form['bio']
+
+    if len(form['avatar'].strip()) == 0:
+        form.data['avatar']='https://twibbon.com/content/images/system/default-image.jpg'
+    else:
+        form.data['avatar'] = form['avatar']
+
+
+    return len(form.errors) == 0
 
 @site.errorhandler(401)
 def custom_401(error):
