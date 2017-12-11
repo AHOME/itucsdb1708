@@ -626,6 +626,8 @@ def register_home_page():
 
             if not form['bio']:
                 bio = form['bio']
+            else:
+                bio = ""
         
             if len(form['avatar'].strip()) == 0:
                 avatar='https://twibbon.com/content/images/system/default-image.jpg'
@@ -746,6 +748,8 @@ def user_edit_page(user_id):
             
             if not request.form['bio']:
                 bio = request.form['bio']
+            else:
+                bio = ""
 
             if len(request.form['avatar'].strip()) == 0:
                 avatar='https://twibbon.com/content/images/system/default-image.jpg'
