@@ -1,17 +1,13 @@
-#from server import app
 import psycopg2 as dbapi2
 from flask import current_app
 from flask_login import UserMixin
 from passlib.apps import custom_app_context as pwd_context
-#from passlib.ext.django.models import password_context
 
 class EventRestaurants():
     def __init__(self, eventId, userId):
         self.Id = ""
         self.eventId = eventId
         self.userId = userId
-        print(self.userId)
-        print(self.eventId)
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             query = """
