@@ -75,7 +75,7 @@
 		 		{% endif %}
 
 		 		{% if new[4] != None %}
-		         <a href="{{new[4]}}">You can access to this restaurant</a>
+		         <a href="{{url_for('site.restaurant_show_page', restaurant_id = new[4])}}">You can access to this restaurant</a>
 		 		{% endif %}
 
 		       	 <hr>

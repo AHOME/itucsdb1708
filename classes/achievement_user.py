@@ -7,7 +7,6 @@ from passlib.apps import custom_app_context as pwd_context
 
 def add_row(userId,ach_id):
     currentRow = None
-    print(userId,ach_id)
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
         statement = """SELECT * FROM ACHIEVEMENT_USER WHERE (ACH_ID = %s)

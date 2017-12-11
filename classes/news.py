@@ -1,6 +1,6 @@
 import psycopg2 as dbapi2
 from flask import current_app
-
+from classes.restaurants import *
 
 class News():
     def __init__(self,Topic,Content,Link,Restaurant):
@@ -27,10 +27,11 @@ class News():
                 VALUES (%s,%s,%s)"""
                 cursor.execute(statement,(self.Topic,self.Content,self.Link))
             else:
+                restaurantId = find_restaurant_id_by_name(self.Restaurant)
                 statement = """
                 INSERT INTO NEWS (TOPIC, CONTENT, LINK , RESTAURANT)
                 VALUES (%s,%s,%s,%s)"""
-                cursor.execute(statement,(self.Topic,self.Content,self.Link,self.Restaurant))
+                cursor.execute(statement,(self.Topic,self.Content,self.Link,restaurantId))
 
             connection.commit()
     
@@ -74,7 +75,7 @@ def get_all_news():
         query = """SELECT * FROM NEWS"""
         cursor.execute(query)
         db_news = cursor.fetchall()
-        print(db_news)
+
         if db_news is None:
             db_news = {}
         return db_news
