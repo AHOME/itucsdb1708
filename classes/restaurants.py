@@ -246,4 +246,4 @@ def find_restaurant_id_by_name(restaurant_name):
         if value is not None:
             return value
         else:
-            return None
+            return empty

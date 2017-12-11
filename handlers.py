@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template , redirect , current_app,url_for
-from flask import request,flash,session
+from flask import request,flash,session,abort
 from datetime import datetime as dt
 from flask_login import LoginManager,login_user,login_required,current_user
 from flask_login import logout_user
@@ -114,11 +114,7 @@ def home_page_search():
 def initialize_database():
     user = load_user(current_user.get_id())
     if not user.is_admin :
-        return """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<title>401 Unauthorized</title>
-<h1>Unauthorized</h1>
-<p>The server could not verify that you are authorized to access the URL requested.  You either supplied the wrong credentials (e.g. a bad password), or your browser doesn't understand how to supply the credentials required.</p>"""
-
+        abort(401)
 
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
@@ -768,10 +764,7 @@ def user_edit_page(user_id):
 def admin_page():
     user = load_user(current_user.get_id())
     if not user.is_admin :
-        return """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<title>401 Unauthorized</title>
-<h1>Unauthorized</h1>
-<p>The server could not verify that you are authorized to access the URL requested.  You either supplied the wrong credentials (e.g. a bad password), or your browser doesn't understand how to supply the credentials required.</p>"""
+        abort(401) 
     achievements = achievementMod.achievement_select_all()
     achievementList = []
 
@@ -1150,3 +1143,7 @@ def validate_event_data(form):
     form.data['link'] = form['link']
 
     return len(form.error) == 0
+
+@site.errorhandler(401)
+def custom_401(error):
+    return render_template('errorpages/401page.html'), 401
