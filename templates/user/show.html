@@ -41,7 +41,9 @@
                 <div class="modal-footer">
                     <center>
                     <button type="button" class="btn btn-warning" data-dismiss="modal">OK</button>
-                    <a href="{{ url_for('site.user_edit_page',user_id=current_user.get_Id) }}" class="btn btn-warning" >Edit</a>
+                    {% if current_user.get_Id | int  == user.Id |int %}
+                      <a href="{{ url_for('site.user_edit_page',user_id=current_user.get_Id) }}" class="btn btn-warning" >Edit</a>
+                    {% endif %}
                     </center>
                 </div>
             </div>
@@ -52,7 +54,9 @@
     <div class="row col-md-12 custyle">
     <table class="table table-striped custab">
     <thead>
-    <a href="{{ url_for('site.restaurant_create_page') }}" class="btn btn-primary btn-xs pull-right"><b>+</b> Add new restaurant</a>
+      {% if current_user.get_Id | int  == user.Id |int %}
+        <a href="{{ url_for('site.restaurant_create_page') }}" class="btn btn-primary btn-xs pull-right"><b>+</b> Add new restaurant</a>
+      {% endif %}
         <tr>
             <th>ID</th>
             <th>Restaurant Name</th>
@@ -113,9 +117,11 @@
                 </div>
                 <div class="modal-footer">
                     <center>
-                    <button type="button" class="btn btn-warning" >OK</button>
+                    <button type="button" class="btn btn-warning" data-dismiss="modal">OK</button>
                     <form>
-                    <button formaction="{{url_for('site.user_edit_page',user_id=current_user.get_type)}}" type="submit" class="btn btn-warning" > Edit</button>
+                    {% if current_user.get_Id | int  == user.Id |int %}
+                      <button formaction="{{url_for('site.user_edit_page',user_id=current_user.get_type)}}" type="submit" class="btn btn-warning" > Edit</button>
+                    {% endif %}
                     </form>
                     </center>
                 </div>
@@ -167,8 +173,10 @@
                 <td>{{food[2]}}</td>
                 <td>{{food[4]}}</td>
                 <td>{{food[3]}}</td>
-                <td><a href="{{ url_for('site.update_food_order',orderId = food[6] ) }}" class="btn btn-warning" >Finish Order</a></td>
-                <td><a href="{{ url_for('site.delete_food_order',orderId = food[6] ) }}" class="btn btn-warning" >Cancel Order</a></td>
+                {% if current_user.get_Id | int  == user.Id |int %}
+                  <td><a href="{{ url_for('site.update_food_order',orderId = food[6] ) }}" class="btn btn-warning" >Finish Order</a></td>
+                  <td><a href="{{ url_for('site.delete_food_order',orderId = food[6] ) }}" class="btn btn-warning" >Cancel Order</a></td>
+                {% endif %}
               </tr>
                 {% endfor %}
     {% endif %}
@@ -181,8 +189,10 @@
                 <td>{{drink[2]}}</td>
                 <td>{{drink[4]}}</td>
                 <td>{{drink[3]}}</td>
-                <td><a href="{{ url_for('site.update_drink_order',orderId = drink[6] ) }}" class="btn btn-warning" >Finish Order</a></td>
-                <td><a href="{{ url_for('site.delete_drink_order',orderId = drink[6] ) }}" class="btn btn-warning" >Cancel Order</a></td>
+                {% if current_user.get_Id | int  == user.Id |int %}
+                  <td><a href="{{ url_for('site.update_drink_order',orderId = drink[6] ) }}" class="btn btn-warning" >Finish Order</a></td>
+                  <td><a href="{{ url_for('site.delete_drink_order',orderId = drink[6] ) }}" class="btn btn-warning" >Cancel Order</a></td>
+               {% endif %}
               </tr>
                 {% endfor %}
     {% endif %}
