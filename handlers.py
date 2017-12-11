@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template , redirect , current_app,url_for
-from flask import request,flash,session
+from flask import request,flash,session,abort
 from datetime import datetime as dt
 from flask_login import LoginManager,login_user,login_required,current_user
 from flask_login import logout_user
@@ -46,6 +46,7 @@ def home_page():
             eventList.append(Events(select = eventSelect))
 
     newList = get_all_news()
+    newList = reversed(newList)
 
 
     if request.method == 'GET':
@@ -114,11 +115,7 @@ def home_page_search():
 def initialize_database():
     user = load_user(current_user.get_id())
     if not user.is_admin :
-        return """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<title>401 Unauthorized</title>
-<h1>Unauthorized</h1>
-<p>The server could not verify that you are authorized to access the URL requested.  You either supplied the wrong credentials (e.g. a bad password), or your browser doesn't understand how to supply the credentials required.</p>"""
-
+        abort(401)
 
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
@@ -690,23 +687,29 @@ def messages_new_page(user_id):
 @site.route('/user/<int:user_id>/show')
 @login_required
 def user_show_page(user_id):
-    userType = current_user.get_type
+    currentUserType = current_user.get_type
+    user = get_user_by_id(user_id)
     recent_drink_orders_notR = select_drink_oders_user_notReceived(user_id)
     recent_drink_orders_rec = select_drink_oders_user_Received(user_id)
     recent_food_orders_notR = select_food_oders_user_notReceived(user_id)
     recent_food_orders_rec = select_food_oders_user_Received(user_id)
     voted_res = get_voted_restaurants(user_id)
     completed_achievements = select_completed_achievements_by_userID(user_id)
-    if userType==0:
-        return redirect(url_for('site.admin_page'))
-    elif userType == 1:
-        db_user = get_user(current_user.get_mail)
-        restaurants_of_owner = get_restaurants(user_id)
-        return render_template('user/show.html',user_id = current_user.get_Id, user=db_user ,restaurants_of_owner = restaurants_of_owner)
-    else:
-        db_user = get_user(current_user.get_mail)
-        return render_template('user/show.html',user_id = current_user.get_Id, user=db_user,foodListNR = recent_food_orders_notR,foodListR = recent_food_orders_rec ,drinkListNR = recent_drink_orders_notR,drinkListR = recent_drink_orders_rec,voted_res = voted_res,completed_achievements = completed_achievements )
 
+    if current_user.get_Id == user_id:
+        if user.get_type==0:
+            return redirect(url_for('site.admin_page'))
+        elif user.get_type == 1:
+            db_user = get_user(current_user.get_mail)
+            restaurants_of_owner = get_restaurants(user_id)
+            return render_template('user/show.html',user_id = current_user.get_Id, user=db_user ,restaurants_of_owner = restaurants_of_owner)
+        else:
+            db_user = get_user(current_user.get_mail)
+            return render_template('user/show.html',user_id = current_user.get_Id, user=db_user,foodListNR = recent_food_orders_notR,foodListR = recent_food_orders_rec ,drinkListNR = recent_drink_orders_notR,drinkListR = recent_drink_orders_rec,voted_res = voted_res,completed_achievements = completed_achievements )
+    else:
+        return render_template('user/show.html',user_id = user_id, user=user,foodListNR = recent_food_orders_notR,foodListR = recent_food_orders_rec ,drinkListNR = recent_drink_orders_notR,drinkListR = recent_drink_orders_rec,voted_res = voted_res,completed_achievements = completed_achievements )
+
+        
 
 @site.route('/user/<int:user_id>/edit',methods=['GET','POST']) #Change me with model [ID]
 @login_required
@@ -760,12 +763,8 @@ def user_edit_page(user_id):
 @site.route('/admin',methods = ['GET','POST'])
 @login_required
 def admin_page():
-    user = load_user(current_user.get_id())
-    if not user.is_admin :
-        return """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<title>401 Unauthorized</title>
-<h1>Unauthorized</h1>
-<p>The server could not verify that you are authorized to access the URL requested.  You either supplied the wrong credentials (e.g. a bad password), or your browser doesn't understand how to supply the credentials required.</p>"""
+    if not current_user.is_admin :
+        abort(401) 
     achievements = achievementMod.achievement_select_all()
     achievementList = []
 
@@ -882,7 +881,7 @@ def news_create_page():
             restaurant_name = ""
         else:
             Id = find_restaurant_id_by_name(restaurant_name)
-            if Id == None:
+            if not Id:
                 restaurant_name = ""
 
         new_news = News(Topic=title,Content=content,Link=link,Restaurant=restaurant_name)
@@ -1144,3 +1143,7 @@ def validate_event_data(form):
     form.data['link'] = form['link']
 
     return len(form.error) == 0
+
+@site.errorhandler(401)
+def custom_401(error):
+    return render_template('errorpages/401page.html'), 401

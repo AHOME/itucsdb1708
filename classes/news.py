@@ -38,11 +38,11 @@ class News():
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             if self.Restaurant == "":
-                query = """UPDATE NEWS SET TOPIC = %s, CONTENT = %s, LINK = %s"""
-                cursor.execute(query,(self.Topic,self.Content,self.Link))
+                query = """UPDATE NEWS SET TOPIC = %s, CONTENT = %s, LINK = %s WHERE ID = %s"""
+                cursor.execute(query,(self.Topic,self.Content,self.Link,self.Id))
             else:
-                query = """UPDATE NEWS SET TOPIC = %s, CONTENT = %s, LINK = %s, RESTAURANT = %s"""
-                cursor.execute(query,(self.Topic,self.Content,self.Link,self.Restaurant))
+                query = """UPDATE NEWS SET TOPIC = %s, CONTENT = %s, LINK = %s, RESTAURANT = %s WHERE ID = %s"""
+                cursor.execute(query,(self.Topic,self.Content,self.Link,self.Restaurant,self.Id))
             connection.commit()
     
 
@@ -70,10 +70,11 @@ def get_news_by_id(id):
 
 def get_all_news():
     with dbapi2.connect(current_app.config['dsn']) as connection:
-            cursor = connection.cursor()
-            query = """SELECT * FROM NEWS"""
-            cursor.execute(query)
-            db_news = cursor.fetchall()
-            if db_news is None:
-                db_news = {}
-            return db_news
+        cursor = connection.cursor()
+        query = """SELECT * FROM NEWS"""
+        cursor.execute(query)
+        db_news = cursor.fetchall()
+        print(db_news)
+        if db_news is None:
+            db_news = {}
+        return db_news

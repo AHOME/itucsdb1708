@@ -126,3 +126,14 @@ def get_restaurants(userId):
         query = """SELECT ID,NAME,ADDRESS,SCORE FROM RESTAURANTS WHERE CREATOR_ID = %s"""
         cursor.execute(query, [userId])
         return cursor.fetchall()
+
+def get_user_by_id(userID):
+    with dbapi2.connect(current_app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        query = """
+            SELECT * FROM USERS WHERE ID = %s"""
+        cursor.execute(query, [userID] )
+        db_user = cursor.fetchone()
+        user = Users(db_user[0],db_user[1], db_user[2], db_user[3],db_user[4], db_user[5], db_user[6], db_user[7], db_user[8], db_user[9], db_user[10])
+        return user
+        
