@@ -4,7 +4,7 @@
 
 {% block content %}
  {% if current_user.is_authenticated %}
- {% if current_user.get_type == 1 %}
+ {% if user.get_type == 1 %}
 <div class="container">
     <div class="span3 well">
         <center>
@@ -80,7 +80,7 @@
 {% endif %}
 </div>
 
-{% elif current_user.get_type == 2%}
+{% elif user.get_type == 0 or user.get_type == 2 %}
 
 <!--  CUSTOMER PART -->
 
