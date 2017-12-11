@@ -61,9 +61,10 @@
 	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 		<div class="container">
 			<div class="news">
+				<hr>
 				{% if news %}
 					{% for new in news %}
-		        <hr>
+		        
 		        {% if current_user.is_admin %}
 		        <h1 style="text-transform:uppercase;" > <a style="color:red;" href="{{url_for('site.news_edit_page',news_id = new[0] ) }}">{{new[1]}} </a></h1>
 		        {% else %}
