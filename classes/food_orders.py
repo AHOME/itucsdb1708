@@ -46,14 +46,16 @@ class FoodOrders():
 def select_food_oders_user_notReceived(userID):
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
-        query = """SELECT RESTAURANTS.NAME,FOODS.NAME,FOOD_ORDERS.PRICE,BUYDATE,STATUS,RESTAURANTS.ID,FOOD_ORDERS.ID FROM FOOD_ORDERS,RESTAURANTS,FOODS WHERE USER_ID = %s AND
+        query = """SELECT RESTAURANTS.NAME,FOODS.NAME,FOOD_ORDERS.PRICE,BUYDATE,STATUS,RESTAURANTS.ID,FOOD_ORDERS.ID
+        FROM FOOD_ORDERS,RESTAURANTS,FOODS WHERE USER_ID = %s AND
         FOOD_ORDERS.REST_ID = RESTAURANTS.ID AND FOODS.ID = FOOD_ORDERS.FOOD_ID AND FOOD_ORDERS.STATUS = %s"""
         cursor.execute(query, [userID,"Not Recieved"])
         return cursor.fetchall()
 def select_food_oders_user_Received(userID):
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
-        query = """SELECT RESTAURANTS.NAME,FOODS.NAME,FOOD_ORDERS.PRICE,BUYDATE,STATUS,RESTAURANTS.ID,FOOD_ORDERS.ID FROM FOOD_ORDERS,RESTAURANTS,FOODS WHERE USER_ID = %s AND
+        query = """SELECT RESTAURANTS.NAME,FOODS.NAME,FOOD_ORDERS.PRICE,BUYDATE,STATUS,RESTAURANTS.ID,FOOD_ORDERS.ID
+         FROM FOOD_ORDERS,RESTAURANTS,FOODS WHERE USER_ID = %s AND
         FOOD_ORDERS.REST_ID = RESTAURANTS.ID AND FOODS.ID = FOOD_ORDERS.FOOD_ID AND FOOD_ORDERS.STATUS = %s"""
         cursor.execute(query, [userID,"Received"])
         return cursor.fetchall()
