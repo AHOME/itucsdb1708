@@ -480,7 +480,6 @@ def add_food_to_restaurant_page():
         foods = request.form.getlist("food",None)
         drinks = request.form.getlist("drink",None)
         restaurant_id = request.form['restaurant_id']
-        print("Restoran: ",restaurant_id)
         restaurant = Restaurant()
         restaurant.take_food_to_restaurant(foods,drinks,restaurant_id)
         return redirect(url_for('site.restaurant_show_page', restaurant_id = restaurant_id))
@@ -499,7 +498,6 @@ def food_home_page(restaurant_id):
 
         restaurant = Restaurant()
         restaurant.select_restaurant_by_id(restaurant_id)
-        print("FOOOD: " ,restaurant_id)
         return render_template('food/index.html', foods = foods, drinks = drinkList, restaurant = restaurant,restaurant_id=restaurant_id)
     return redirect(url_for('site.home_page'))
 
@@ -554,7 +552,6 @@ def food_create_page():
 @site.route('/food/<int:food_id>/<int:restaurant_id>/delete')
 def food_delete_func(food_id,restaurant_id):
     if current_user.is_admin or current_user.get_type == 1:
-        print("sd")
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
             query = """DELETE FROM FOODS WHERE ID = %s"""
@@ -606,25 +603,38 @@ def register_home_page():
         form = request.form
         valid = validate_user_data(form)
         if valid:
-            name = request.form['firstName']
+            name = form['firstName']
             nameList= name.split(" ")
-            if(len(nameList) >= 2):
+            if(len(nameList) >= 3):
+                firstName = nameList[0]
+                firstName += " " + nameList[1] 
+                lastName = nameList[2]
+            elif len(nameList) == 2 :
                 firstName = nameList[0]
                 lastName = nameList[1]
-            elif(len(nameList) <2):
+            else:
                 firstName = nameList[0]
                 lastName=""
-            email = request.form['email']
-            password = request.form['password']
+            email = form['email']
+            password = form['password']
             hashed_password = pwd_context.encrypt(password)
-            birthDate = request.form['birthDate']
-            bio = request.form['bio']
-            city = request.form['city']
-            gender = request.form['gender']
-            userType = request.form['userType']
-            avatar = request.form['avatar']
+            birthDate = form['birthDate']
 
+            city = form['city']
+            gender = form['gender']
+            userType = form['userType']
 
+            if not form['bio']:
+                bio = form['bio']
+            else:
+                bio = ""
+        
+            if len(form['avatar'].strip()) == 0:
+                avatar='https://twibbon.com/content/images/system/default-image.jpg'
+            else:
+                avatar = form['avatar']
+
+            
             with dbapi2.connect(current_app.config['dsn']) as connection:
                 cursor = connection.cursor()
                 query = """
@@ -635,11 +645,10 @@ def register_home_page():
                 connection.commit()
             flash('This is great! You have successfully registered! Now you can login via navbar.','user_login')
             return redirect(url_for('site.home_page'))
-        else:
-            form.errors['notComplete'] = 'We couldn\'t registred you as user please fix your answers.'
-        form = request.form
-
-        render_template('home/index.html',form=form)
+        
+        
+        form.errors['notComplete'] = 'We couldn\'t registred you as user please fix your answers.'    
+        return render_template('register/index.html',form=form)
 
 
 @site.route('/user/<int:user_id>/messages')
@@ -695,7 +704,6 @@ def user_show_page(user_id):
     recent_food_orders_rec = select_food_oders_user_Received(user_id)
     voted_res = get_voted_restaurants(user_id)
     completed_achievements = select_completed_achievements_by_userID(user_id)
-
     if current_user.get_Id == user_id:
         if user.get_type==0:
             return redirect(url_for('site.admin_page'))
@@ -718,23 +726,35 @@ def user_edit_page(user_id):
         db_user = get_user(current_user.get_mail)
         return render_template('user/edit.html',user = db_user,form=None)
     else:
-        valid = validate_edit_data(request.form)
+        valid = validate_user_edit_data(request.form)
         if valid:
             name = request.form['firstName']
             nameList= name.split(" ")
-            if(len(nameList) >= 2):
+            if(len(nameList) >= 3):
+                firstName = nameList[0]
+                firstName += " " + nameList[1] 
+                lastName = nameList[2]
+            elif len(nameList) == 2 :
                 firstName = nameList[0]
                 lastName = nameList[1]
-            elif(len(nameList) <2):
+            else:
                 firstName = nameList[0]
                 lastName=""
 
             email = request.form['email']
             birthDate = request.form['birthDate']
-            bio = request.form['bio']
             city = request.form['city']
             gender = request.form['gender']
-            avatar = request.form['avatar']
+            
+            if not request.form['bio']:
+                bio = request.form['bio']
+            else:
+                bio = ""
+
+            if len(request.form['avatar'].strip()) == 0:
+                avatar='https://twibbon.com/content/images/system/default-image.jpg'
+            else:
+                avatar = request.form['avatar']
 
 
             with dbapi2.connect(current_app.config['dsn']) as connection:
@@ -758,7 +778,8 @@ def user_edit_page(user_id):
             return redirect(url_for('site.user_show_page',user_id=current_user.get_Id,user=db_user))
 
         form = request.form
-        return render_template('user/edit.html',form=form)
+        db_user = get_user(current_user.get_mail)
+        return render_template('user/edit.html',form=form,user=db_user)
 
 @site.route('/admin',methods = ['GET','POST'])
 @login_required
@@ -1067,31 +1088,6 @@ def menu_drink_delete(restaurant_id,drink_id):
     return redirect(url_for('site.restaurant_show_page',restaurant_id  = restaurant_id ))
 
 
-def validate_edit_data(form):
-    if form == None:
-        return False
-
-    form.data = {}
-    form.errors = {}
-
-
-    form.data['firstName'] = form['firstName']
-
-
-    form.data['email'] = form['email']
-
-
-    form.data['birthDate'] = form['birthDate']
-
-    if not form['bio']:
-        form.data['bio'] = form['bio']
-    if len(form['avatar'].strip()) == 0:
-        form.data['avatar']='http://gazettereview.com/wp-content/uploads/2016/03/facebook-avatar.jpg'
-    else:
-        form.data['avatar'] = form['avatar']
-
-    return len(form.errors) == 0
-
 
 def validate_user_data(form):
     if form == None:
@@ -1104,17 +1100,29 @@ def validate_user_data(form):
 
     form.data['email'] = form['email']
 
-    form.data['birthDate'] = form['birthDate']
+    t=dt.date(dt.now())
+    birthString=dt.strptime(form['birthDate'], '%Y-%m-%d')
+
+    if '{:%Y-%m-%d}'.format(t) < form['birthDate'] :
+        form.errors['birthDate'] = "You can't born in the future."
+    elif birthString.year < 1888 :
+        form.errors['birthDate'] = "You can't be older than 130 years old."
+    else:
+        form.data['birthDate'] = form['birthDate']
+    
 
     if not form['bio']:
         form.data['bio'] = form['bio']
 
     if len(form['avatar'].strip()) == 0:
-        form.data['avatar']='http://gazettereview.com/wp-content/uploads/2016/03/facebook-avatar.jpg'
+        form.data['avatar']='https://twibbon.com/content/images/system/default-image.jpg'
     else:
         form.data['avatar'] = form['avatar']
 
-
+    if form.get('terms') != "1":
+        form.errors['terms'] = 'You should accept the terms'
+    else:
+        form.data['terms'] = form.get('terms')
 
     return len(form.errors) == 0
 
@@ -1143,6 +1151,39 @@ def validate_event_data(form):
     form.data['link'] = form['link']
 
     return len(form.error) == 0
+
+def validate_user_edit_data(form):
+    if form == None:
+        return False
+
+    form.data = {}
+    form.errors = {}
+
+    form.data['firstName'] = form['firstName']
+
+    form.data['email'] = form['email']
+
+    t=dt.date(dt.now())
+    birthString=dt.strptime(form['birthDate'], '%Y-%m-%d')
+
+    if '{:%Y-%m-%d}'.format(t) < form['birthDate'] :
+        form.errors['birthDate'] = "You can't born in the future."
+    elif birthString.year < 1888 :
+        form.errors['birthDate'] = "You can't be older than 130 years old."
+    else:
+        form.data['birthDate'] = form['birthDate']
+    
+
+    if not form['bio']:
+        form.data['bio'] = form['bio']
+
+    if len(form['avatar'].strip()) == 0:
+        form.data['avatar']='https://twibbon.com/content/images/system/default-image.jpg'
+    else:
+        form.data['avatar'] = form['avatar']
+
+
+    return len(form.errors) == 0
 
 @site.errorhandler(401)
 def custom_401(error):

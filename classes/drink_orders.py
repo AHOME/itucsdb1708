@@ -26,7 +26,6 @@ class DrinkOrders():
             cursor = connection.cursor()
             query = """INSERT INTO DRINK_ORDERS (USER_ID, REST_ID, drink_ID, PRICE, BUYDATE, STATUS)
                 VALUES (%s,%s,%s,%s,%s,%s)"""
-            print("asd")
             cursor.execute(query, [self.userId, self.restaurantId, self.drinkId, self.price,self.date,self.status])
             connection.commit()
 

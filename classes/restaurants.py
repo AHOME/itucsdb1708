@@ -130,8 +130,8 @@ class Restaurant():
     def check_user_gave_a_star_or_not(self, user_id, restaurant_id):
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
-            query = """SELECT * FROM STAR_RESTAURANTS WHERE USER_ID = %s"""
-            cursor.execute(query,[user_id])
+            query = """SELECT * FROM STAR_RESTAURANTS WHERE USER_ID = %s AND RESTAURANT_ID = %s"""
+            cursor.execute(query,(user_id,restaurant_id))
             users = cursor.fetchall()
         if(users == []):
             return True
@@ -140,8 +140,8 @@ class Restaurant():
     def give_star_by_id(self, user_id, restaurant_id , score):
         with dbapi2.connect(current_app.config['dsn']) as connection:
             cursor = connection.cursor()
-            query = """SELECT * FROM STAR_RESTAURANTS WHERE USER_ID = %s"""
-            cursor.execute(query,[user_id])
+            query = """SELECT * FROM STAR_RESTAURANTS WHERE USER_ID = %s AND RESTAURANT_ID = %s"""
+            cursor.execute(query,(user_id,restaurant_id))
             users = cursor.fetchall()
         if (users == []):
             with dbapi2.connect(current_app.config['dsn']) as connection:

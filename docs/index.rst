@@ -1,17 +1,16 @@
 Welcome to itucsdb's documentation!
 ===================================
 
-:Team: Team Name
+:Team: itucsdb1708
 
 :Members:
 
-   * Member 1
-   * Member 2
-   * Member 3
-   * Member 4
-   * Member 5
+   * Alperen Kantarcı
+   * Sadik Ekin Özbay
+   * Onat Şahin
+   * Burak Bekci
 
-**project description goes here (a few paragraphs)**
+**Restoranlandın is a website in which restaurant owners can display their restaurants and share information about them, while customers can look at restaurants' menus, rate them and order from them. As customers order from restaurants and visit them, they can unlock achievements. These achievements will give them additional deals. Moreover, Restoranlandın shares events from the world of taste in the home page to inform people and tempt them to join.**
 
 Contents:
 
