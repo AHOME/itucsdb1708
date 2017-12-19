@@ -33,6 +33,7 @@ def select_comers_all(eventId):
         cursor.execute(statement,[eventId])
         comers = cursor.fetchall()
         return comers
+
 def delete_comers_by_Id(eventId,userId):
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()
@@ -41,6 +42,7 @@ def delete_comers_by_Id(eventId,userId):
             USER_ID = %s"""
         cursor.execute(query, [eventId,userId])
         connection.commit()
+
 def does_user_come(userId,eventId):
     with dbapi2.connect(current_app.config['dsn']) as connection:
         cursor = connection.cursor()

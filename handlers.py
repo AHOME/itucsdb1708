@@ -717,7 +717,7 @@ def user_show_page(user_id):
     else:
         return render_template('user/show.html',user_id = user_id, user=user,foodListNR = recent_food_orders_notR,foodListR = recent_food_orders_rec ,drinkListNR = recent_drink_orders_notR,drinkListR = recent_drink_orders_rec,voted_res = voted_res,completed_achievements = completed_achievements )
 
-        
+
 
 @site.route('/user/<int:user_id>/edit',methods=['GET','POST']) #Change me with model [ID]
 @login_required
@@ -785,7 +785,7 @@ def user_edit_page(user_id):
 @login_required
 def admin_page():
     if not current_user.is_admin :
-        abort(401) 
+        abort(401)
     achievements = achievementMod.achievement_select_all()
     achievementList = []
 
