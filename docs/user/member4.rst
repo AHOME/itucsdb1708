@@ -7,13 +7,13 @@ Homepage
 Every user authorized or not will see this page when they visit the website. Hence, homepage should contain general information about website and also it
 should contain attractive parts. For that reason, current events and news about restaurants, website and users are listed on this page.
 
-.. figure:: /images/burak/event_slider.png
+.. figure:: images/burak/event_slider.png
       :scale: 100 %
       :alt: event slider
 
       Current events listed in this slider. By clicking the event image user can go web page of each event.
 
-.. figure:: /images/burak/news_section.png
+.. figure:: images/burak/news_section.png
       :scale: 100 %
       :alt: news section
 
@@ -25,7 +25,7 @@ Events Page
 Details of event, time and place of the event are shown on this page. Users can select "Going" or "Not Going" to that Event via a button.
 Users who selected "Going" are listed at the bottom of the page. Admin can edit event via "Edit Event" button which is visible for admin only.
 
-.. figure:: /images/burak/event_page.png
+.. figure:: images/burak/event_page.png
       :scale: 100 %
       :alt: event page
 
@@ -40,19 +40,19 @@ By clicking the names of the achievements admin can edit an achievement. At the 
 to any user. Below of it, there is a part for admin to publish a new. The published news will be listed on the homepage. At the bottom of the page, there are links for
 creating events and achievements.
 
-.. figure:: /images/burak/admin_lists.png
+.. figure:: images/burak/admin_lists.png
       :scale: 100 %
       :alt: admin lists
 
       Lists of restaurants,events,achievements and user. Admin can delete them from here.
 
-.. figure:: /images/burak/admin_messages.png
+.. figure:: images/burak/admin_messages.png
       :scale: 100 %
       :alt: admin messages
 
       Admin can message any user with this form. Whit the link under the title admin can list and select current registered users.
 
-.. figure:: /images/burak/admin_links_news.png
+.. figure:: images/burak/admin_links_news.png
       :scale: 100 %
       :alt: admin news form and links
 
@@ -64,7 +64,7 @@ Event Create Form
 This page available for admin only.  All the information except "Potograph link of event" must given. Also "Starting Date of Event" must earlier than "Ending Date of Event".
 Admin can open Event Edit form via Edit button on the Events page. Edit form is very similar to Create form. The only difference is, in the Edit from there will be existing values of that Event.
 
-.. figure:: /images/burak/event_creation.png
+.. figure:: images/burak/event_creation.png
       :scale: 100 %
       :alt: event from
 
@@ -74,7 +74,7 @@ Drink Create Form
 =================
 Admin and restaurant owners can add drinks to website with this form.
 
-.. figure:: /images/burak/drink_create.png
+.. figure:: images/burak/drink_create.png
       :scale: 100 %
       :alt: drink form
 
