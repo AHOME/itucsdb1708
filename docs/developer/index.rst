@@ -6,7 +6,11 @@ Database Design
 
 **explain the database design of your project**
 
-**include the E/R diagram(s)**
+Our E/R diagram of the project.
+
+.. figure:: images/er.png
+     :scale: 100 %
+     :alt: er diagram of the database.
 
 Code
 ----
