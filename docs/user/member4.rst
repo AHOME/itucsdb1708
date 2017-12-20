@@ -46,7 +46,7 @@ creating events and achievements.
 
       Lists of restaurants,events,achievements and user. Admin can delete them from here.
 
-.. figure:: images/burak/admin_messages.png
+.. figure:: images/burak/admin_message.png
       :scale: 100 %
       :alt: admin messages
 
