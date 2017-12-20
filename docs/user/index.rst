@@ -1,16 +1,15 @@
 User Guide
 ==========
 
-**explain how your application works from the user perspective, use
-screenshots whereever appropriate**
+In this section we will be explaining mostly visual parts we implemented in our project. You will be informed about our site. If you want to learn much more than that then we suggest you to look our developer guide.
 
-**to add a picture, use the following example**::
 
-   .. figure:: picture.png
-      :scale: 50 %
-      :alt: map to buried treasure
+.. figure:: images/alperen/home.png
+     :scale: 100 %
+     :alt: Home page
 
-      This is the caption of the figure (a simple paragraph).
+     Home page of R E S T O R A N L A N D I N
+    
 
 .. toctree::
 
@@ -18,5 +17,4 @@ screenshots whereever appropriate**
    member2
    member3
    member4
-   member5
    
