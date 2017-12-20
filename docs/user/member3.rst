@@ -5,7 +5,7 @@ I was responsible for Restaurant, Food, and Comment. So I created the relationsh
 
 Restaurant Show Page
 ===================
-.. figure:: images/ekin/restaurant_importantInfo.png
+.. figure:: images/ekin/restaurant_show_importantInfo.png
     :scale: 100 %
     :alt: restaurant important info show
 .. figure:: images/ekin/restaurant_show_status.png
@@ -50,7 +50,7 @@ Comment Page
     :scale: 100 %
     :alt: restaurant comment
 
-Users can give comments about any restaurant that they want. They can not edit their comments.Plus they cannot delete their comments.The admin user cannot delete or edit also.
+Users can give comments about any restaurant that they want. They can not edit their comments.Plus they cannot delete their comments.The admin user can delete. However s/he can not edit.
 
 
 Food Create and Edit Page
