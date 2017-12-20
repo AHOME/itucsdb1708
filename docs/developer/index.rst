@@ -7,7 +7,7 @@ Database Design
 
 Our E/R diagram of the project.
 
-.. image:: /images/er.jpg
+.. image:: images/er.jpg
     :alt: Er diagram
     :width: 720px
     :height: 630px
