@@ -101,7 +101,7 @@ This is the page that opens when the admin clicks to an achievement. The form is
 Search Results Page
 -------------------
 
-.. figure:: images/onat/achupdate.png
+.. figure:: images/onat/search.png
      :scale: 100 %
      :alt: search results
 
