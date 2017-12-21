@@ -4,7 +4,7 @@ I was responsible for Restaurant, Food, and Comment. So I created the relationsh
 
 
 Restaurant Show Page
-===================
+--------------------
 .. figure:: images/ekin/restaurant_show_importantInfo.png
     :scale: 100 %
     :alt: restaurant important info show
@@ -21,7 +21,7 @@ Restaurant show menu part contains what the restaurant sells. Users can give a f
 
 
 Restaurant Edit and Create Page
-===============================
+-------------------------------
 .. figure:: images/ekin/restaurant_create.png
      :scale: 100 %
      :alt: restaurant create form
@@ -33,7 +33,7 @@ Restaurant owners and admin can create the restaurant. They just need to fill th
 
 
 Restaurant Index Page
-=====================
+-----------------------
 .. figure:: images/ekin/restaurants_index_page_admin_user.png
      :scale: 100 %
      :alt: restaurants admin user
@@ -45,7 +45,7 @@ In this page, it changes with user type. If you are the admin user, you can see 
 
 
 Comment Page
-============
+--------------------
 .. figure:: images/ekin/restaurant_show_comment.png
     :scale: 100 %
     :alt: restaurant comment
@@ -54,7 +54,7 @@ Users can give comments about any restaurant that they want. They can not edit t
 
 
 Food Create and Edit Page
-=========================
+-----------------------------
 .. figure:: images/ekin/food_create.png
     :scale: 100 %
     :alt: food create
@@ -67,7 +67,7 @@ For editing, only admins or restaurant owners can edit the food. The information
 
 
 Add Food To The Restaurant Page
-==============================
+---------------------------------
 .. figure:: images/ekin/add_food_to_restaurant.png
     :scale: 100 %
     :alt: food add to restaurant
