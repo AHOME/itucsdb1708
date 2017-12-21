@@ -3,7 +3,7 @@ Parts Implemented by Sadık Ekin Özbay
 I did CRUD operations of Restaurants, Comments and Foods. Moreover I did create function of order.
 
 Restaurants Table
-=================
+---------------------------------
 Restaurants are the main part of our project.
 
 Attributes of Restaurants Table
@@ -189,7 +189,7 @@ This method allows the users to give ratings to restaurants. The second function
       return False
 
 Foods Table
-=================
+---------------------------------
 Foods are the main part of the Restaurants. We can add foods to restaurants.
 
 Attributes of Foods Table
@@ -306,7 +306,7 @@ This method is used for selecting all foods.This method is used in add food to t
 
 
 Restaurant_Foods Table
-=================
+---------------------------------
 This is the connection table for restaurants and foods.
 
 Attributes of Restaurant_Foods Table
@@ -376,7 +376,7 @@ To add new food to the spesific restaurant, we use this. Implemented the food pa
               connection.commit()
 
 Comments Table
-=================
+---------------------------------
 Comments are the one of the main part for restaurants.
 
 Attributes of Comments Table

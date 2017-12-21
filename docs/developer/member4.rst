@@ -3,7 +3,7 @@ Parts Implemented by Burak Bekci
 CRUD operations of Events and Drinks table. Delete, read and update operations for food and drink orders create operations was implemented by Sadık Ekin Özbay. Control of achievements.
 
 Events Table
-============
+---------------------------------
 Events are one of the social parts of RESTORANLANDIN. It helps restaurant owners and user to meet each other.
 
 Attributes of Events Table
@@ -134,7 +134,7 @@ Events deleted by their id.
 To attend users to events a connection table is used.
 
 Events-Users Table
-==================
+---------------------------------
 This is a connection table to keep which user has attended which event. The name of the table is EVENTS_RESTAURANTS however it is operating with users and events.
 
 Attributes of Events_Users Table
@@ -226,7 +226,7 @@ This method is used when a user selects not to come to the event via "Not Going"
               connection.commit()
 
 Drinks Table
-============
+---------------------------------
 Drinks are one of the main entities in RESTORANLANDIN. There is a pool in the website that contains all the food and drinks which are added by admin or user.
 
 Attributes of Drinks Table
@@ -360,7 +360,7 @@ To handle order operations, an order table in the database was necessary. Since 
 I implemented search, update and delete operation for drink and food order tables. Create operation implemented by Sadık Ekin Özbay.
 
 Food_Orders Table
-=================
+---------------------------------
 RESTORANLANDIN gives an opportunity for their customers to order foods. A database table named FOOD_ORDERS created for orders.
 
 Attributes of Food_Orders Table
@@ -469,7 +469,7 @@ This button provokes the given method below.
 Another type of orders in RESTORANLANDIN is drink orders. It has very similar methods for food orders since the main purpose of them is same.
 
 Drink_Orders Table
-===================
+---------------------------------
 Drinks can be order from restaurants as well as foods in RESTORANLANDIN.
 A database table named DRINK_ORDERS created for drink orders and functions implemented to operate on it.
 
@@ -562,7 +562,7 @@ This button provokes the given method below.
 
 
 Achievement_User Table
-======================
+---------------------------------
 
 Achievements are the fun part of RESTORANLANDIN. Users can complete achievements with ordering foods.
 To keep information about achievements a database table named ACHIEVEMENTS created by Onat Şahin. Connecting achievements with users require another table which named as ACHIEVEMENT_USER.
