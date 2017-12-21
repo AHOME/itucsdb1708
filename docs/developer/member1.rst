@@ -27,7 +27,7 @@ Attributes of Users Table
 * GENDER VARCHAR(20)
 	Gender of the user man,woman and other
 * USERTYPE INTEGER NOT NULL
-	1 for admin 2 for restaurant owner 3 for customer
+	0 for admin 1 for restaurant owner 2 for customer
 * AVATAR VARCHAR(255)
 	Avatar link
 * BIO VARCHAR(500) 

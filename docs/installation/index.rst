@@ -1,19 +1,7 @@
 Installation Guide
 ==================
 
-## Instructions to Deploy Project
-
-2. Browse to root directory of repository.
-3. Open terminal or command line.
-4. Run `vagrant up` command and wait it to finish.
-5. Run `python server.py` command.
-
-## Requirements to Deploy Project
-- VirtualBox
-- Vagrant
-
 1. Install Python (version 3.4 or higher)
-
 
 2. Install Flask
 
