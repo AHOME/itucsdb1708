@@ -241,8 +241,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'itucsdb', 'itucsdb Documentation',
-   'Team Name', 'itucsdb', 'One line description of project.',
+  ('index', 'itucsdb1708', 'itucsdb1708 Documentation',
+   'Team Name', 'itucsdb1708', 'One line description of project.',
    'Miscellaneous'),
 ]
 

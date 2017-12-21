@@ -300,4 +300,3 @@ We initialized our database with initdb function which is given below:
    member2
    member3
    member4
-   member5

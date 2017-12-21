@@ -78,4 +78,4 @@ Admin and restaurant owners can add drinks to website with this form.
       :scale: 100 %
       :alt: drink form
 
-      Drink creation form. Added drinks will be shown in menuitems page so that restaurant owners can add them to their restaurant. This form created by Alperen Kantarcı. I only edited it.
+      Drink creation form. Added drinks will be shown in menuitems page so that restaurant owners can add them to their restaurant. This       form created by Alperen Kantarcı. I only edited it.
