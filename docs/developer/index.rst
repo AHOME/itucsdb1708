@@ -14,7 +14,6 @@ Our E/R diagram of the project:
     :alt: Er diagram
     :width: 720px
     :height: 630px
-    :align: center
 
 
 We initialized our database with initdb function which is given below:
