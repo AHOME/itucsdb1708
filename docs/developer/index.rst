@@ -12,8 +12,8 @@ Our E/R diagram of the project:
 
 .. image:: images/er.png
     :alt: Er diagram
-    :width: 1600px
-    :height: 800px
+    :width: 720px
+    :height: 630px
     :align: center
 
 
