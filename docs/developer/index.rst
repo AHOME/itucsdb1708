@@ -10,7 +10,7 @@ minor tables to connect bigger ones.
 
 Our E/R diagram of the project:
 
-.. image:: images/er.png
+.. image:: images/er2.png
     :alt: Er diagram
     :width: 720px
     :height: 630px
